@@ -9,7 +9,7 @@
   --text: #111111;
   --muted: #6A6A6A;
   --border: #E9E9E9;
-  --border-dark: rgba(255,255,255,0.1);
+  --border-dark: rgba(255, 255, 255, 0.1);
 
   /* Gradient colors */
   --sand: #EBB987;
@@ -31,8 +31,8 @@
   --radius-pill: 9999px;
 
   /* Shadows */
-  --shadow-soft: 0 12px 40px rgba(0,0,0,.08);
-  --shadow-card: 0 4px 20px rgba(0,0,0,.06);
+  --shadow-soft: 0 12px 40px rgba(0, 0, 0, .08);
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, .06);
   --shadow-glow: 0 0 60px rgba(152, 244, 249, 0.3);
 }
 
@@ -89,36 +89,30 @@ body {
 
 /* Hero gradient */
 .hero-gradient {
-  background: linear-gradient(
-    135deg,
-    var(--sand) 0%,
-    var(--coral) 20%,
-    var(--rose) 35%,
-    var(--lavender) 55%,
-    var(--mint) 75%,
-    var(--deep-blue) 100%
-  );
+  background: linear-gradient(135deg,
+      var(--sand) 0%,
+      var(--coral) 20%,
+      var(--rose) 35%,
+      var(--lavender) 55%,
+      var(--mint) 75%,
+      var(--deep-blue) 100%);
   background-size: 200% 200%;
   animation: gradient-shift 15s ease infinite;
 }
 
 /* Orange gradient for contrast sections */
 .gradient-orange {
-  background: linear-gradient(
-    135deg,
-    var(--orange) 0%,
-    var(--coral) 50%,
-    var(--rose) 100%
-  );
+  background: linear-gradient(135deg,
+      var(--orange) 0%,
+      var(--coral) 50%,
+      var(--rose) 100%);
 }
 
 /* Dark gradient */
 .gradient-dark {
-  background: linear-gradient(
-    180deg,
-    var(--black) 0%,
-    var(--charcoal) 100%
-  );
+  background: linear-gradient(180deg,
+      var(--black) 0%,
+      var(--charcoal) 100%);
 }
 
 /* Space grid background */
@@ -133,6 +127,7 @@ body {
 .noise {
   position: relative;
 }
+
 .noise::before {
   content: "";
   position: absolute;
@@ -143,8 +138,15 @@ body {
 }
 
 @keyframes gradient-shift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 /* Glow effect */
@@ -196,13 +198,13 @@ body {
 .card-dark {
   border-radius: var(--radius-card);
   border: 1px solid var(--border-dark);
-  background: rgba(255,255,255,0.02);
+  background: rgba(255, 255, 255, 0.02);
   transition: all 0.3s ease;
 }
 
 .card-dark:hover {
   border-color: rgba(152, 244, 249, 0.3);
-  background: rgba(255,255,255,0.04);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 /* Selection */
@@ -229,8 +231,15 @@ img {
 
 /* Animated border */
 @keyframes border-pulse {
-  0%, 100% { border-color: rgba(152, 244, 249, 0.2); }
-  50% { border-color: rgba(152, 244, 249, 0.5); }
+
+  0%,
+  100% {
+    border-color: rgba(152, 244, 249, 0.2);
+  }
+
+  50% {
+    border-color: rgba(152, 244, 249, 0.5);
+  }
 }
 
 .border-pulse {
@@ -239,8 +248,15 @@ img {
 
 /* Floating animation */
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 .float {

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Friendroid Proposal | Laniameda",
   description:
-    "Creative Treatment Package — Pre-launch audience system for Robots Retail. $1,000 / 5 working days.",
+    "Creative Treatment Package — Build a connected, trusted audience in the robotics niche. $2,000 / 5 business days.",
 };
 
 export default function ProposalLayout({
