@@ -1,26 +1,248 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Neutrals */
+  --black: #0A0A0A;
+  --charcoal: #141414;
+  --slate: #6B6F7A;
+  --bg: #FFFFFF;
+  --text: #111111;
+  --muted: #6A6A6A;
+  --border: #E9E9E9;
+  --border-dark: rgba(255,255,255,0.1);
+
+  /* Gradient colors */
+  --sand: #EBB987;
+  --mint: #D8F2ED;
+  --lavender: #BABAE5;
+  --deep-blue: #4135CF;
+  --coral: #E5866F;
+  --rose: #E26158;
+  --burgundy: #5C0000;
+  --orange: #FF6B35;
+
+  /* Accent */
+  --cyan: #98F4F9;
+  --indigo: #3D409A;
+
+  /* Radius tokens */
+  --radius-hero: 0px;
+  --radius-card: 20px;
+  --radius-pill: 9999px;
+
+  /* Shadows */
+  --shadow-soft: 0 12px 40px rgba(0,0,0,.08);
+  --shadow-card: 0 4px 20px rgba(0,0,0,.06);
+  --shadow-glow: 0 0 60px rgba(152, 244, 249, 0.3);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-black: var(--black);
+  --color-charcoal: var(--charcoal);
+  --color-slate: var(--slate);
+  --color-bg: var(--bg);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-cyan: var(--cyan);
+  --color-indigo: var(--indigo);
+  --color-sand: var(--sand);
+  --color-mint: var(--mint);
+  --color-lavender: var(--lavender);
+  --color-deep-blue: var(--deep-blue);
+  --color-coral: var(--coral);
+  --color-rose: var(--rose);
+  --color-orange: var(--orange);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--black);
+  color: var(--text);
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Snap scroll container */
+.snap-container {
+  scroll-snap-type: y mandatory;
+  overflow-y: scroll;
+  height: 100vh;
+}
+
+.snap-section {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Hero gradient */
+.hero-gradient {
+  background: linear-gradient(
+    135deg,
+    var(--sand) 0%,
+    var(--coral) 20%,
+    var(--rose) 35%,
+    var(--lavender) 55%,
+    var(--mint) 75%,
+    var(--deep-blue) 100%
+  );
+  background-size: 200% 200%;
+  animation: gradient-shift 15s ease infinite;
+}
+
+/* Orange gradient for contrast sections */
+.gradient-orange {
+  background: linear-gradient(
+    135deg,
+    var(--orange) 0%,
+    var(--coral) 50%,
+    var(--rose) 100%
+  );
+}
+
+/* Dark gradient */
+.gradient-dark {
+  background: linear-gradient(
+    180deg,
+    var(--black) 0%,
+    var(--charcoal) 100%
+  );
+}
+
+/* Space grid background */
+.space-grid {
+  background-image:
+    linear-gradient(rgba(152, 244, 249, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(152, 244, 249, 0.03) 1px, transparent 1px);
+  background-size: 80px 80px;
+}
+
+/* Subtle noise texture */
+.noise {
+  position: relative;
+}
+.noise::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  pointer-events: none;
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Glow effect */
+.glow-cyan {
+  box-shadow: var(--shadow-glow);
+}
+
+.text-glow {
+  text-shadow: 0 0 40px rgba(152, 244, 249, 0.5);
+}
+
+/* Glass effect */
+.glass {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-dark {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Pill button */
+.pill {
+  border-radius: var(--radius-pill);
+  transition: all 0.2s ease;
+}
+
+.pill:hover {
+  transform: translateY(-1px);
+}
+
+/* Card */
+.card {
+  border-radius: var(--radius-card);
+  border: 1px solid var(--border);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-soft);
+  transform: translateY(-2px);
+}
+
+.card-dark {
+  border-radius: var(--radius-card);
+  border: 1px solid var(--border-dark);
+  background: rgba(255,255,255,0.02);
+  transition: all 0.3s ease;
+}
+
+.card-dark:hover {
+  border-color: rgba(152, 244, 249, 0.3);
+  background: rgba(255,255,255,0.04);
+}
+
+/* Selection */
+::selection {
+  background: var(--cyan);
+  color: var(--black);
+}
+
+/* Smooth image rendering */
+img {
+  image-rendering: -webkit-optimize-contrast;
+}
+
+/* Hide scrollbar but keep functionality */
+.snap-container::-webkit-scrollbar {
+  width: 0;
+  display: none;
+}
+
+.snap-container {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Animated border */
+@keyframes border-pulse {
+  0%, 100% { border-color: rgba(152, 244, 249, 0.2); }
+  50% { border-color: rgba(152, 244, 249, 0.5); }
+}
+
+.border-pulse {
+  animation: border-pulse 3s ease-in-out infinite;
+}
+
+/* Floating animation */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.float {
+  animation: float 6s ease-in-out infinite;
 }
