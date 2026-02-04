@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Spline from '@splinetool/react-spline';
+import KineticDotsLoader from "@/components/ui/kinetic-dots-loader";
 
 export function HeroSection() {
     const [isLoaded, setIsLoaded] = useState(false);
@@ -18,13 +19,9 @@ export function HeroSection() {
                         transition={{ duration: 0.5 }}
                         className="absolute inset-0 z-50 bg-white flex items-center justify-center"
                     >
-                        <motion.div
-                            animate={{ opacity: [0.3, 1, 0.3] }}
-                            transition={{ duration: 1.5, repeat: Infinity }}
-                            className="text-black/40 text-sm tracking-widest uppercase"
-                        >
-                            Loading...
-                        </motion.div>
+                        <div className="scale-75">
+                            <KineticDotsLoader />
+                        </div>
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -68,7 +65,7 @@ export function HeroSection() {
                 >
                     Creative
                     <br />
-                    <span className="font-light">Treatment</span>
+                    <span className="font-normal bg-[#98F4F9] px-4 py-1 leading-[0.8] inline-block my-1 text-black">Treatment</span>
                     <br />
                     Package
                 </h1>

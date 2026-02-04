@@ -10,7 +10,12 @@ Proceed implementing the wep app pitch deck stage by stage.
 For each session focus only on one particular section of the deck, giving it full attention, buidling a 
 high quality frontend web app design presentation.
 
-always use only the copy that is present in the COPY.MD file. 
+always use only the copy that is present in the MAIN-COPY.MD file. 
 You may Only invent placeholders text suggestions, not final copy unless asked for
 
 use components approach to do this design. components are not reusable by default - maintain uniqueness, creativity and high value 10000$ design style.
+
+only edit the component sectipn apge that you are requested to edit.
+
+
+make sure to ake edits in context with the app page you are working on - adapt it nicely to fit the design system, layout etc.

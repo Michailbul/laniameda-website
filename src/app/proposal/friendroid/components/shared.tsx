@@ -13,28 +13,20 @@ export function Section({
     className?: string;
     id?: string;
 }) {
-    const ref = useRef(null);
-    const isInView = useInView(ref, { amount: 0.3 });
-
     return (
         <section
-            ref={ref}
             id={id}
             className={`snap-section flex flex-col justify-center ${className}`}
         >
-            <AnimatePresence>
-                {isInView && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 40 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
-                        className="w-full"
-                    >
-                        {children}
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            <motion.div
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true, margin: "-10%" }}
+                transition={{ duration: 0.8 }}
+                className="w-full"
+            >
+                {children}
+            </motion.div>
         </section>
     );
 }
@@ -91,8 +83,8 @@ export function NavDots({ sections, activeIndex }: { sections: string[]; activeI
                     key={section}
                     href={`#${section}`}
                     className={`w-2 h-2 rounded-full transition-all duration-300 ${activeIndex === i
-                            ? "bg-cyan scale-150"
-                            : "bg-white/30 hover:bg-white/60"
+                        ? "bg-cyan scale-150"
+                        : "bg-white/30 hover:bg-white/60"
                         }`}
                     title={section}
                 />
@@ -102,7 +94,9 @@ export function NavDots({ sections, activeIndex }: { sections: string[]; activeI
 }
 
 // Top navigation bar
-export function TopNav() {
+export function TopNav({ activeSection = 0 }: { activeSection?: number }) {
+    const isHero = activeSection === 0;
+
     return (
         <motion.nav
             initial={{ opacity: 0, y: -20 }}
@@ -111,22 +105,28 @@ export function TopNav() {
             className="fixed top-0 left-0 right-0 z-50 px-6 py-5"
         >
             <div className="max-w-[1400px] mx-auto flex items-center justify-between">
-                <span className="text-white text-sm font-medium tracking-wider">
+                <span className={`text-sm font-medium tracking-wider transition-all duration-300 ${isHero ? "text-black opacity-100" : "text-white opacity-0"
+                    }`}>
                     LANIAMEDA
                 </span>
-                <div className="glass pill px-6 py-2.5 flex items-center gap-8">
+                <div
+                    className={`glass pill px-6 py-2.5 flex items-center gap-8 transition-all duration-300 ${isHero
+                        ? "opacity-100 translate-y-0 pointer-events-auto bg-white/50 border-black/5"
+                        : "opacity-0 -translate-y-4 pointer-events-none"
+                        }`}
+                >
                     {["Package", "Deliverables", "Pricing"].map((item) => (
                         <a
                             key={item}
                             href={`#${item.toLowerCase()}`}
-                            className="text-white/70 text-sm hover:text-white transition-colors"
+                            className="text-black/70 text-sm hover:text-black transition-colors"
                         >
                             {item}
                         </a>
                     ))}
                     <a
                         href="#pricing"
-                        className="text-cyan text-sm font-medium hover:text-white transition-colors"
+                        className="text-cyan-600 text-sm font-medium hover:text-black transition-colors"
                     >
                         Start Project
                     </a>

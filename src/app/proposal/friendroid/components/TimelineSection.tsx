@@ -1,46 +1,55 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { Timeline, type TimelineEntry } from "@/components/ui/timeline";
 import { Section } from "./shared";
 
-const timelineItems = [
-    { day: "01", title: "Foundation", desc: "Data & structure" },
-    { day: "02", title: "Build", desc: "Hooks & hypotheses" },
-    { day: "03", title: "Build", desc: "Refine priorities" },
-    { day: "04", title: "Systematize", desc: "Maps & metrics" },
-    { day: "05", title: "Deliver", desc: "Notion + call" },
+const timelineEntries: TimelineEntry[] = [
+  {
+    title: "Pilot → Scale Roadmap",
+    content: (
+      <p className="text-muted text-sm md:text-base max-w-xl">
+        step-by-step next phase plan (no pricing here)
+      </p>
+    ),
+  },
+  {
+    title: "Expand to more platforms",
+    content: (
+      <p className="text-muted text-sm md:text-base max-w-xl">
+        Expand to more platforms <span className="text-black">only after proof</span>
+      </p>
+    ),
+  },
+  {
+    title: "Build repurposing",
+    content: (
+      <p className="text-muted text-sm md:text-base max-w-xl">
+        Build repurposing: <span className="text-black">one insight → multiple assets</span>
+      </p>
+    ),
+  },
+  {
+    title: "Keep the loop going",
+    content: (
+      <p className="text-muted text-sm md:text-base max-w-xl">
+        Keep the loop going:{" "}
+        <span className="text-black">
+          test → measure → double down → iterate
+        </span>{" "}
+        (manual first, AI automation later)
+      </p>
+    ),
+  },
 ];
 
 export function TimelineSection() {
-    return (
-        <Section id="timeline" className="bg-white px-6">
-            <div className="max-w-[1100px] mx-auto">
-                <span className="text-indigo text-xs tracking-[0.3em] uppercase font-medium">
-                    Timeline
-                </span>
-                <h2 className="text-black text-[clamp(40px,5vw,64px)] font-extralight leading-[1] mt-6 mb-16">
-                    5 days to system
-                </h2>
-
-                <div className="flex gap-4">
-                    {timelineItems.map((item, i) => (
-                        <motion.div
-                            key={item.day}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: i * 0.1 }}
-                            className="flex-1 border border-border p-6 rounded-2xl hover:border-indigo hover:shadow-lg transition-all group"
-                        >
-                            <span className="font-mono text-indigo text-2xl">{item.day}</span>
-                            <h3 className="text-black text-lg font-medium mt-4 group-hover:text-indigo transition-colors">
-                                {item.title}
-                            </h3>
-                            <p className="text-muted text-sm mt-1">{item.desc}</p>
-                        </motion.div>
-                    ))}
-                </div>
-            </div>
-        </Section>
-    );
+  return (
+    <Section id="timeline" className="bg-white px-0">
+      <Timeline
+        data={timelineEntries}
+        heading="Whats next? (timeline)"
+        subheading="Pilot → Scale Roadmap"
+      />
+    </Section>
+  );
 }
