@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { GradientBackground } from "@/components/ui/gradient-background";
+import { GradientBackground } from "@/components/ui/noisy-gradient-backgrounds";
 
 // Shared components
 import { NavDots, TopNav, ScrollProvider } from "./components/shared";
@@ -10,15 +10,6 @@ import { ThemeProvider } from "./components/ThemeContext";
 // Section components
 import { HeroSection } from "./components/HeroSection";
 import { NextPageSection } from "./components/NextPageSection";
-
-// Fiery sun gradient colors
-const sunGradients = [
-  "linear-gradient(135deg, #FF4500 0%, #FF6B35 50%, #FFB347 100%)",
-  "linear-gradient(135deg, #FF6B35 0%, #FF8C42 50%, #FFD700 100%)",
-  "linear-gradient(135deg, #E63946 0%, #FF4500 50%, #FF6B35 100%)",
-  "linear-gradient(135deg, #FF8C42 0%, #FFB347 50%, #FFA500 100%)",
-  "linear-gradient(135deg, #FF4500 0%, #FF6B35 50%, #FFB347 100%)",
-];
 
 // Theme script to prevent flash - runs before hydration
 const themeScript = `
@@ -60,21 +51,30 @@ export default function FriendroidProposal() {
     <>
       <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       <ThemeProvider>
-        <GradientBackground
-          gradients={sunGradients}
-          animationDuration={10}
-          animationDelay={0}
-        >
-          <div ref={containerRef} className="snap-container relative z-0">
-            <ScrollProvider containerRef={containerRef}>
-              <NavDots sections={sections} activeIndex={activeSection} />
+        <div className="fixed inset-0 -z-10">
+          <GradientBackground
+            gradientOrigin="left-middle"
+            colors={[
+              { color: "rgba(50,0,0,1)", stop: "0%" },
+              { color: "rgba(183,28,28,1)", stop: "30%" },
+              { color: "rgba(244,67,54,1)", stop: "60%" },
+              { color: "rgba(255,152,0,1)", stop: "85%" },
+              { color: "rgba(255,235,59,1)", stop: "100%" }
+            ]}
+            noiseIntensity={1.5}
+            noisePatternSize={70}
+            noisePatternRefreshInterval={1}
+          />
+        </div>
+        <div ref={containerRef} className="snap-container relative z-0">
+          <ScrollProvider containerRef={containerRef}>
+            <NavDots sections={sections} activeIndex={activeSection} />
 
-              {/* Stage 1: Hero + Parallax Expand + Next Page */}
-              <HeroSection />
-              <NextPageSection />
-            </ScrollProvider>
-          </div>
-        </GradientBackground>
+            {/* Stage 1: Hero + Parallax Expand + Next Page */}
+            <HeroSection />
+            <NextPageSection />
+          </ScrollProvider>
+        </div>
       </ThemeProvider>
     </>
   );

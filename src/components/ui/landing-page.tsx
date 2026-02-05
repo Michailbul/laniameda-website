@@ -42,51 +42,6 @@ const MANTRAS = [
     description: "We reverse-engineer success. Clear vision drives every decision from day one.",
   },
   {
-    number: "04",
-    title: "Approach Everything as Art",
-    description: "Code is poetry. Design is sculpture. Strategy is composition. We craft, we don't just build.",
-  },
-];
-
-// Animated section component
-function MantraCard({ mantra, index }: { mantra: typeof MANTRAS[0]; index: number }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
-
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 60 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.8, delay: index * 0.15, ease: [0.22, 1, 0.36, 1] }}
-      className="group relative"
-    >
-      <div className="relative p-8 md:p-10 border border-white/10 bg-black/40 backdrop-blur-sm overflow-hidden transition-all duration-500 hover:border-white/30 hover:bg-white/[0.02]">
-        {/* Gradient overlay on hover */}
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-orange-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-        
-        {/* Number */}
-        <span className="absolute top-6 right-6 text-[10px] tracking-[0.3em] text-white/20 font-mono">
-          {mantra.number}
-        </span>
-
-        {/* Content */}
-        <div className="relative z-10">
-          <h3 className="text-lg md:text-xl font-semibold tracking-wide text-white/90 mb-4 group-hover:text-white transition-colors duration-300">
-            {mantra.title}
-          </h3>
-          <p className="text-sm text-white/50 leading-relaxed group-hover:text-white/60 transition-colors duration-300">
-            {mantra.description}
-          </p>
-        </div>
-
-        {/* Corner accent */}
-        <div className="absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-purple-500 to-orange-500 group-hover:w-full transition-all duration-700 ease-out" />
-      </div>
-    </motion.div>
-  );
-}
-
 export default function LandingPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const appRef = useRef<{ tubes?: { setColors: (colors: string[]) => void; setLightsColors: (colors: string[]) => void }; dispose?: () => void } | null>(null);

@@ -6,8 +6,9 @@ import { motion, useTransform } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { SplineScene } from "@/components/ui/splite";
 import { useScrollProgress } from "./shared";
+import { GradientSlideButton } from "@/components/ui/gradient-slide-button";
+import { ChevronDown, Sun, Moon } from "lucide-react";
 import { useTheme } from "./ThemeContext";
-import { Sun, Moon } from "lucide-react";
 import HyperTextParagraph from "@/components/ui/hyper-text-with-decryption";
 import { ProposalBadge } from "@/components/ui/proposal-badge";
 
@@ -267,19 +268,13 @@ export function HeroSection() {
             </div>
 
             {/* CTA Button */}
-            <a
-              href="#deliverables"
-              className={`mt-8 inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 ${
-                isLight
-                  ? "bg-gray-900 text-white hover:bg-gray-800 hover:shadow-lg"
-                  : "bg-teal-500 text-gray-900 hover:bg-teal-400 hover:shadow-lg hover:shadow-teal-500/20"
-              }`}
+            <GradientSlideButton
+              className="mt-8 h-12 px-8 text-base rounded-full"
+              onClick={() => document.getElementById('deliverables')?.scrollIntoView({ behavior: 'smooth' })}
             >
               Explore Package
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </a>
+              <ChevronDown className="w-4 h-4" />
+            </GradientSlideButton>
           </div>
 
           <div className="flex-1 relative">
