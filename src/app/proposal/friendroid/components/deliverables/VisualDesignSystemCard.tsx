@@ -44,7 +44,7 @@ const CustomCardRenderer = (item: CardStackItem, state: { active: boolean }) => 
     return (
         <div className="relative h-full w-full bg-zinc-900 overflow-hidden">
             {/* Tag at top */}
-            <span className="absolute top-3 left-3 px-1.5 py-0.5 text-[8px] font-mono uppercase tracking-wider bg-cyan-500/20 border border-cyan-500/30 rounded text-cyan-400 z-20">
+            <span className="absolute top-3 left-3 px-1.5 py-0.5 text-[8px] font-mono uppercase tracking-wider bg-teal-500/20 border border-teal-500/30 rounded text-teal-400 z-20">
                 {item.tag}
             </span>
 

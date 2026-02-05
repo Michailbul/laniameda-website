@@ -1,37 +1,40 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
+import { GradientBackground } from "@/components/ui/gradient-background";
 
 // Shared components
-import { NavDots, TopNav } from "./components/shared";
+import { NavDots, TopNav, ScrollProvider } from "./components/shared";
+import { ThemeProvider } from "./components/ThemeContext";
 
 // Section components
 import { HeroSection } from "./components/HeroSection";
-import { CurrentStateSection } from "./components/CurrentStateSection";
-import { BelieveSection } from "./components/BelieveSection";
-import { ProblemSection } from "./components/ProblemSection";
-import { SolutionSection } from "./components/SolutionSection";
-import { PackageSection } from "./components/PackageSection";
-import { DeliverablesSection } from "./components/DeliverablesSection";
-import { MethodSection } from "./components/MethodSection";
-import { TimelineSection } from "./components/TimelineSection";
-import { PricingSection } from "./components/PricingSection";
-import { OutcomeSection } from "./components/OutcomeSection";
-import { WhyUsSection } from "./components/WhyUsSection";
-import { ThankYouSection } from "./components/ThankYouSection";
+import { NextPageSection } from "./components/NextPageSection";
+
+// Fiery sun gradient colors
+const sunGradients = [
+  "linear-gradient(135deg, #FF4500 0%, #FF6B35 50%, #FFB347 100%)",
+  "linear-gradient(135deg, #FF6B35 0%, #FF8C42 50%, #FFD700 100%)",
+  "linear-gradient(135deg, #E63946 0%, #FF4500 50%, #FF6B35 100%)",
+  "linear-gradient(135deg, #FF8C42 0%, #FFB347 50%, #FFA500 100%)",
+  "linear-gradient(135deg, #FF4500 0%, #FF6B35 50%, #FFB347 100%)",
+];
+
+// Theme script to prevent flash - runs before hydration
+const themeScript = `
+  (function() {
+    const theme = localStorage.getItem("friendroid-theme");
+    if (theme === "light") {
+      document.documentElement.classList.remove("dark");
+    } else if (theme === "dark" || (!theme && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+      document.documentElement.classList.add("dark");
+    }
+  })();
+`;
 
 const sections = [
   "hero",
-  "current-state",
-  "believe",
-  "package",
-  "deliverables",
-  "outcome",
-  "why-us",
-  "method",
-  "timeline",
-  "pricing",
-  "thank-you",
+  "next-page",
 ];
 
 export default function FriendroidProposal() {
@@ -54,29 +57,25 @@ export default function FriendroidProposal() {
   }, []);
 
   return (
-    <div ref={containerRef} className="snap-container">
-      <NavDots sections={sections} activeIndex={activeSection} />
-      <TopNav activeSection={activeSection} />
+    <>
+      <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      <ThemeProvider>
+        <GradientBackground
+          gradients={sunGradients}
+          animationDuration={10}
+          animationDelay={0}
+        >
+          <div ref={containerRef} className="snap-container relative z-0">
+            <ScrollProvider containerRef={containerRef}>
+              <NavDots sections={sections} activeIndex={activeSection} />
 
-      {/* Stage 1: Hero + Current State + We Believe */}
-      <HeroSection />
-      <CurrentStateSection />
-      <BelieveSection />
-      <ProblemSection />
-
-      {/* Stage 2: Package + Deliverables + Outcome */}
-      <PackageSection />
-      <DeliverablesSection />
-      <OutcomeSection />
-      <WhyUsSection />
-
-      {/* Stage 3: Method + Timeline */}
-      <MethodSection />
-      <TimelineSection />
-
-      {/* Stage 4: Pricing + CTA */}
-      <PricingSection />
-      <ThankYouSection />
-    </div>
+              {/* Stage 1: Hero + Parallax Expand + Next Page */}
+              <HeroSection />
+              <NextPageSection />
+            </ScrollProvider>
+          </div>
+        </GradientBackground>
+      </ThemeProvider>
+    </>
   );
 }

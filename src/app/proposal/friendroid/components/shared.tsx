@@ -1,7 +1,30 @@
 "use client";
 
-import { motion, useInView, AnimatePresence } from "framer-motion";
-import { useRef } from "react";
+import { motion, useInView, AnimatePresence, useScroll, useTransform, MotionValue } from "framer-motion";
+import { useRef, createContext, useContext, RefObject } from "react";
+
+// Scroll progress context for parallax animations
+interface ScrollContextValue {
+    scrollY: MotionValue<number>;
+    containerRef: RefObject<HTMLDivElement | null>;
+}
+
+const ScrollContext = createContext<ScrollContextValue | null>(null);
+
+export function ScrollProvider({ children, containerRef }: { children: React.ReactNode; containerRef: RefObject<HTMLDivElement | null> }) {
+    const { scrollY } = useScroll({ container: containerRef });
+    return (
+        <ScrollContext.Provider value={{ scrollY, containerRef }}>
+            {children}
+        </ScrollContext.Provider>
+    );
+}
+
+export function useScrollProgress() {
+    const context = useContext(ScrollContext);
+    if (!context) throw new Error("useScrollProgress must be used within ScrollProvider");
+    return context;
+}
 
 // Section wrapper with snap and entrance animation
 export function Section({
