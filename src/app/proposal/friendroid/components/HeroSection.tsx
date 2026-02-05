@@ -1,46 +1,105 @@
 "use client";
 
-import { useState } from "react";
+import dynamic from "next/dynamic";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Spline from '@splinetool/react-spline';
 import KineticDotsLoader from "@/components/ui/kinetic-dots-loader";
 
+const Spline = dynamic(() => import("@splinetool/react-spline"), { ssr: false });
+
+type NavigatorConnection = {
+    saveData?: boolean;
+    effectiveType?: string;
+};
+
+type IdleCallbackHandle = number;
+type RequestIdleCallbackOptions = { timeout?: number };
+type RequestIdleCallbackDeadline = { didTimeout: boolean; timeRemaining: () => number };
+type RequestIdleCallback = (
+    callback: (deadline: RequestIdleCallbackDeadline) => void,
+    options?: RequestIdleCallbackOptions
+) => IdleCallbackHandle;
+type CancelIdleCallback = (handle: IdleCallbackHandle) => void;
+
 export function HeroSection() {
-    const [isLoaded, setIsLoaded] = useState(false);
+    const [enableSpline, setEnableSpline] = useState(false);
+    const [splineLoaded, setSplineLoaded] = useState(false);
+
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+
+        const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
+        const connection =
+            "connection" in navigator
+                ? (navigator as unknown as { connection?: NavigatorConnection }).connection
+                : undefined;
+        const saveData = connection?.saveData ?? false;
+        const effectiveType = connection?.effectiveType ?? "";
+        const isVerySlowNetwork = effectiveType === "2g" || effectiveType === "slow-2g";
+
+        if (prefersReducedMotion || saveData || isVerySlowNetwork) return;
+
+        let cancelled = false;
+        const start = () => {
+            if (cancelled) return;
+            setEnableSpline(true);
+        };
+
+        const requestIdleCallback = (window as unknown as { requestIdleCallback?: RequestIdleCallback })
+            .requestIdleCallback;
+        const cancelIdleCallback = (window as unknown as { cancelIdleCallback?: CancelIdleCallback })
+            .cancelIdleCallback;
+
+        if (requestIdleCallback) {
+            const id = requestIdleCallback(() => start(), { timeout: 1500 });
+            return () => {
+                cancelled = true;
+                cancelIdleCallback?.(id);
+            };
+        }
+
+        const timeoutId = window.setTimeout(start, 800);
+        return () => {
+            cancelled = true;
+            window.clearTimeout(timeoutId);
+        };
+    }, []);
 
     return (
         <section id="hero" className="snap-section bg-white relative flex flex-col justify-between px-8 md:px-16 py-20 overflow-hidden">
-            {/* Loading indicator */}
+            {/* Spline 3D Robot - centered */}
+            <div className="absolute inset-0 z-[5] pointer-events-none flex items-center justify-center">
+                <div className="w-full h-full max-w-[900px]">
+                    {enableSpline ? (
+                        <Spline
+                            scene="https://prod.spline.design/2gAWIkpkliN0GKg8/scene.splinecode"
+                            style={{ width: "100%", height: "100%" }}
+                            onLoad={() => setSplineLoaded(true)}
+                        />
+                    ) : null}
+                </div>
+            </div>
+
+            {/* Loading indicator (only for 3D, never blocks text) */}
             <AnimatePresence>
-                {!isLoaded && (
+                {enableSpline && !splineLoaded && (
                     <motion.div
                         initial={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        transition={{ duration: 0.5 }}
-                        className="absolute inset-0 z-50 bg-white flex items-center justify-center"
+                        transition={{ duration: 0.35 }}
+                        className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center"
                     >
-                        <div className="scale-75">
+                        <div className="scale-75 opacity-90">
                             <KineticDotsLoader />
                         </div>
                     </motion.div>
                 )}
             </AnimatePresence>
 
-            {/* Spline 3D Robot - centered */}
-            <div className="absolute inset-0 z-[5] pointer-events-none flex items-center justify-center">
-                <div className="w-full h-full max-w-[900px]">
-                    <Spline
-                        scene="https://prod.spline.design/2gAWIkpkliN0GKg8/scene.splinecode"
-                        style={{ width: '100%', height: '100%' }}
-                        onLoad={() => setIsLoaded(true)}
-                    />
-                </div>
-            </div>
-
             {/* Top section - Badge */}
             <motion.div
                 initial={{ opacity: 0, y: -20 }}
-                animate={isLoaded ? { opacity: 1, y: 0 } : {}}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.3 }}
                 className="relative z-20"
             >
@@ -52,7 +111,7 @@ export function HeroSection() {
             {/* Middle section - Main headline (left aligned) */}
             <motion.div
                 initial={{ opacity: 0, x: -40 }}
-                animate={isLoaded ? { opacity: 1, x: 0 } : {}}
+                animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 1, delay: 0.5 }}
                 className="relative z-20 max-w-[600px]"
             >
@@ -74,7 +133,7 @@ export function HeroSection() {
             {/* Bottom section - Pricing and info */}
             <motion.div
                 initial={{ opacity: 0, y: 30 }}
-                animate={isLoaded ? { opacity: 1, y: 0 } : {}}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.8 }}
                 className="relative z-20 flex flex-col md:flex-row md:items-end md:justify-between gap-8"
             >
@@ -112,24 +171,7 @@ export function HeroSection() {
                     <span className="text-black/60 text-xl">5 days</span>
                 </div>
             </motion.div>
-
-            {/* Scroll hint */}
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={isLoaded ? { opacity: 1 } : {}}
-                transition={{ delay: 1.5 }}
-                className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20"
-            >
-                <motion.div
-                    animate={{ y: [0, 8, 0] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                    className="flex flex-col items-center gap-2"
-                >
-                    <span className="text-black/40 text-xs tracking-widest uppercase">Scroll</span>
-                    <div className="w-px h-6 bg-gradient-to-b from-black/20 to-transparent" />
-                </motion.div>
-            </motion.div>
+            
         </section>
     );
 }
-

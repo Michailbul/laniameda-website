@@ -1,7 +1,6 @@
 'use client';
 
-import React, { useLayoutEffect, useRef } from 'react';
-import gsap from 'gsap';
+import React from 'react';
 
 interface BlurTextEffectProps {
   children: string;
@@ -9,33 +8,38 @@ interface BlurTextEffectProps {
 }
 
 export const BlurTextEffect: React.FC<BlurTextEffectProps> = ({ children, className = '' }) => {
-  const containerRef = useRef<HTMLSpanElement>(null);
-
-  useLayoutEffect(() => {
-    if (!containerRef.current) return;
-
-    const chars = containerRef.current.querySelectorAll('span.char');
-
-    gsap.set(chars, { opacity: 0, y: 10, filter: 'blur(8px)' });
-
-    gsap.to(chars, {
-      opacity: 1,
-      y: 0,
-      filter: 'blur(0px)',
-      duration: 0.3,
-      ease: 'power2.out',
-      stagger: 0.015,
-      clearProps: 'filter',
-    });
-  }, [children]);
-
   return (
-    <span className={`inline-block ${className}`} ref={containerRef}>
+    <span className={`inline-block ${className}`}>
       {children.split('').map((char, i) => (
-        <span key={`${char}-${i}`} className="char inline-block" style={{ whiteSpace: 'pre' }}>
+        <span
+          key={`${char}-${i}`}
+          className="char inline-block animate-blur-in"
+          style={{
+            whiteSpace: 'pre',
+            animationDelay: `${i * 15}ms`,
+          }}
+        >
           {char === ' ' ? '\u00A0' : char}
         </span>
       ))}
+      <style jsx>{`
+        @keyframes blur-in {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+            filter: blur(8px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0);
+          }
+        }
+        .animate-blur-in {
+          animation: blur-in 0.3s ease-out forwards;
+          opacity: 0;
+        }
+      `}</style>
     </span>
   );
 };

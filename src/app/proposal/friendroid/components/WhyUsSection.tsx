@@ -16,6 +16,7 @@ export function WhyUsSection() {
 
     return (
         <section
+            id="why-us"
             ref={containerRef}
             className="relative h-screen w-full bg-[#050505] snap-start snap-always overflow-hidden flex flex-col items-center justify-center p-6 md:p-12"
             aria-label="Why Us"

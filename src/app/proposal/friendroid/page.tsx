@@ -1,29 +1,27 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 
-// Shared components
 import { NavDots, TopNav } from "./components/shared";
 
-// Section components
 import { HeroSection } from "./components/HeroSection";
 import { CurrentStateSection } from "./components/CurrentStateSection";
 import { BelieveSection } from "./components/BelieveSection";
 import { ProblemSection } from "./components/ProblemSection";
-import { SolutionSection } from "./components/SolutionSection";
 import { PackageSection } from "./components/PackageSection";
 import { DeliverablesSection } from "./components/DeliverablesSection";
+import { OutcomeSection } from "./components/OutcomeSection";
+import { WhyUsSection } from "./components/WhyUsSection";
 import { MethodSection } from "./components/MethodSection";
 import { TimelineSection } from "./components/TimelineSection";
 import { PricingSection } from "./components/PricingSection";
-import { OutcomeSection } from "./components/OutcomeSection";
-import { WhyUsSection } from "./components/WhyUsSection";
 import { ThankYouSection } from "./components/ThankYouSection";
 
 const sections = [
   "hero",
   "current-state",
   "believe",
+  "problem",
   "package",
   "deliverables",
   "outcome",
@@ -37,19 +35,32 @@ const sections = [
 export default function FriendroidProposal() {
   const [activeSection, setActiveSection] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
+  const lastIndexRef = useRef(-1);
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
+    let ticking = false;
+
     const handleScroll = () => {
-      const scrollPos = container.scrollTop;
-      const windowHeight = window.innerHeight;
-      const index = Math.round(scrollPos / windowHeight);
-      setActiveSection(index);
+      if (ticking) return;
+      ticking = true;
+
+      requestAnimationFrame(() => {
+        ticking = false;
+        const windowHeight = window.innerHeight || 1;
+        const index = Math.round(container.scrollTop / windowHeight);
+        const clampedIndex = Math.min(Math.max(index, 0), sections.length - 1);
+        if (clampedIndex === lastIndexRef.current) return;
+        lastIndexRef.current = clampedIndex;
+        setActiveSection(clampedIndex);
+      });
     };
 
-    container.addEventListener("scroll", handleScroll);
+    container.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+
     return () => container.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -58,23 +69,16 @@ export default function FriendroidProposal() {
       <NavDots sections={sections} activeIndex={activeSection} />
       <TopNav activeSection={activeSection} />
 
-      {/* Stage 1: Hero + Current State + We Believe */}
       <HeroSection />
       <CurrentStateSection />
       <BelieveSection />
       <ProblemSection />
-
-      {/* Stage 2: Package + Deliverables + Outcome */}
       <PackageSection />
       <DeliverablesSection />
       <OutcomeSection />
       <WhyUsSection />
-
-      {/* Stage 3: Method + Timeline */}
       <MethodSection />
       <TimelineSection />
-
-      {/* Stage 4: Pricing + CTA */}
       <PricingSection />
       <ThankYouSection />
     </div>

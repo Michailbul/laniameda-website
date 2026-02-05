@@ -179,41 +179,28 @@ Every connection with the audience maps to the story "hero - problem - guide - p
 
 
 ## OUTCOMES:
-By the end, you will have:
-1)
-2)
-3)
-4)
-5)
+Within 10 days, you will have:
+1) A database of content ideas to test. So you dont have to spend time on ideating.
+2) A brand narrative bible - clarity on what your brand is about, what it stands for, what it fights against. 
+3) A ready to execute plan on what to post, in what distribution, on which platforms. You dont have to think, you just follow the checklist.
+4) Figma database of visual references, styles, layouts for each content pillar (news,tutorials) - so you have a clear direction on how you brand visuals would look like.
+5) Clear content strategy on how to turn content into audience, what metrics to track.
+6) A clear plan on next steps. What to focus on, prioritization rules.
+
+
+
+
+What happens next?
+- We get the brand narrative right. We describe our ICP, their problems and aspirations. THis will be a map we are gonna put each subsequential decision through.
+- We ressearch the niche of robotics, and adjacent niches. we identify what is working (and what is not). We put those findings in the table, that we later use as a backlog of ideas to test and iterate on.
+- We prepare a visual identity reference block, so that you dont spend time for ideating regarding visual direction later on. For a high quqality brand its crucial to stick with visual brand identity.
+- We identify the most promising content pillars and platforms to prioritize on. We prepare a system
 
 
 ### Whats next? (timeline)
 - Expand to more platforms **only after proof** 
 - Build repurposing: **one insight → multiple assets** 
 - Keep the loop going: **test → measure → double down → iterate** (manual first, AI automation later) ---
-
-# The Gap
-
-a clear system and content plan on what type of content to produce,
-what to prioritize, and what to ignore
-understanding what to measure and how to make decisions based on the metrics---
-
-# Solution overview
-
-
-## Long-term: compound the system (scale phase)
-- increase volume of winners
-- repurpose: **one insight → multiple assets**
-- add platforms only after proof
-
-
----STAGE3---
-
-
-
----STAGE4---
-
-## Whats next? (timeline)
 
 
 
@@ -223,176 +210,13 @@ understanding what to measure and how to make decisions based on the metrics---
 
 
 
----STAGE5---
 
 # Pricing
 ## $2,000 fixed
 **Delivery:** 5 business days  
 **Scope:** strategy + system + decision rules *(not production)*
 
----
-
-# Guarantee (risk reversal)
-You will receive a clear, actionable plan for what to do **the next day**:
-- what to publish
-- what to measure
-- what to scale / improve / cut
-
-If the plan is not clear enough to execute → **money back.**
----
-
-# Thank you
-Questions?
 
 *Let’s build the content engine.*
 
 
-=============
-
-# Deliverables — What you get (Multi-tab view)
-> Use this as tabs on a web page.  
-> Each tab is a pair: **Problem → Deliverable**
-
----
-
-## Tab 1 — Content Opportunity Map (Ranked)
-**Problem:** “We don’t know what to post or what to prioritize first.”  
-**Deliverable:** **Ranked Content Test Backlog**
-
-**What it is:**  
-A ranked backlog of content directions and post ideas pulled from the robotics niche (and adjacent ones), so you have a clear set of directions to execute and test.
-
-**You get (tangible artifact):**
-- A ranked backlog of **20–40 post ideas** grouped by format + platform
-- Each idea includes: hook, angle, reference, “make it ours” notes, effort level, and the metric that proves it worked
-
-**What’s inside:**
-- Content format (Reels / carousel / meme / cinematic / educational)
-- Platform + reason
-- Reference links (videos / carousels / posts that already work)
-- Adaptation instructions (how to translate it into your brand)
-- Complexity to implement (low / medium / high)
-- Tools stack (incl. AI tools if applicable)
-- Metrics to track (per format)
-- Efficiency projection
-- Priority order (what to test first)
-
----
-
-## Tab 2 — Focus & Cadence System (90-day starter)
-**Problem:** “We’re inconsistent, and we get distracted by too many content styles.”  
-**Deliverable:** **90-Day Content Operating System**
-
-**What it is:**  
-A focused starting setup so you don’t try everything at once and can execute consistently.
-
-**You get (tangible artifact):**
-- Primary channel + secondary channel recommendation
-- Hero format (main growth engine)
-- Support format
-- 1–2 controlled experiments (limited on purpose)
-- Publishing cadence guidance (what goes out and how often)
-
-**Example setup (illustrative):**
-- **Hero format:** AI talking head explaining robotics news (Reels)
-- **Support format:** carousel with key takeaways (Instagram + LinkedIn)
-
----
-
-## Tab 3 — Strategy Snapshot (North Star, one page)
-**Problem:** “We don’t have strategy — we don’t know what and why to post.”  
-**Deliverable:** **One-Page Content Strategy**
-
-**What it is:**  
-A clear strategy that defines *what we’re building*, *who it’s for*, and *how content turns into audience and demand* (not just posts).
-
-**You get (tangible artifact):**
-- **Audience definition:** primary + secondary audience (and what they care about)
-- **Content pillars:** 4–6 repeatable themes the brand owns
-- Strategy for building trust **without a personal brand**
-- Strategy for turning engagement into valuable metrics (follows, saves, replies, site clicks, demand)
-- A short **weekly execution checklist** (what to do each week so it moves forward)
-
-**How you use it:**
-- It becomes the “north star” that prevents random posting
-- It makes repurposing coherent (same idea, different packaging)
-- It keeps content building in one direction
-
-**Result:**  
-A single focused strategy that grows audience trust and creates a clear path to e-shop demand.
-
----
-
-## Tab 4 — Repurposing Blueprint (One-to-many engine)
-**Problem:** “Scaling is hard.”  
-**Deliverable:** **One Topic → Many Assets Blueprint**
-
-**What it is:**  
-A practical map for converting one topic into multiple pieces without reinventing the wheel, aligned to the content hypotheses.
-
-**You get (tangible artifact):**
-- A repurposing template where **1 topic becomes 6–12 outputs**
-- A few example breakdowns using robotics topics (so it’s immediately usable)
-
-**What’s inside:**
-- Topic → short-form script → carousel outline → LinkedIn post → story → meme/hot-take variant
-- Rules for “same idea, different packaging” without losing coherence
-
-**How you use it:**  
-One topic/theme fuels multiple posts and keeps output consistent with less effort.
-
----
-
-## Tab 5 — Brand Kernel (Messaging core)
-**Problem:** “We want a long-term brand, but lack clarity on what we stand for (and can’t explain it in 30 seconds).”  
-**Deliverable:** **Brand Kernel**
-
-**What it is:**  
-A tight identity block that keeps content, messaging, and actions recognizable and coherent.
-
-**You get (tangible artifact):**
-- Brand narrative story hook (30 seconds)
-- **Positioning:**
-  - “What we stand for” (1–2 lines)
-  - “What we’re against” (1–2 lines)
-  - Promise (why stay with us)
-- Voice + tone guidance (3–5 rules)
-- Story spine for content: **hero → problem → guide → plan → success**
-
-**Howationale (why this matters):**  
-So each piece of content reinforces the same association in the audience’s mind and compounds trust.
-
-**Example positioning (illustrative):**
-> “Most robotics brands talk specs and features. We think differently. We believe the purpose of robots is to give people time back — for creativity, loved ones, and what matters.”
-
----
-
-## Tab 6 — Creative Direction Kit (Visual consistency)
-**Problem:** “Visuals drift and look inconsistent.”  
-**Deliverable:** **Creative Direction Kit** *(not full brand design)*
-
-**What it is:**  
-A reference-driven direction for editing + design style so the content looks consistent and premium.
-
-**You get (tangible artifact):**
-- A reference set for captions, UI/layout, pacing, and edits
-- A short **do / don’t** list (what makes the brand look cheap)
-- 2–3 lightweight layout directions (e.g., lower-thirds, caption system, carousel grid)
-
-**Scope boundary:**
-- Includes: direction + templates
-- Excludes: full brand identity, logo system, full design system
-
-**Result:**  
-A clear visual direction for branded content production before any deeper brand design work.
-
----
-
-## Included inside the Operating System (Decision layer)
-### Metrics + Decision Rules
-**Problem:** “We don’t know what ‘working’ means.”  
-**Deliverable:** **Weekly Metrics + Decision Loop** — what to track weekly + scale / iterate / kill loop.
-
-### Pilot → Scale Roadmap
-**Problem:** “What happens after this?”  
-**Deliverable:** **Pilot → Scale Roadmap** — step-by-step next phase plan *(no pricing here)*.

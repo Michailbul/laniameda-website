@@ -19,6 +19,8 @@ import * as Portal from "@radix-ui/react-portal"
 
 import { cn } from "@/lib/utils"
 
+type AnyProps = Record<string, unknown>
+
 type DialogStackContextType = {
     activeIndex: number
     setActiveIndex: Dispatch<SetStateAction<number>>
@@ -100,10 +102,13 @@ export const DialogStackTrigger = ({
     }
 
     if (asChild && children) {
-        return cloneElement(children as ReactElement<any>, {
-            onClick: handleClick,
-            className: cn(className, (children as ReactElement<any>).props.className),
-            ...props,
+        const child = children as ReactElement<AnyProps>
+        const childClassName = typeof child.props.className === "string" ? child.props.className : undefined
+
+        return cloneElement(child, {
+            onClick: handleClick as unknown,
+            className: cn(className, childClassName),
+            ...(props as unknown as AnyProps),
         })
     }
 
@@ -143,8 +148,6 @@ export const DialogStackOverlay = ({
         <div
             className={cn(
                 "fixed inset-0 z-50",
-                "data-[state=open]:animate-in data-[state=closed]:animate-out",
-                "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
                 className
             )}
             onClick={() => context.setIsOpen(false)}
@@ -191,7 +194,7 @@ export const DialogStackBody = ({
                 >
                     <div className="pointer-events-auto relative flex w-full flex-col items-center justify-center">
                         {Children.map(children, (child, index) =>
-                            cloneElement(child as ReactElement<any>, { index })
+                            cloneElement(child as ReactElement<AnyProps>, { index } as unknown as AnyProps)
                         )}
                     </div>
                 </div>
@@ -313,10 +316,13 @@ export const DialogStackNext = ({
     }
 
     if (asChild && children) {
-        return cloneElement(children as ReactElement<any>, {
-            onClick: handleNext,
-            className: cn(className, (children as ReactElement<any>).props.className),
-            ...props,
+        const child = children as ReactElement<AnyProps>
+        const childClassName = typeof child.props.className === "string" ? child.props.className : undefined
+
+        return cloneElement(child, {
+            onClick: handleNext as unknown,
+            className: cn(className, childClassName),
+            ...(props as unknown as AnyProps),
         })
     }
 
@@ -359,10 +365,13 @@ export const DialogStackPrevious = ({
     }
 
     if (asChild && children) {
-        return cloneElement(children as ReactElement<any>, {
-            onClick: handlePrevious,
-            className: cn(className, (children as ReactElement<any>).props.className),
-            ...props,
+        const child = children as ReactElement<AnyProps>
+        const childClassName = typeof child.props.className === "string" ? child.props.className : undefined
+
+        return cloneElement(child, {
+            onClick: handlePrevious as unknown,
+            className: cn(className, childClassName),
+            ...(props as unknown as AnyProps),
         })
     }
 

@@ -110,7 +110,7 @@ Starting from zero needs output. If every post is a brand new project, you won�
 **Deliverable:** **Repurposing Blueprint**
 
 **What you get:**
-- A simple method to turn **one topic** into multiple pieces across platforms
+- A reliable system effectively tur **one topic** into multiple pieces across platforms
 - Rules so everything still feels consistent with your brand direction and topics
 
 **Outcome:**  
@@ -128,7 +128,7 @@ There is none yet.
 **What you get:**
 - A curated reference table from the robotics niche (and similar niches) that shows:
   - editing style references (pacing, cuts, overlays, captions)
-  - layout/UI references (lower thirds, text systems, carousel structure)
+  - layout/UI references. 
   - typography + readability references (what looks premium vs cheap)
   - visual consistency cues (reusable elements that make content recognizable)
 - A short “do / don’t” list that defines what makes the brand look cheap vs top tier
