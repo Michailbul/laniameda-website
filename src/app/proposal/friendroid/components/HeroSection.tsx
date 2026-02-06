@@ -2,12 +2,11 @@
 
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
-import { motion, useTransform, useSpring } from "framer-motion";
+// motion import removed - animations disabled for performance testing
 import { Card } from "@/components/ui/card";
 import { SplineScene } from "@/components/ui/splite";
-import { useScrollProgress } from "./shared";
 import { GradientSlideButton } from "@/components/ui/gradient-slide-button";
-import { ChevronDown, Sun, Moon, ArrowUpRight } from "lucide-react";
+import { ChevronDown, ArrowUpRight } from "lucide-react";
 import { useTheme } from "./ThemeContext";
 import HyperTextParagraph from "@/components/ui/hyper-text-with-decryption";
 import { ProposalBadge } from "@/components/ui/proposal-badge";
@@ -15,25 +14,15 @@ import { MagneticCursor } from "@/components/ui/magnetic-cursor";
 
 export function HeroSection() {
   const [shouldRenderSpline, setShouldRenderSpline] = useState(false);
-  const [vh, setVh] = useState(800);
-  const { scrollY } = useScrollProgress();
-  const { theme, toggleTheme } = useTheme();
+  const { theme } = useTheme();
   const isLight = theme === "light";
   const splineAppRef = useRef<any>(null);
 
-  
+
   // Key words to trigger the effect
   const triggers = ["Treatment"];
 
   const bio = "Creative Treatment Package";
-
-  useEffect(() => {
-    setVh(window.innerHeight);
-  }, []);
-
-  // Scale with spring physics for smooth transitions during rapid scrolling
-  const rawScale = useTransform(scrollY, [0, vh], [0.92, 1.08]);
-  const scale = useSpring(rawScale, { stiffness: 100, damping: 30 });
 
   useEffect(() => {
     const desktop = window.matchMedia("(min-width: 768px)");
@@ -81,82 +70,54 @@ export function HeroSection() {
   }, [shouldRenderSpline]);
 
   return (
-    <MagneticCursor
-      magneticFactor={0.3}
-      hoverPadding={4}
-      blendMode="exclusion"
-      cursorSize={40}
-    >
-    <section
-      id="hero"
-      className={`snap-section relative flex items-center justify-center px-6 md:px-16 py-20 overflow-hidden bg-transparent`}
-    >
-      {/* Fixed Logo - Top Left */}
-      <Link
-        href="/"
-        data-magnetic
-        className="fixed top-6 left-6 md:left-10 z-50 group"
-      >
-        <span className={`text-base font-semibold tracking-[0.15em] transition-colors duration-300 ${
-          isLight ? "text-gray-900" : "text-white"
-        }`}>
-          LANIAMEDA
-        </span>
-      </Link>
+    <>
+      {/* Unified Header Bar - Tesla/Robotics Style - Outside MagneticCursor */}
+      <header className="fixed top-0 left-0 right-0 z-[60] flex items-center justify-between px-6 md:px-10 h-16">
+        {/* Logo */}
+        <Link
+          href="/"
+          className="text-[11px] font-medium tracking-[0.25em] uppercase text-white/90 hover:text-white transition-colors duration-300"
+        >
+          Laniameda
+        </Link>
 
-      {/* Navbar */}
-      <nav className={`fixed top-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-8 px-6 py-3 rounded-full backdrop-blur-md transition-all duration-300 ${
-        isLight 
-          ? "bg-white/70 border border-gray-200/50 shadow-lg shadow-gray-200/30" 
-          : "bg-white/5 border border-white/10"
-      }`}>
-        {["Package", "Deliverables", "Pricing"].map((item) => (
+        {/* Center Nav - Sharp geometric Tesla style */}
+        <nav className="flex items-center gap-0 bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm">
+          {["Offer", "What you get", "Spin it up"].map((item, index) => (
+            <a
+              key={item}
+              href="#"
+              className={`relative px-6 py-3 text-[11px] font-normal tracking-[0.12em] uppercase text-white/50 hover:text-white hover:bg-white/[0.05] transition-all duration-200 ${
+                index > 0 ? "border-l border-white/[0.06]" : ""
+              }`}
+            >
+              {item}
+            </a>
+          ))}
+
+          {/* CTA button - sharp, minimal */}
           <a
-            key={item}
-            href={`#${item.toLowerCase()}`}
-            
-            className={`text-sm font-medium transition-colors duration-200 ${
-              isLight 
-                ? "text-gray-600 hover:text-gray-900" 
-                : "text-white/70 hover:text-white"
-            }`}
+            href="#"
+            className="px-6 py-3 text-[11px] font-medium tracking-[0.12em] uppercase text-black bg-white hover:bg-white/90 transition-all duration-200 border-l border-white/[0.06]"
           >
-            {item}
+            Start Project
           </a>
-        ))}
-        <a
-          href="#pricing"          
-          className="text-sm font-medium text-teal-500 hover:text-teal-400 transition-colors duration-200"
-        >
-          Start Project
-        </a>
-      </nav>
+        </nav>
 
-      {/* Theme Toggle - Top Right */}
-      <motion.button
-        onClick={toggleTheme}
-        data-magnetic
-        className={`fixed top-6 right-6 md:right-10 z-50 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-500 ${
-          isLight
-            ? "bg-white border border-gray-200 shadow-lg shadow-gray-200/50 hover:shadow-xl hover:border-teal-300"
-            : "bg-white/5 border border-white/10 hover:bg-white/10 hover:border-teal-500/30"
-        }`}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        aria-label={`Switch to ${isLight ? "dark" : "light"} mode`}
+        {/* Right spacer for balance */}
+        <div className="w-20" />
+      </header>
+
+      <MagneticCursor
+        magneticFactor={0.3}
+        hoverPadding={4}
+        blendMode="exclusion"
+        cursorSize={40}
       >
-        <motion.div
-          initial={false}
-          animate={{ rotate: isLight ? 0 : 180 }}
-          transition={{ duration: 0.5, ease: "easeInOut" }}
-        >
-          {isLight ? (
-            <Moon className="w-5 h-5 text-gray-700" />
-          ) : (
-            <Sun className="w-5 h-5 text-teal-400" />
-          )}
-        </motion.div>
-      </motion.button>
+      <section
+        id="hero"
+        className={`snap-section relative flex items-center justify-center px-6 md:px-16 py-20 bg-transparent`}
+      >
 
       {/* Subtle grid pattern - SpaceX style - Always visible */}
       <div 
@@ -169,38 +130,31 @@ export function HeroSection() {
       />
       
       {/* Radial glow from top center */}
-      <div 
+      <div
         className={`absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] blur-3xl ${
-          isLight 
-            ? "bg-gradient-radial from-gray-300/20 via-gray-200/10 to-transparent" 
-            : "bg-gradient-radial from-teal-500/10 via-transparent to-transparent"
-        }`} 
-        aria-hidden 
+          isLight
+            ? "bg-gradient-radial from-gray-300/20 via-gray-200/10 to-transparent"
+            : "bg-gradient-radial from-white/8 via-white/3 to-transparent"
+        }`}
+        aria-hidden
       />
 
-      {/* Secondary glow - Tesla style accent */}
-      <div 
+      {/* Secondary glow */}
+      <div
         className={`absolute bottom-0 right-0 w-[600px] h-[400px] blur-3xl ${
-          isLight 
-            ? "bg-gradient-radial from-gray-200/15 via-transparent to-transparent" 
-            : "bg-gradient-radial from-cyan-500/8 via-transparent to-transparent"
-        }`} 
-        aria-hidden 
+          isLight
+            ? "bg-gradient-radial from-gray-200/15 via-transparent to-transparent"
+            : "bg-gradient-radial from-white/5 via-transparent to-transparent"
+        }`}
+        aria-hidden
       />
 
-      <motion.div
-        style={{ scale }}
-        className="w-full max-w-7xl will-change-transform"
-      >
-        <Card className="w-full h-[720px] rounded-3xl relative overflow-hidden bg-transparent border-0 shadow-none">
+      <div className="w-full max-w-7xl">
+        <Card className="w-full h-[720px] rounded-3xl relative bg-transparent border-0 shadow-none">
         
-        <div className="flex h-full flex-col md:flex-row relative overflow-hidden rounded-3xl">
+        <div className="flex h-full flex-col md:flex-row relative rounded-3xl">
           {/* Left section - Black background with curved right edge */}
-          <motion.div 
-            initial={{ x: "25%" }}
-            animate={{ x: 0 }}
-            transition={{ duration: 3, ease: [0.22, 2, 0.36, 1] }}
-            className="flex-1 p-8 md:p-12 relative z-10 flex flex-col bg-[#0a0a0a] md:rounded-r-[40px] md:mr-[-50px] shadow-[8px_0_40px_rgba(0,0,0,0.4)]">
+          <div className="flex-1 p-8 md:p-12 relative z-10 flex flex-col bg-[#0a0a0a] md:rounded-r-[40px] md:mr-[-50px] shadow-[8px_0_40px_rgba(0,0,0,0.4)]">
             <div className="flex-1 flex flex-col justify-center">
             <ProposalBadge
               data-magnetic  
@@ -212,7 +166,7 @@ export function HeroSection() {
             <h1 className="mt-8 text-4xl md:text-6xl font-medium tracking-tight text-white">
               Creative Treatment
               <br />
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-teal-400 via-cyan-300 to-teal-400">
+              <span className="text-white/60">
                 Package
               </span>
             </h1>
@@ -233,7 +187,7 @@ export function HeroSection() {
             </div>
 
             {/* Accent line - Tesla style */}
-            <div className="mt-8 h-px w-16 bg-gradient-to-r from-teal-500 to-transparent" />
+            <div className="mt-8 h-px w-16 bg-gradient-to-r from-white/60 to-transparent" />
 
             {/* Key Benefits */}
             <div className="mt-8 flex flex-wrap gap-3">
@@ -266,17 +220,13 @@ export function HeroSection() {
               </div>
             </div>
             </div>
-          </motion.div>
+          </div>
 
           {/* Mobile divider */}
           <div className="md:hidden w-full h-[2px] bg-gradient-to-r from-transparent via-white/30 to-transparent" />
 
           {/* Right section - White background with curved left edge */}
-          <motion.div 
-            initial={{ x: "-30%", opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-            className="flex-1 relative bg-white md:rounded-l-[60px] md:ml-[-40px] z-0">
+          <div className="flex-1 relative bg-white md:rounded-l-[60px] md:ml-[-40px] z-0">
             {/* Glow behind 3D scene - neutral for light background */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full blur-[100px] bg-gradient-radial from-gray-300/40 via-gray-200/30 to-transparent" aria-hidden />
             
@@ -291,8 +241,8 @@ export function HeroSection() {
             ) : (
               <div className="w-full h-full grid place-items-center">
                 <div className="text-center px-6">
-                  <div className="w-12 h-12 mx-auto mb-4 rounded-full border grid place-items-center border-teal-400/40">
-                    <div className="w-2 h-2 rounded-full animate-pulse bg-teal-500/80" />
+                  <div className="w-12 h-12 mx-auto mb-4 rounded-full border grid place-items-center border-white/20">
+                    <div className="w-2 h-2 rounded-full animate-pulse bg-white/60" />
                   </div>
                   <p className="text-sm font-light text-gray-400">3D preview</p>
                   <p className="mt-1 text-xs text-gray-300">
@@ -307,5 +257,6 @@ export function HeroSection() {
       </motion.div>
     </section>
     </MagneticCursor>
+    </>
   );
 }
