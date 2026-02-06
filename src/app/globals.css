@@ -126,6 +126,18 @@
   --radius-4xl: calc(var(--radius) + 16px);
 }
 
+/* Smooth theme transitions */
+html, body {
+  transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.theme-wrapper {
+  transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: background-color;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -151,7 +163,7 @@ body {
 
 .snap-section {
   scroll-snap-align: start;
-  scroll-snap-stop: always;
+  scroll-snap-stop: normal;
   min-height: 100vh;
   position: relative;
 }
@@ -171,10 +183,15 @@ body {
 
 /* Orange gradient for contrast sections */
 .gradient-orange {
-  background: linear-gradient(135deg,
-      var(--orange) 0%,
-      var(--coral) 50%,
-      var(--rose) 100%);
+  background: radial-gradient(ellipse at 30% 20%,
+      #FF4500 0%,
+      #FF6B35 20%,
+      #FF8C42 40%,
+      #FFB347 60%,
+      #FF6B35 80%,
+      #E63946 100%);
+  background-size: 200% 200%;
+  animation: gradient-shift 8s ease infinite;
 }
 
 /* Dark gradient */
@@ -216,6 +233,36 @@ body {
   50% {
     background-position: 100% 50%;
   }
+}
+
+@keyframes spotlight {
+  0% {
+    opacity: 0;
+    transform: translate(-72%, -62%) scale(0.6);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -40%) scale(1);
+  }
+}
+
+.animate-spotlight {
+  animation: spotlight 2s ease .75s 1 forwards;
+}
+
+@keyframes loader-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loader {
+  width: 24px;
+  height: 24px;
+  border-radius: 9999px;
+  border: 3px solid rgba(255, 255, 255, 0.25);
+  border-top-color: rgba(255, 255, 255, 0.9);
+  animation: loader-spin 0.9s linear infinite;
 }
 
 /* Glow effect */
@@ -379,4 +426,103 @@ img {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Light theme for proposal pages */
+.light-theme {
+  --proposal-bg: #f8f9fa;
+  --proposal-card-bg: #ffffff;
+  --proposal-card-border: rgba(0, 0, 0, 0.08);
+  --proposal-text: #111111;
+  --proposal-text-muted: rgba(0, 0, 0, 0.5);
+  --proposal-text-subtle: rgba(0, 0, 0, 0.3);
+  --proposal-accent: #0d9488;
+  --proposal-accent-light: rgba(13, 148, 136, 0.1);
+  --proposal-glow: rgba(13, 148, 136, 0.15);
+  --proposal-grid: rgba(13, 148, 136, 0.05);
+}
+
+.light-theme .snap-container {
+  background: var(--proposal-bg);
+}
+
+.light-theme .snap-section {
+  background: var(--proposal-bg);
+}
+
+.light-theme [class*="bg-[#0a0a0a]"],
+.light-theme [class*="bg-gradient-to-br"][class*="from-[#111111]"] {
+  background: var(--proposal-card-bg) !important;
+}
+
+.light-theme [class*="text-white"] {
+  color: var(--proposal-text) !important;
+}
+
+.light-theme [class*="text-white/50"],
+.light-theme [class*="text-white/40"] {
+  color: var(--proposal-text-muted) !important;
+}
+
+.light-theme [class*="text-white/30"],
+.light-theme [class*="text-white/20"] {
+  color: var(--proposal-text-subtle) !important;
+}
+
+.light-theme [class*="border-white/"] {
+  border-color: var(--proposal-card-border) !important;
+}
+
+.light-theme [class*="bg-white/"] {
+  background: rgba(0, 0, 0, 0.03) !important;
+}
+
+.light-theme [class*="text-teal-400"],
+.light-theme [class*="text-teal-400/90"] {
+  color: var(--proposal-accent) !important;
+}
+
+.light-theme [class*="bg-teal-500/10"],
+.light-theme [class*="bg-teal-500/8"] {
+  background: var(--proposal-accent-light) !important;
+}
+
+.light-theme [class*="border-teal-500/"] {
+  border-color: rgba(13, 148, 136, 0.25) !important;
+}
+
+.light-theme [class*="from-teal-500"] {
+  --tw-gradient-from: var(--proposal-accent) !important;
+}
+
+.light-theme [class*="bg-gradient-to-r"][class*="from-teal-400"] {
+  background: linear-gradient(to right, #0d9488, #06b6d4, #0d9488) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+}
+
+.light-theme .card,
+.light-theme [class*="Card"] {
+  background: var(--proposal-card-bg) !important;
+  border-color: var(--proposal-card-border) !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06) !important;
+}
+
+.light-theme [class*="shadow-black/"],
+.light-theme [class*="shadow-2xl"] {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08) !important;
+}
+
+.light-theme [class*="blur-"][class*="bg-teal"] {
+  background: var(--proposal-glow) !important;
+}
+
+.light-theme [class*="bg-gradient-radial"] {
+  background: radial-gradient(circle, var(--proposal-glow), transparent) !important;
+}
+
+.light-theme [class*="bg-[linear-gradient"] {
+  background: linear-gradient(var(--proposal-grid) 1px, transparent 1px),
+              linear-gradient(90deg, var(--proposal-grid) 1px, transparent 1px) !important;
+  background-size: 60px 60px !important;
 }

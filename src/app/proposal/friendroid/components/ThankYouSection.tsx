@@ -1,7 +1,12 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
-import { LavaLamp } from "@/components/ui/fluid-blob";
+
+const LavaLamp = dynamic(
+  () => import("@/components/ui/fluid-blob").then((mod) => mod.LavaLamp),
+  { ssr: false }
+);
 import { ArrowRight } from "lucide-react";
 
 export function ThankYouSection() {

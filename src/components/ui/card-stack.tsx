@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -308,12 +309,14 @@ function DefaultFanCard({ item }: { item: CardStackItem; active: boolean }) {
     <div className="relative h-full w-full">
       <div className="absolute inset-0">
         {item.imageSrc ? (
-          <img
+          <Image
             src={item.imageSrc}
             alt={item.title}
-            className="h-full w-full object-cover"
+            fill
+            className="object-cover"
             draggable={false}
-            loading="eager"
+            sizes="(max-width: 768px) 100vw, 520px"
+            priority
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-zinc-900 text-sm text-zinc-500">

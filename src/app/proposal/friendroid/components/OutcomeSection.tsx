@@ -1,8 +1,13 @@
 "use client";
 
 import * as React from "react";
+import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
-import { DotScreenShader } from "@/components/ui/dot-shader-background";
+
+const DotScreenShader = dynamic(
+  () => import("@/components/ui/dot-shader-background").then((mod) => mod.DotScreenShader),
+  { ssr: false }
+);
 import { Check, ChevronDown } from "lucide-react";
 
 interface OutcomeItem {

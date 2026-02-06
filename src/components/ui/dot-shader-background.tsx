@@ -145,14 +145,26 @@ function Scene() {
     return new DotMaterial()
   }, [])
 
+  // Target colors for smooth interpolation
+  const targetColors = useMemo(() => ({
+    dotColor: new THREE.Color(),
+    bgColor: new THREE.Color(),
+    dotOpacity: 0
+  }), [])
+
   useEffect(() => {
-    dotMaterial.uniforms.dotColor.value.setHex(themeColors.dotColor.replace('#', '0x'))
-    dotMaterial.uniforms.bgColor.value.setHex(themeColors.bgColor.replace('#', '0x'))
-    dotMaterial.uniforms.dotOpacity.value = themeColors.dotOpacity
-  }, [theme, dotMaterial, themeColors])
+    targetColors.dotColor.setHex(parseInt(themeColors.dotColor.replace('#', ''), 16))
+    targetColors.bgColor.setHex(parseInt(themeColors.bgColor.replace('#', ''), 16))
+    targetColors.dotOpacity = themeColors.dotOpacity
+  }, [theme, themeColors, targetColors])
 
   useFrame((state) => {
     dotMaterial.uniforms.time.value = state.clock.elapsedTime
+    
+    // Smoothly interpolate colors (lerp factor of 0.1 for ~10 frames transition)
+    dotMaterial.uniforms.dotColor.value.lerp(targetColors.dotColor, 0.1)
+    dotMaterial.uniforms.bgColor.value.lerp(targetColors.bgColor, 0.1)
+    dotMaterial.uniforms.dotOpacity.value += (targetColors.dotOpacity - dotMaterial.uniforms.dotOpacity.value) * 0.1
   })
 
   const handlePointerMove = (e: ThreeEvent<PointerEvent>) => {
@@ -178,14 +190,16 @@ function Scene() {
 
 export const DotScreenShader = () => {
   return (
-    <Canvas
-      gl={{
-        antialias: true,
-        powerPreference: 'high-performance',
-        outputColorSpace: THREE.SRGBColorSpace,
-        toneMapping: THREE.NoToneMapping
-      }}>
-      <Scene />
-    </Canvas>
+    <div style={{ width: '100%', height: '100%', willChange: 'contents' }}>
+      <Canvas
+        gl={{
+          antialias: true,
+          powerPreference: 'high-performance',
+          outputColorSpace: THREE.SRGBColorSpace,
+          toneMapping: THREE.NoToneMapping
+        }}>
+        <Scene />
+      </Canvas>
+    </div>
   )
 }
