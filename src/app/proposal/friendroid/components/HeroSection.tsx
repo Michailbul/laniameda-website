@@ -7,10 +7,11 @@ import { Card } from "@/components/ui/card";
 import { SplineScene } from "@/components/ui/splite";
 import { useScrollProgress } from "./shared";
 import { GradientSlideButton } from "@/components/ui/gradient-slide-button";
-import { ChevronDown, Sun, Moon } from "lucide-react";
+import { ChevronDown, Sun, Moon, ArrowUpRight } from "lucide-react";
 import { useTheme } from "./ThemeContext";
 import HyperTextParagraph from "@/components/ui/hyper-text-with-decryption";
 import { ProposalBadge } from "@/components/ui/proposal-badge";
+import { MagneticCursor } from "@/components/ui/magnetic-cursor";
 
 export function HeroSection() {
   const [shouldRenderSpline, setShouldRenderSpline] = useState(false);
@@ -79,6 +80,12 @@ export function HeroSection() {
   }, [shouldRenderSpline]);
 
   return (
+    <MagneticCursor
+      magneticFactor={0.3}
+      hoverPadding={4}
+      blendMode="exclusion"
+      cursorSize={40}
+    >
     <section
       id="hero"
       className={`snap-section relative flex items-center justify-center px-6 md:px-16 py-20 overflow-hidden bg-transparent`}
@@ -86,6 +93,7 @@ export function HeroSection() {
       {/* Fixed Logo - Top Left */}
       <Link
         href="/"
+        data-magnetic
         className="fixed top-6 left-6 md:left-10 z-50 group"
       >
         <span className={`text-base font-semibold tracking-[0.15em] transition-colors duration-300 ${
@@ -105,6 +113,7 @@ export function HeroSection() {
           <a
             key={item}
             href={`#${item.toLowerCase()}`}
+            
             className={`text-sm font-medium transition-colors duration-200 ${
               isLight 
                 ? "text-gray-600 hover:text-gray-900" 
@@ -115,7 +124,7 @@ export function HeroSection() {
           </a>
         ))}
         <a
-          href="#pricing"
+          href="#pricing"          
           className="text-sm font-medium text-teal-500 hover:text-teal-400 transition-colors duration-200"
         >
           Start Project
@@ -125,6 +134,7 @@ export function HeroSection() {
       {/* Theme Toggle - Top Right */}
       <motion.button
         onClick={toggleTheme}
+        data-magnetic
         className={`fixed top-6 right-6 md:right-10 z-50 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-500 ${
           isLight
             ? "bg-white border border-gray-200 shadow-lg shadow-gray-200/50 hover:shadow-xl hover:border-teal-300"
@@ -177,111 +187,94 @@ export function HeroSection() {
         aria-hidden 
       />
 
-      <motion.div style={{ scale }} className="w-full max-w-6xl will-change-transform">
-        <Card className={`w-full h-[620px] rounded-3xl relative overflow-hidden ${
-          isLight
-            ? "bg-gradient-to-br from-[#fefefe] to-[#f5f5f5] border border-gray-200/80 shadow-2xl shadow-gray-400/20"
-            : "bg-gradient-to-br from-[#141414] to-[#0a0a0a] border border-white/[0.08] shadow-2xl shadow-black/50"
-        }`}>
+      <motion.div style={{ scale }} className="w-full max-w-7xl will-change-transform">
+        <Card className="w-full h-[720px] rounded-3xl relative overflow-hidden bg-transparent border-0 shadow-none">
         
-        {/* Inner glow edge */}
-        <div className={`absolute inset-0 rounded-3xl pointer-events-none ${
-          isLight
-            ? "bg-gradient-to-b from-gray-100/50 to-transparent"
-            : "bg-gradient-to-b from-white/[0.04] to-transparent"
-        }`} />
+        <div className="flex h-full flex-col md:flex-row relative overflow-hidden rounded-3xl">
+          {/* Left section - Black background with curved right edge */}
+          <motion.div 
+            initial={{ x: "25%" }}
+            animate={{ x: 0 }}
+            transition={{ duration: 3, ease: [0.22, 2, 0.36, 1] }}
+            className="flex-1 p-8 md:p-12 relative z-10 flex flex-col bg-[#0a0a0a] md:rounded-r-[40px] md:mr-[-50px] shadow-[8px_0_40px_rgba(0,0,0,0.4)]">
+            <div className="flex-1 flex flex-col justify-center">
+            <ProposalBadge
+              data-magnetic  
+              data-magnetic-blend-mode="screen"
+              text="Proposal for Friendroid"
+              isLight={false}
+            />
 
-        {/* Animated corner accent - Tesla style */}
-        <div className={`absolute top-0 right-0 w-32 h-32 ${
-          isLight ? "opacity-50" : "opacity-40"
-        }`}>
-          <div className={`absolute top-4 right-4 w-px h-16 bg-gradient-to-b ${
-            isLight ? "from-gray-400" : "from-teal-500"
-          } to-transparent`} />
-          <div className={`absolute top-4 right-4 w-16 h-px bg-gradient-to-l ${
-            isLight ? "from-gray-400" : "from-teal-500"
-          } to-transparent`} />
-        </div>
-        
-        <div className="flex h-full flex-col md:flex-row">
-          <div className="flex-1 p-8 md:p-12 relative z-10 flex flex-col justify-center">
-            <ProposalBadge text="Proposal for Friendroid" isLight={isLight} />
-
-            <h1 className={`mt-8 text-4xl md:text-6xl font-medium tracking-tight ${
-              isLight ? "text-gray-900" : "text-white"
-            }`}>
+            <h1 className="mt-8 text-4xl md:text-6xl font-medium tracking-tight text-white">
               Creative Treatment
               <br />
-              <span className={`bg-clip-text text-transparent ${
-                isLight
-                  ? "bg-gradient-to-r from-gray-800 via-gray-600 to-gray-800"
-                  : "bg-gradient-to-r from-teal-400 via-cyan-300 to-teal-400"
-              }`}>
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-teal-400 via-cyan-300 to-teal-400">
                 Package
               </span>
             </h1>
 
-            <p className={`mt-5 max-w-xl text-[15px] leading-relaxed font-light ${
-              isLight ? "text-gray-500" : "text-white/70"
-            }`}>
+            <p className="mt-5 max-w-xl text-[15px] leading-relaxed font-light text-white/70">
               <HyperTextParagraph
                 text={"Build a connected, trusted audience in the robotics niche"}
                 highlightWords={["robotics"]}
                 className="text-[15px] font-light leading-relaxed"
-                theme={isLight ? "light" : "dark"}
+                theme="dark"
               />
             </p>
 
             <div className="mt-10 flex items-baseline gap-3">
-              <span className={`text-4xl md:text-5xl font-extralight tracking-tight ${
-                isLight ? "text-gray-900" : "text-white"
-              }`}>$2,000</span>
-              <span className={`text-xl ${
-                isLight ? "text-gray-300" : "text-white/50"
-              }`}>/</span>
-              <span className={`text-lg font-light ${
-                isLight ? "text-gray-400" : "text-white/70"
-              }`}>5 days</span>
+              <span className="text-4xl md:text-5xl font-extralight tracking-tight text-white">$2,000</span>
+              <span className="text-xl text-white/50">/</span>
+              <span className="text-lg font-light text-white/70">5 days</span>
             </div>
 
             {/* Accent line - Tesla style */}
-            <div className={`mt-8 h-px ${
-              isLight
-                ? "w-20 bg-gradient-to-r from-gray-400 to-transparent"
-                : "w-16 bg-gradient-to-r from-teal-500 to-transparent"
-            }`} />
+            <div className="mt-8 h-px w-16 bg-gradient-to-r from-teal-500 to-transparent" />
 
             {/* Key Benefits */}
             <div className="mt-8 flex flex-wrap gap-3">
               {["Brand Strategy", "Visual Identity", "Content Framework"].map((benefit) => (
                 <span
                   key={benefit}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-full border ${
-                    isLight
-                      ? "bg-white/60 border-gray-200/60 text-gray-600"
-                      : "bg-white/5 border-white/10 text-white/60"
-                  }`}
+                  className="px-3 py-1.5 text-xs font-medium rounded-full border bg-white/5 border-white/10 text-white/60"
                 >
                   {benefit}
                 </span>
               ))}
             </div>
 
-            {/* CTA Button */}
-            <GradientSlideButton
-              className="mt-8 h-12 px-8 text-base rounded-full"
-              onClick={() => document.getElementById('deliverables')?.scrollIntoView({ behavior: 'smooth' })}
+            {/* High Contrast Demo Block */}
+            <div 
+              data-magnetic              
+              className="mt-8 relative flex h-28 w-full max-w-sm items-center justify-between overflow-hidden rounded-2xl bg-white px-6 text-gray-900 shadow-2xl transition-transform hover:scale-[1.02]"
             >
-              Explore Package
-              <ChevronDown className="w-4 h-4" />
-            </GradientSlideButton>
-          </div>
+              <div className="flex flex-col gap-1">
+                <span className="text-xs font-medium uppercase tracking-widest opacity-60">
+                  Explore 
+                </span>
+                <span className="text-xl font-bold tracking-tight">
+                  The offer
+                </span>
+              </div>
+              {/* Inverted icon circle */}
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-900 text-white">
+                 <ArrowUpRight className="h-5 w-5 pointer-events-none" />
+              </div>
+            </div>
+            </div>
+          </motion.div>
 
-          <div className="flex-1 relative">
-            {/* Glow behind 3D scene - neutral for light, cool for dark */}
-            <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full blur-[100px] ${
-              isLight ? "bg-gradient-radial from-gray-300/30 via-gray-200/20 to-transparent" : "bg-gradient-radial from-teal-400/15 via-cyan-500/10 to-transparent"
-            }`} aria-hidden />
+          {/* Mobile divider */}
+          <div className="md:hidden w-full h-[2px] bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+
+          {/* Right section - White background with curved left edge */}
+          <motion.div 
+            initial={{ x: "-30%", opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 1, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+            className="flex-1 relative bg-white md:rounded-l-[60px] md:ml-[-40px] z-0">
+            {/* Glow behind 3D scene - neutral for light background */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full blur-[100px] bg-gradient-radial from-gray-300/40 via-gray-200/30 to-transparent" aria-hidden />
             
             {shouldRenderSpline ? (
               <SplineScene
@@ -294,28 +287,21 @@ export function HeroSection() {
             ) : (
               <div className="w-full h-full grid place-items-center">
                 <div className="text-center px-6">
-                  <div className={`w-12 h-12 mx-auto mb-4 rounded-full border grid place-items-center ${
-                    isLight ? "border-teal-400/40" : "border-teal-500/30"
-                  }`}>
-                    <div className={`w-2 h-2 rounded-full animate-pulse ${
-                      isLight ? "bg-teal-500/80" : "bg-teal-500/60"
-                    }`} />
+                  <div className="w-12 h-12 mx-auto mb-4 rounded-full border grid place-items-center border-teal-400/40">
+                    <div className="w-2 h-2 rounded-full animate-pulse bg-teal-500/80" />
                   </div>
-                  <p className={`text-sm font-light ${
-                    isLight ? "text-gray-400" : "text-white/60"
-                  }`}>3D preview</p>
-                  <p className={`mt-1 text-xs ${
-                    isLight ? "text-gray-300" : "text-white/40"
-                  }`}>
+                  <p className="text-sm font-light text-gray-400">3D preview</p>
+                  <p className="mt-1 text-xs text-gray-300">
                     Enabled on desktop when motion is allowed.
                   </p>
                 </div>
               </div>
             )}
-          </div>
+          </motion.div>
         </div>
         </Card>
       </motion.div>
     </section>
+    </MagneticCursor>
   );
 }

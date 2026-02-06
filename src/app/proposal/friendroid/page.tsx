@@ -9,7 +9,8 @@ import { ThemeProvider } from "./components/ThemeContext";
 
 // Section components
 import { HeroSection } from "./components/HeroSection";
-import { NextPageSection } from "./components/NextPageSection";
+import { CanvasPageSection } from "./components/NextPageSection";
+import { PricingSection } from "./components/PricingSection";
 
 // Theme script to prevent flash - runs before hydration
 const themeScript = `
@@ -26,6 +27,7 @@ const themeScript = `
 const sections = [
   "hero",
   "next-page",
+  "pricing",
 ];
 
 export default function FriendroidProposal() {
@@ -72,7 +74,8 @@ export default function FriendroidProposal() {
 
             {/* Stage 1: Hero + Parallax Expand + Next Page */}
             <HeroSection />
-            <NextPageSection />
+            <CanvasPageSection />
+            <PricingSection />
           </ScrollProvider>
         </div>
       </ThemeProvider>

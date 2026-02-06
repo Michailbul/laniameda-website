@@ -155,66 +155,6 @@ export default function HeroSection() {
 
       {/* Main canvas */}
       <canvas ref={canvasRef} className="fixed inset-0 z-0" />
-      
-      {/* Hero content */}
-      <div className="relative h-full flex flex-col items-center justify-center z-10 px-6">
-        {/* Pre-title */}
-        <div 
-          className={`overflow-hidden mb-4 transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
-          style={{ transitionDelay: '200ms' }}
-        >
-          <span className="inline-block text-white/50 text-xs tracking-[0.4em] uppercase font-mono">
-            Creative Studio
-          </span>
-        </div>
-
-        {/* Main title - matching proposal page styling */}
-        <h1 
-          className={`m-0 p-0 text-white text-base font-semibold tracking-[0.15em] uppercase select-none transition-all duration-1000 ${isLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}
-          style={{ 
-            transitionDelay: '400ms',
-            fontSize: 'clamp(48px, 12vw, 140px)',
-            textShadow: '0 0 60px rgba(255,255,255,0.15), 0 2px 10px rgba(0,0,0,0.5)'
-          }}
-        >
-          LANIAMEDA
-        </h1>
-
-        {/* Tagline with gradient text */}
-        <div 
-          className={`overflow-hidden mt-6 transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
-          style={{ transitionDelay: '600ms' }}
-        >
-          <p 
-            className="m-0 p-0 text-[clamp(14px,2.5vw,20px)] font-light tracking-wide leading-relaxed select-none"
-            style={{
-              background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0.8) 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text'
-            }}
-          >
-            AI-native creative studio
-          </p>
-        </div>
-
-        {/* Decorative line */}
-        <div 
-          className={`mt-12 w-24 h-[2px] bg-gradient-to-r from-transparent via-white/60 to-transparent transition-all duration-1000 ${isLoaded ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'}`}
-          style={{ transitionDelay: '800ms' }}
-        />
-
-        {/* Interactive hint */}
-        <div 
-          className={`absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 transition-all duration-1000 ${isLoaded ? 'opacity-40' : 'opacity-0'}`}
-          style={{ transitionDelay: '1000ms' }}
-        >
-          <span className="text-white/30 text-[10px] tracking-[0.3em] uppercase">
-            Click to transform
-          </span>
-          <div className="w-[1px] h-8 bg-gradient-to-b from-white/40 to-transparent animate-pulse" />
-        </div>
-      </div>
 
       {/* Ambient glow effect following cursor */}
       <div 

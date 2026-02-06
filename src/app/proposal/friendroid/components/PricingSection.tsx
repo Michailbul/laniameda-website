@@ -1,50 +1,88 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Section } from "./shared";
+import { PricingCardWithFeatures } from "@/components/ui/pricing-card-with-features";
+import { useTheme } from "./ThemeContext";
+import { cn } from "@/lib/utils";
 
 export function PricingSection() {
-    return (
-        <Section id="pricing" className="bg-black space-grid px-6">
-            <div className="max-w-[900px] mx-auto text-center">
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    className="border border-cyan/30 rounded-3xl p-16 border-pulse"
-                >
-                    <span className="text-cyan text-xs tracking-[0.3em] uppercase font-medium">
-                        Let's Build
-                    </span>
-                    <h2 className="text-white text-[clamp(48px,8vw,96px)] font-extralight leading-[0.9] mt-6">
-                        Ready to
-                        <br />
-                        <span className="text-glow">launch?</span>
-                    </h2>
+  const { theme } = useTheme();
+  const isLight = theme === "light";
 
-                    <div className="flex items-baseline justify-center gap-4 mt-12">
-                        <span className="text-white text-7xl font-extralight">$2,000</span>
-                        <span className="text-white/40 text-xl">fixed</span>
-                    </div>
-                    <p className="text-white/40 text-lg mt-2">5 working days</p>
+  return (
+    <section
+      id="pricing"
+      className={cn(
+        "snap-section relative min-h-screen overflow-hidden flex flex-col items-center justify-center py-24",
+        "bg-transparent"
+      )}
+    >
+      {/* Subtle grid pattern - matching NextPageSection */}
+      <div
+        className={cn(
+          "absolute inset-0 bg-[size:60px_60px]",
+          isLight
+            ? "bg-[linear-gradient(rgba(0,0,0,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.04)_1px,transparent_1px)]"
+            : "bg-[linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)]"
+        )}
+        aria-hidden
+      />
 
-                    <motion.a
-                        href="mailto:hello@laniameda.com?subject=Friendroid%20Creative%20Treatment%20Package"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.98 }}
-                        className="inline-block mt-12 bg-cyan text-black font-medium tracking-wide px-12 py-4 rounded-full glow-cyan"
-                    >
-                        Start Project
-                    </motion.a>
-                </motion.div>
-            </div>
+      {/* Section header */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        className="text-center mb-16 relative z-10"
+      >
+        <span
+          className={cn(
+            "text-[13px] font-mono uppercase tracking-[0.3em] font-semibold",
+            isLight ? "text-zinc-600" : "text-zinc-300"
+          )}
+        >
+          Investment
+        </span>
+        <h2
+          className={cn(
+            "mt-4 text-4xl md:text-5xl font-light tracking-[-0.02em]",
+            isLight ? "text-zinc-900" : "text-white"
+          )}
+        >
+          Ready to <span className="font-medium text-teal-500">Start</span>?
+        </h2>
+        <p
+          className={cn(
+            "mt-4 text-lg max-w-xl mx-auto",
+            isLight ? "text-zinc-600" : "text-zinc-400"
+          )}
+        >
+          Transparent pricing for complete GPT app development. No hidden fees, just results.
+        </p>
+      </motion.div>
 
-            {/* Footer */}
-            <div className="max-w-[1100px] mx-auto mt-20 pt-8 border-t border-white/10 flex items-center justify-between">
-                <span className="text-white/60 text-sm">LANIAMEDA</span>
-                <span className="text-white/40 text-sm">AI Creative Marketing Studio</span>
-                <span className="text-white/40 text-sm">2025</span>
-            </div>
-        </Section>
-    );
+      {/* Pricing Card */}
+      <motion.div
+        initial={{ opacity: 0, y: 40, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+        className="relative z-10"
+      >
+        <PricingCardWithFeatures />
+      </motion.div>
+
+      {/* Trust badges */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.5 }}
+        className={cn(
+          "mt-12 text-center text-sm",
+          isLight ? "text-zinc-500" : "text-zinc-400"
+        )}
+      >
+        <p>7-day money-back guarantee • No credit card required for consultation</p>
+      </motion.div>
+    </section>
+  );
 }

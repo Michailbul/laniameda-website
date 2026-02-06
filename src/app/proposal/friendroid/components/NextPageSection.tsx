@@ -46,7 +46,7 @@ const cardExpandedStyles = cn(
 // Main Section Component
 // ─────────────────────────────────────────────────────────────────────────────
 
-export function NextPageSection() {
+export function CanvasPageSection() {
   const { theme } = useTheme();
   const isLight = theme === "light";
 
@@ -78,8 +78,8 @@ export function NextPageSection() {
       >
         <span
           className={cn(
-            "text-[11px] font-mono uppercase tracking-[0.4em]",
-            isLight ? "text-zinc-400" : "text-zinc-500"
+            "text-[13px] font-mono uppercase tracking-[0.3em] font-semibold",
+            isLight ? "text-zinc-600" : "text-zinc-300"
           )}
         >
           Your Journey
@@ -90,7 +90,7 @@ export function NextPageSection() {
             isLight ? "text-zinc-900" : "text-white"
           )}
         >
-          Three Phases to{" "}
+          Three(four) Phases to{" "}
           <span className="font-medium text-teal-500">Scale</span>
         </h2>
       </motion.div>
@@ -106,25 +106,25 @@ export function NextPageSection() {
         >
           {/* "You are here" indicator */}
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1, duration: 0.6 }}
-            className="absolute -top-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-20"
+            className="absolute -bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 z-20"
           >
+            <motion.div
+              animate={{ y: [0, -3, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+              className={cn(
+                "w-0 h-0 border-l-[5px] border-r-[5px] border-b-[6px] border-l-transparent border-r-transparent",
+                isLight ? "border-b-teal-500" : "border-b-teal-400"
+              )}
+            />
             <span className={cn(
               "text-[10px] font-mono uppercase tracking-[0.25em] whitespace-nowrap",
               isLight ? "text-teal-600" : "text-teal-400"
             )}>
               You are here
             </span>
-            <motion.div
-              animate={{ y: [0, 4, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              className={cn(
-                "w-0 h-0 border-l-[6px] border-r-[6px] border-t-8 border-l-transparent border-r-transparent",
-                isLight ? "border-t-teal-600" : "border-t-teal-400"
-              )}
-            />
           </motion.div>
 
           <ExpandableCard

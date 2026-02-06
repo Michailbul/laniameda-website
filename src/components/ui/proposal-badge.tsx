@@ -2,17 +2,22 @@
 
 import { cn } from "@/lib/utils";
 
-interface ProposalBadgeProps {
+interface ProposalBadgeProps extends React.HTMLAttributes<HTMLDivElement> {
   text?: string;
   isLight?: boolean;
 }
 
-export const ProposalBadge = ({ text = "Proposal for Friendroid", isLight = false }: ProposalBadgeProps) => {
+export const ProposalBadge = ({ 
+  text = "Proposal for Friendroid", 
+  isLight = false,
+  className,
+  ...props
+}: ProposalBadgeProps) => {
   return (
-    <div className="inline-flex w-fit">
+    <div className={cn("inline-flex w-fit", className)} {...props}>
       <div
         className={cn(
-          "px-4 py-2.5",
+          "px-4 py-2.5 rounded-xl",
           "backdrop-blur-sm",
           isLight
             ? "bg-gray-100 border border-gray-200"
