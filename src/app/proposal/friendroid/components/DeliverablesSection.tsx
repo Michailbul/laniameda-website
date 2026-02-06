@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import dynamic from "next/dynamic";
 import { AnimatePresence, motion } from "framer-motion";
 import {
     BookOpen,
@@ -12,14 +13,16 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DeliverableTab } from "./deliverables/types";
-import { HypothesesLibraryCard } from "./deliverables/HypothesesLibraryCard";
-import { VisualDesignSystemCard } from "./deliverables/VisualDesignSystemCard";
-import { ContentPillarsCard } from "./deliverables/ContentPillarsCard";
-import { BrandClarityCard } from "./deliverables/BrandClarityCard";
-import { RepurposingBlueprintCard } from "./deliverables/RepurposingBlueprintCard";
-import { PilotScaleRoadmapCard } from "./deliverables/PilotScaleRoadmapCard";
 import { DefaultPanel } from "./deliverables/DefaultPanel";
 import { ExpandableTabs } from "@/components/ui/expandable-tabs";
+
+// Dynamic imports for content components (reduces initial bundle by ~50-100KB)
+const HypothesesLibraryCard = dynamic(() => import("./deliverables/HypothesesLibraryCard").then(m => m.HypothesesLibraryCard));
+const VisualDesignSystemCard = dynamic(() => import("./deliverables/VisualDesignSystemCard").then(m => m.VisualDesignSystemCard));
+const ContentPillarsCard = dynamic(() => import("./deliverables/ContentPillarsCard").then(m => m.ContentPillarsCard));
+const BrandClarityCard = dynamic(() => import("./deliverables/BrandClarityCard").then(m => m.BrandClarityCard));
+const RepurposingBlueprintCard = dynamic(() => import("./deliverables/RepurposingBlueprintCard").then(m => m.RepurposingBlueprintCard));
+const PilotScaleRoadmapCard = dynamic(() => import("./deliverables/PilotScaleRoadmapCard").then(m => m.PilotScaleRoadmapCard));
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Default Deliverables Data
@@ -104,9 +107,15 @@ export function DeliverablesSection({
 }) {
     const [activeIndex, setActiveIndex] = React.useState(0);
     const containerRef = React.useRef<HTMLDivElement>(null);
+    const snapContainerRef = React.useRef<Element | null>(null);
     const scrollStateRef = React.useRef<ScrollState>("inactive");
     const isVisibleRef = React.useRef(false);
     const entryCooldownRef = React.useRef<number>(0);
+
+    // Cache snap-container reference once
+    React.useEffect(() => {
+        snapContainerRef.current = document.querySelector('.snap-container');
+    }, []);
 
     const activeIndexRef = React.useRef(activeIndex);
     const tabsLengthRef = React.useRef(tabs.length);
@@ -134,15 +143,13 @@ export function DeliverablesSection({
         lastSwitchAt: 0,
     });
 
-    // Helper functions for scroll lock
+    // Helper functions for scroll lock (use cached ref)
     const lockParentScroll = React.useCallback(() => {
-        const container = document.querySelector('.snap-container');
-        container?.classList.add('snap-disabled');
+        snapContainerRef.current?.classList.add('snap-disabled');
     }, []);
 
     const unlockParentScroll = React.useCallback(() => {
-        const container = document.querySelector('.snap-container');
-        container?.classList.remove('snap-disabled');
+        snapContainerRef.current?.classList.remove('snap-disabled');
     }, []);
 
     // IntersectionObserver to detect when section is fully visible
@@ -179,8 +186,8 @@ export function DeliverablesSection({
                 }
             },
             {
-                threshold: [0, 0.5, 0.9, 1],
-                root: document.querySelector('.snap-container'),
+                threshold: [0.9],
+                root: snapContainerRef.current,
             }
         );
 
@@ -334,9 +341,9 @@ export function DeliverablesSection({
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={activeTab?.id ?? "empty"}
-                            initial={{ opacity: 0, y: 14, filter: "blur(6px)" }}
-                            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                            exit={{ opacity: 0, y: -10, filter: "blur(6px)" }}
+                            initial={{ opacity: 0, y: 14 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
                             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                             className="w-full h-full flex items-center justify-center"
                         >

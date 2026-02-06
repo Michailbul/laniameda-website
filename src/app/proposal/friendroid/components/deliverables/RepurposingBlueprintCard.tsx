@@ -47,7 +47,7 @@ const SOCIAL_PREVIEWS = [
                     </div>
                     <div className="absolute bottom-4 left-4 right-12 z-10">
                         <div className="flex items-center gap-2 mb-2">
-                            <div className="w-6 h-6 rounded-full bg-teal-500/20 border border-teal-500/50" />
+                            <div className="w-6 h-6 rounded-full bg-cyan-500/20 border border-cyan-500/50" />
                             <span className="text-sm font-medium text-white text-shadow">friendroid</span>
                         </div>
                         <p className="text-xs text-white/90 line-clamp-2 text-shadow-sm font-light">The future of robotics isn't just about hardware, it's about the stories we tell...</p>
@@ -64,7 +64,7 @@ const SOCIAL_PREVIEWS = [
         content: (
             <div className="flex flex-col w-full h-full bg-white rounded-md overflow-hidden border border-zinc-200">
                 <div className="p-3 flex items-center gap-2 border-b border-zinc-100 bg-white">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-teal-500" />
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-cyan-500" />
                     <div>
                         <div className="text-xs font-bold text-zinc-900 leading-none mb-1">Company Name</div>
                         <div className="text-[10px] text-zinc-500 leading-none">Robotics & AI Innovation</div>
@@ -74,7 +74,7 @@ const SOCIAL_PREVIEWS = [
                     <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-50" />
                     <div className="w-full aspect-[4/5] bg-white shadow-lg border border-zinc-200 flex flex-col p-6 transition-transform duration-300 group-hover:-translate-y-1 relative z-10">
                         <div className="w-8 h-8 mb-4">
-                            <svg viewBox="0 0 24 24" fill="none" className="text-teal-600 w-full h-full">
+                            <svg viewBox="0 0 24 24" fill="none" className="text-cyan-600 w-full h-full">
                                 <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                                 <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                                 <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -109,17 +109,17 @@ const SOCIAL_PREVIEWS = [
                     <div className="flex-1">
                         <div className="flex items-center gap-1.5 mb-0.5">
                             <span className="text-white font-semibold text-sm">Friendroid</span>
-                            <div className="w-3 h-3 text-teal-400">
+                            <div className="w-3 h-3 text-cyan-400">
                                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" /></svg>
                             </div>
                             <span className="text-zinc-500 text-xs">@friendroid · 2h</span>
                         </div>
-                        <p className="text-zinc-300 text-sm leading-relaxed font-light">Starting from zero needs output. If every post is a brand new project, you won't keep up. <span className="text-teal-400">#RoboticsMarketing</span></p>
+                        <p className="text-zinc-300 text-sm leading-relaxed font-light">Starting from zero needs output. If every post is a brand new project, you won't keep up. <span className="text-cyan-400">#RoboticsMarketing</span></p>
                         <div className="flex justify-between mt-3 text-zinc-600 max-w-[200px]">
-                            <MessageCircle className="w-4 h-4 hover:text-teal-400 transition-colors" />
+                            <MessageCircle className="w-4 h-4 hover:text-cyan-400 transition-colors" />
                             <Repeat className="w-4 h-4 hover:text-green-400 transition-colors" />
                             <Heart className="w-4 h-4 hover:text-red-400 transition-colors" />
-                            <Share className="w-4 h-4 hover:text-teal-400 transition-colors" />
+                            <Share className="w-4 h-4 hover:text-cyan-400 transition-colors" />
                         </div>
                     </div>
                 </div>
@@ -151,7 +151,7 @@ const SOCIAL_PREVIEWS = [
         description: "Deep dive content for authority",
         content: (
             <div className="w-full h-full bg-[#FAFAFA] rounded-md border border-zinc-200 p-8 flex flex-col font-serif relative overflow-hidden group">
-                <div className="w-full h-1 bg-gradient-to-r from-teal-500 to-blue-600 absolute top-0 left-0" />
+                <div className="w-full h-1 bg-gradient-to-r from-cyan-500 to-blue-600 absolute top-0 left-0" />
 
                 <div className="flex items-center gap-2 mb-6 border-b border-zinc-100 pb-4">
                     <div className="w-6 h-6 rounded-full bg-zinc-200" />
@@ -160,7 +160,7 @@ const SOCIAL_PREVIEWS = [
                     <span className="text-[10px] text-zinc-400 font-sans">5 min read</span>
                 </div>
 
-                <h1 className="text-3xl font-bold text-zinc-900 mb-4 leading-tight group-hover:text-teal-900 transition-colors duration-300">The Content Engine: How to Scale Technical Storytelling</h1>
+                <h1 className="text-3xl font-bold text-zinc-900 mb-4 leading-tight group-hover:text-cyan-900 transition-colors duration-300">The Content Engine: How to Scale Technical Storytelling</h1>
 
                 <div className="space-y-3 font-sans opacity-60">
                     <div className="h-2 w-full bg-zinc-200 rounded-sm" />
@@ -170,7 +170,7 @@ const SOCIAL_PREVIEWS = [
                     <div className="h-2 w-5/6 bg-zinc-200 rounded-sm" />
                 </div>
 
-                <div className="mt-auto flex items-center text-teal-600 text-xs font-sans font-medium">
+                <div className="mt-auto flex items-center text-cyan-600 text-xs font-sans font-medium">
                     Read article <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform" />
                 </div>
             </div>
@@ -193,7 +193,7 @@ export function RepurposingBlueprintCard({ isActive }: { isActive: boolean }) {
                 }}
             />
             <motion.div
-                className="absolute top-0 right-0 w-[500px] h-[500px] bg-teal-500/5 blur-[120px] rounded-full pointer-events-none mix-blend-screen"
+                className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-500/5 blur-[120px] rounded-full pointer-events-none mix-blend-screen"
                 animate={{
                     scale: [1, 1.2, 1],
                     opacity: [0.1, 0.2, 0.1]
@@ -209,7 +209,7 @@ export function RepurposingBlueprintCard({ isActive }: { isActive: boolean }) {
                     transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                     className="grid grid-cols-[auto_1fr] gap-4 items-baseline border-b border-white/10 pb-4"
                 >
-                    <span className="text-teal-400 font-mono text-sm tracking-wider">05</span>
+                    <span className="text-cyan-400 font-mono text-sm tracking-wider">05</span>
                     <h2 className="text-white text-3xl md:text-4xl font-extralight tracking-tight uppercase">Repurposing Blueprint</h2>
                 </motion.div>
             </div>
@@ -234,7 +234,7 @@ export function RepurposingBlueprintCard({ isActive }: { isActive: boolean }) {
                     initial={{ scaleX: 0 }}
                     animate={shouldAnimate ? { scaleX: 1 } : {}}
                     transition={{ delay: 0.4 }}
-                    className="w-16 h-px bg-gradient-to-r from-white/20 to-teal-500/50"
+                    className="w-16 h-px bg-gradient-to-r from-white/20 to-cyan-500/50"
                 />
 
                 {/* Transform Label */}
@@ -242,9 +242,9 @@ export function RepurposingBlueprintCard({ isActive }: { isActive: boolean }) {
                     initial={{ opacity: 0 }}
                     animate={shouldAnimate ? { opacity: 1 } : {}}
                     transition={{ delay: 0.5 }}
-                    className="px-3 py-1.5 rounded-full border border-teal-500/30 bg-black"
+                    className="px-3 py-1.5 rounded-full border border-cyan-500/30 bg-black"
                 >
-                    <span className="text-[10px] text-teal-400 uppercase tracking-wider">Transform</span>
+                    <span className="text-[10px] text-cyan-400 uppercase tracking-wider">Transform</span>
                 </motion.div>
 
                 {/* Arrow */}
@@ -252,7 +252,7 @@ export function RepurposingBlueprintCard({ isActive }: { isActive: boolean }) {
                     initial={{ scaleX: 0 }}
                     animate={shouldAnimate ? { scaleX: 1 } : {}}
                     transition={{ delay: 0.6 }}
-                    className="w-16 h-px bg-gradient-to-r from-teal-500/50 to-white/20"
+                    className="w-16 h-px bg-gradient-to-r from-cyan-500/50 to-white/20"
                 />
 
                 {/* Outputs */}
@@ -263,9 +263,9 @@ export function RepurposingBlueprintCard({ isActive }: { isActive: boolean }) {
                             initial={{ opacity: 0, x: 20 }}
                             animate={shouldAnimate ? { opacity: 1, x: 0 } : {}}
                             transition={{ delay: 0.7 + i * 0.1 }}
-                            className="flex items-center gap-3 px-4 py-2 rounded-lg border border-white/10 bg-zinc-950/50 hover:border-teal-500/30 transition-colors"
+                            className="flex items-center gap-3 px-4 py-2 rounded-lg border border-white/10 bg-zinc-950/50 hover:border-cyan-500/30 transition-colors"
                         >
-                            <div className="w-2 h-2 rounded-full bg-teal-500/60" />
+                            <div className="w-2 h-2 rounded-full bg-cyan-500/60" />
                             <span className="text-xs text-white/70">{fmt}</span>
                         </motion.div>
                     ))}
@@ -281,7 +281,7 @@ export function RepurposingBlueprintCard({ isActive }: { isActive: boolean }) {
             >
                 <div className="grid md:grid-cols-2 gap-8 md:gap-16">
                     <div className="relative group">
-                        <div className="absolute -left-4 top-0 bottom-0 w-[1px] bg-teal-500 scale-y-0 group-hover:scale-y-100 transition-transform duration-500 origin-top" />
+                        <div className="absolute -left-4 top-0 bottom-0 w-[1px] bg-cyan-500 scale-y-0 group-hover:scale-y-100 transition-transform duration-500 origin-top" />
                         <p className="text-[10px] text-white/30 uppercase tracking-[0.2em] font-mono mb-3">What You Get</p>
                         <p className="text-white/60 text-sm font-light leading-relaxed">
                             A workflow to turn <span className="text-white font-medium">one topic</span> into multiple pieces across platforms.
@@ -289,8 +289,8 @@ export function RepurposingBlueprintCard({ isActive }: { isActive: boolean }) {
                         </p>
                     </div>
                     <div className="relative group">
-                        <div className="absolute -left-4 top-0 bottom-0 w-[1px] bg-teal-500 scale-y-0 group-hover:scale-y-100 transition-transform duration-500 origin-top" />
-                        <p className="text-[10px] text-teal-400/50 uppercase tracking-[0.2em] font-mono mb-3">Outcome</p>
+                        <div className="absolute -left-4 top-0 bottom-0 w-[1px] bg-cyan-500 scale-y-0 group-hover:scale-y-100 transition-transform duration-500 origin-top" />
+                        <p className="text-[10px] text-cyan-400/50 uppercase tracking-[0.2em] font-mono mb-3">Outcome</p>
                         <p className="text-white text-base md:text-lg font-light">
                             More content with less effort <span className="text-white/40 block md:inline">— without reinventing the wheel.</span>
                         </p>
