@@ -4,13 +4,12 @@ import { useRef, useState, useEffect } from "react";
 import { GradientBackground } from "@/components/ui/noisy-gradient-backgrounds";
 
 // Shared components
-import { NavDots, ScrollProvider } from "./components/shared";
+import { NavDots, TopNav, ScrollProvider } from "./components/shared";
 import { ThemeProvider } from "./components/ThemeContext";
 
 // Section components
 import { HeroSection } from "./components/HeroSection";
 import { CanvasPageSection } from "./components/NextPageSection";
-import { OutcomeSection } from "./components/OutcomeSection";
 import { PricingSection } from "./components/PricingSection";
 
 // Theme script to prevent flash - runs before hydration
@@ -28,7 +27,6 @@ const themeScript = `
 const sections = [
   "hero",
   "next-page",
-  "deliverables",
   "pricing",
 ];
 
@@ -40,50 +38,31 @@ export default function FriendroidProposal() {
     const container = containerRef.current;
     if (!container) return;
 
-    const sectionElements = sections
-      .map((id) => document.getElementById(id))
-      .filter((node): node is HTMLElement => node instanceof HTMLElement);
-
-    if (sectionElements.length === 0) return;
-
     let rafId: number | null = null;
+    let lastIndex = 0;
 
-    const updateActiveSection = () => {
-      const currentScrollTop = container.scrollTop;
-      let nextIndex = 0;
-      let minDistance = Number.POSITIVE_INFINITY;
+    const handleScroll = () => {
+      // Throttle with RAF to prevent excessive updates during rapid scrolling
+      if (rafId) return;
 
-      for (const [index, section] of sectionElements.entries()) {
-        const distance = Math.abs(section.offsetTop - currentScrollTop);
-
-        if (distance < minDistance) {
-          minDistance = distance;
-          nextIndex = index;
-        }
-      }
-
-      setActiveSection((prev) => (prev === nextIndex ? prev : nextIndex));
-    };
-
-    const scheduleUpdate = () => {
-      if (rafId !== null) return;
-      rafId = window.requestAnimationFrame(() => {
+      rafId = requestAnimationFrame(() => {
         rafId = null;
-        updateActiveSection();
+        const scrollPos = container.scrollTop;
+        const windowHeight = window.innerHeight;
+        const index = Math.round(scrollPos / windowHeight);
+
+        // Only update state if index changed
+        if (index !== lastIndex) {
+          lastIndex = index;
+          setActiveSection(index);
+        }
       });
     };
 
-    container.addEventListener("scroll", scheduleUpdate, { passive: true });
-    window.addEventListener("resize", scheduleUpdate);
-    scheduleUpdate();
-
+    container.addEventListener("scroll", handleScroll, { passive: true });
     return () => {
-      container.removeEventListener("scroll", scheduleUpdate);
-      window.removeEventListener("resize", scheduleUpdate);
-
-      if (rafId !== null) {
-        window.cancelAnimationFrame(rafId);
-      }
+      if (rafId) cancelAnimationFrame(rafId);
+      container.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
@@ -113,7 +92,6 @@ export default function FriendroidProposal() {
             {/* Stage 1: Hero + Parallax Expand + Next Page */}
             <HeroSection />
             <CanvasPageSection />
-            <OutcomeSection />
             <PricingSection />
           </ScrollProvider>
         </div>
