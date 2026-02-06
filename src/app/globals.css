@@ -67,6 +67,12 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --color-1: hsl(330 100% 40%);
+  --color-2: hsl(140 100% 55%);
+  --color-3: hsl(210 100% 30%);
+  --color-4: hsl(60 100% 70%);
+  --color-5: hsl(295 100% 45%);
+  --brand: hsl(50 100% 50%);
 }
 
 @theme inline {
@@ -124,6 +130,12 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
+  --color-brand: var(----brand);
+  --color-color-5: var(----color-5);
+  --color-color-4: var(----color-4);
+  --color-color-3: var(----color-3);
+  --color-color-2: var(----color-2);
+  --color-color-1: var(----color-1);
 }
 
 /* Smooth theme transitions */
@@ -416,6 +428,12 @@ img {
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  --color-1: hsl(330 100% 40%);
+  --color-2: hsl(140 100% 55%);
+  --color-3: hsl(210 100% 30%);
+  --color-4: hsl(60 100% 70%);
+  --color-5: hsl(295 100% 45%);
+  --brand: hsl(50 100% 50%);
 }
 
 @layer base {
@@ -525,4 +543,39 @@ img {
   background: linear-gradient(var(--proposal-grid) 1px, transparent 1px),
               linear-gradient(90deg, var(--proposal-grid) 1px, transparent 1px) !important;
   background-size: 60px 60px !important;
+}
+
+.database {
+  offset-anchor: 10px 0px;
+  animation: database-animation-path;
+  animation-direction: reverse;
+  animation-iteration-count: infinite;
+  animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  animation-duration: 4s;
+  animation-delay: 1s;
+}
+
+.db-light-1 {
+  offset-path: path("M 31 10 v 15 q 0 5 5 5 h 59 q 5 0 5 5 v 25");
+}
+
+.db-light-2 {
+  offset-path: path("M 77 10 v 10 q 0 5 5 5 h 13 q 5 0 5 5 v 25");
+}
+
+.db-light-3 {
+  offset-path: path("M 124 10 v 10 q 0 5 -5 5 h -14 q -5 0 -5 5 v 25");
+}
+
+.db-light-4 {
+  offset-path: path("M 170 10 v 15 q 0 5 -5 5 h -60 q -5 0 -5 5 v 25");
+}
+
+@keyframes database-animation-path {
+  0% {
+    offset-distance: 0%;
+  }
+  100% {
+    offset-distance: 100%;
+  }
 }

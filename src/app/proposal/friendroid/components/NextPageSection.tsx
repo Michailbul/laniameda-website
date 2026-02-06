@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { ExpandableCard } from "@/components/ui/expandable-card";
 import { useTheme } from "./ThemeContext";
-import { Rocket, Zap, MapPin } from "lucide-react";
+import { Rocket, Zap, MapPin, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   Phase0CurrentStateContent,
@@ -49,6 +49,23 @@ const cardExpandedStyles = cn(
 export function CanvasPageSection() {
   const { theme } = useTheme();
   const isLight = theme === "light";
+  const phase0MarkdownPath = "/assets/proposal/phase0-current-state.md";
+  const phase0MarkdownFilename = "friendroid-phase0-current-state.md";
+
+  const downloadButton = (
+    <motion.a
+      aria-label="Download markdown"
+      href={phase0MarkdownPath}
+      download={phase0MarkdownFilename}
+      className="h-10 px-4 shrink-0 flex items-center gap-2 rounded-full bg-zinc-50 dark:bg-zinc-950 hover:bg-neutral-100 dark:hover:bg-neutral-900 text-black/70 dark:text-white/70 border border-gray-200/90 dark:border-zinc-900 hover:border-gray-300/90 hover:text-black dark:hover:text-white dark:hover:border-zinc-800 transition-colors duration-300 focus:outline-none text-sm font-medium"
+      onClick={(event) => event.stopPropagation()}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+    >
+      <Download className="w-4 h-4" />
+      <span className="hidden sm:inline">MD</span>
+    </motion.a>
+  );
 
   return (
     <section
@@ -128,12 +145,13 @@ export function CanvasPageSection() {
           </motion.div>
 
           <ExpandableCard
-            title="Where we are now"
+            title="Where we are today"
             description="Current state"
             imageSize="compact"
             icon={<MapPin className="w-6 h-6" />}
             className="w-[220px]"
             classNameExpanded={cardExpandedStyles}
+            headerAction={downloadButton}
           >
             <Phase0CurrentStateContent />
           </ExpandableCard>

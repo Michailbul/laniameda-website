@@ -15,7 +15,7 @@ interface ExpandableCardProps {
   badge?: React.ReactNode;
   icon?: React.ReactNode;
   imageSize?: "default" | "compact";
-  [key: string]: any;
+  headerAction?: React.ReactNode;
 }
 
 export function ExpandableCard({
@@ -29,18 +29,20 @@ export function ExpandableCard({
   badge,
   icon,
   imageSize = "default",
-  ...props
+  headerAction,
 }: ExpandableCardProps) {
   const [active, setActive] = React.useState(false);
   const cardRef = React.useRef<HTMLDivElement>(null);
   const id = React.useId();
 
-  const handleSetActive = (value: boolean) => {
+  const handleSetActive = React.useCallback((value: boolean) => {
     setActive(value);
     onActiveChange?.(value);
-  };
+  }, [onActiveChange]);
 
   React.useEffect(() => {
+    if (!active) return;
+
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         handleSetActive(false);
@@ -62,7 +64,7 @@ export function ExpandableCard({
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("touchstart", handleClickOutside);
     };
-  }, []);
+  }, [active, handleSetActive]);
 
   return (
     <>
@@ -72,7 +74,7 @@ export function ExpandableCard({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-white/50 dark:bg-black/50 backdrop-blur-md h-full w-full z-10"
+            className="fixed inset-0 bg-white/55 dark:bg-black/55 backdrop-blur-[2px] h-full w-full z-10"
           />
         )}
       </AnimatePresence>
@@ -87,10 +89,9 @@ export function ExpandableCard({
               layoutId={`card-${title}-${id}`}
               ref={cardRef}
               className={cn(
-                "w-full max-w-[850px] h-full flex flex-col overflow-auto [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-overflow-scrolling:touch] sm:rounded-t-3xl bg-zinc-50 shadow-sm dark:shadow-none dark:bg-zinc-950 relative",
+                "w-full max-w-[850px] h-full flex flex-col overflow-y-auto overflow-x-hidden [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-overflow-scrolling:touch] sm:rounded-t-3xl bg-zinc-50 shadow-sm dark:shadow-none dark:bg-zinc-950 relative",
                 classNameExpanded,
               )}
-              {...props}
             >
               <motion.div layoutId={`image-${title}-${id}`}>
                 <div className="relative before:absolute before:inset-x-0 before:bottom-[-1px] before:h-[70px] before:z-50 before:bg-gradient-to-t dark:before:from-zinc-950 before:from-zinc-50">
@@ -125,40 +126,42 @@ export function ExpandableCard({
                       {title}
                     </motion.h3>
                   </div>
-                  <motion.button
-                    aria-label="Close card"
-                    layoutId={`button-${title}-${id}`}
-                    className="h-10 w-10 shrink-0 flex items-center justify-center rounded-full bg-zinc-50 dark:bg-zinc-950 text-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-950 dark:text-white/70 text-black/70 border border-gray-200/90 dark:border-zinc-900 hover:border-gray-300/90 hover:text-black dark:hover:text-white dark:hover:border-zinc-800 transition-colors duration-300 focus:outline-none"
-                    onClick={() => handleSetActive(false)}
-                  >
-                    <motion.div
-                      animate={{ rotate: active ? 45 : 0 }}
-                      transition={{ duration: 0.4 }}
+                  <div className="flex items-center gap-2">
+                    {headerAction}
+                    <motion.button
+                      aria-label="Close card"
+                      layoutId={`button-${title}-${id}`}
+                      className="h-10 w-10 shrink-0 flex items-center justify-center rounded-full bg-zinc-50 dark:bg-zinc-950 text-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-950 dark:text-white/70 text-black/70 border border-gray-200/90 dark:border-zinc-900 hover:border-gray-300/90 hover:text-black dark:hover:text-white dark:hover:border-zinc-800 transition-colors duration-300 focus:outline-none"
+                      onClick={() => handleSetActive(false)}
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
+                      <motion.div
+                        animate={{ rotate: active ? 45 : 0 }}
+                        transition={{ duration: 0.4 }}
                       >
-                        <path d="M5 12h14" />
-                        <path d="M12 5v14" />
-                      </svg>
-                    </motion.div>
-                  </motion.button>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="20"
+                          height="20"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M5 12h14" />
+                          <path d="M12 5v14" />
+                        </svg>
+                      </motion.div>
+                    </motion.button>
+                  </div>
                 </div>
                 <div className="relative px-6 sm:px-8">
                   <motion.div
-                    layout
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="text-zinc-500 dark:text-zinc-400 text-base pb-10 flex flex-col items-start gap-4 overflow-auto"
+                    className="text-zinc-500 dark:text-zinc-400 text-base pb-10 flex flex-col gap-4 w-full min-w-0 overflow-x-hidden"
                   >
                     {children}
                   </motion.div>

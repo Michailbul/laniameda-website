@@ -15,8 +15,10 @@ import { MagneticCursor } from "@/components/ui/magnetic-cursor";
 
 export function HeroSection() {
   const [shouldRenderSpline, setShouldRenderSpline] = useState(false);
+  const [isHeroInView, setIsHeroInView] = useState(true);
   const [vh, setVh] = useState(800);
-  const { scrollY } = useScrollProgress();
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const { scrollY, containerRef } = useScrollProgress();
   const { theme, toggleTheme } = useTheme();
   const isLight = theme === "light";
   const splineAppRef = useRef<any>(null);
@@ -30,6 +32,30 @@ export function HeroSection() {
   useEffect(() => {
     setVh(window.innerHeight);
   }, []);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const rootHeight = entry.rootBounds?.height ?? window.innerHeight;
+        const viewportCenter = rootHeight / 2;
+        const centerInsideSection =
+          entry.boundingClientRect.top <= viewportCenter &&
+          entry.boundingClientRect.bottom >= viewportCenter;
+
+        setIsHeroInView(entry.isIntersecting && centerInsideSection);
+      },
+      {
+        root: containerRef.current ?? null,
+        threshold: [0, 0.01, 0.5, 1],
+      }
+    );
+
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, [containerRef]);
 
   // Scale from smaller card to fullscreen over the scroll
   const scale = useTransform(scrollY, [0, vh], [0.85, 1.35]);
@@ -81,12 +107,14 @@ export function HeroSection() {
 
   return (
     <MagneticCursor
+      enabled={isHeroInView}
       magneticFactor={0.3}
       hoverPadding={4}
       blendMode="exclusion"
       cursorSize={40}
     >
     <section
+      ref={sectionRef}
       id="hero"
       className={`snap-section relative flex items-center justify-center px-6 md:px-16 py-20 overflow-hidden bg-transparent`}
     >

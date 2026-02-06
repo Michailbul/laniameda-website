@@ -5,6 +5,7 @@ import gsap from "gsap";
 
 interface MagneticCursorProps {
   children: React.ReactNode;
+  enabled?: boolean;
   magneticFactor?: number;
   lerpAmount?: number;
   hoverPadding?: number;
@@ -34,6 +35,7 @@ interface CursorState {
 
 export function MagneticCursor({
   children,
+  enabled = true,
   lerpAmount = 0.1,
   magneticFactor = 0.2,
   hoverPadding = 12,
@@ -50,6 +52,7 @@ export function MagneticCursor({
   contrastBoost = 1.5,
 }: MagneticCursorProps) {
   const cursorRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const cursorStateRef = useRef<CursorState | null>(null);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
 
@@ -80,9 +83,10 @@ export function MagneticCursor({
   }, []);
 
   useEffect(() => {
-    if (disableOnTouch && isTouchDevice) return;
+    if (!enabled || (disableOnTouch && isTouchDevice)) return;
     const cursorEl = cursorRef.current;
-    if (!cursorEl) return;
+    const containerEl = containerRef.current;
+    if (!cursorEl || !containerEl) return;
 
     gsap.set(cursorEl, { xPercent: -50, yPercent: -50 });
 
@@ -296,7 +300,10 @@ export function MagneticCursor({
     };
 
     // Attach to existing elements
-    const magneticElements = gsap.utils.toArray<HTMLElement>(`[${hoverAttribute}]`);
+    const magneticElements = gsap.utils.toArray<HTMLElement>(containerEl.querySelectorAll(`[${hoverAttribute}]`));
+    if (containerEl.hasAttribute(hoverAttribute)) {
+      attachMagneticListeners(containerEl);
+    }
     magneticElements.forEach(attachMagneticListeners);
 
     // Watch for new magnetic elements
@@ -317,20 +324,21 @@ export function MagneticCursor({
       });
     });
 
-    observer.observe(document.body, { childList: true, subtree: true });
+    observer.observe(containerEl, { childList: true, subtree: true });
 
     cleanupFunctions.push(() => observer.disconnect());
 
     return () => {
       gsap.ticker.remove(update);
       window.removeEventListener("pointermove", onMouseMove);
+      window.removeEventListener("pointermove", initializePosition);
       document.removeEventListener("mouseleave", handleMouseLeave);
       document.removeEventListener("mouseenter", handleMouseEnter);
       cleanupFunctions.forEach((cleanup) => cleanup());
     };
-  }, [disableOnTouch, isTouchDevice, hoverPadding, cursorColor, shape]);
+  }, [enabled, disableOnTouch, isTouchDevice, hoverPadding, cursorColor, shape, hoverAttribute]);
 
-  if (disableOnTouch && isTouchDevice) return <>{children}</>;
+  if (!enabled || (disableOnTouch && isTouchDevice)) return <>{children}</>;
 
   const styles: React.CSSProperties = {
     position: "fixed",
@@ -351,7 +359,9 @@ export function MagneticCursor({
   return (
     <>
       <div ref={cursorRef} className={`magnetic-cursor ${cursorClassName}`} style={styles} />
-      {children}
+      <div ref={containerRef} style={{ display: "contents" }}>
+        {children}
+      </div>
     </>
   );
 }

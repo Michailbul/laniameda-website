@@ -37,27 +37,27 @@ export function PricingSection() {
       >
         <span
           className={cn(
-            "text-[13px] font-mono uppercase tracking-[0.3em] font-semibold",
-            isLight ? "text-zinc-600" : "text-zinc-300"
+            "text-[13px] font-mono uppercase tracking-[0.3em] font-semibold drop-shadow-[0_2px_10px_rgba(0,0,0,0.45)]",
+            isLight ? "text-white/90" : "text-teal-200/90"
           )}
         >
           Investment
         </span>
         <h2
           className={cn(
-            "mt-4 text-4xl md:text-5xl font-light tracking-[-0.02em]",
-            isLight ? "text-zinc-900" : "text-white"
+            "mt-4 text-4xl md:text-5xl font-light tracking-[-0.02em] drop-shadow-[0_4px_20px_rgba(0,0,0,0.45)]",
+            "text-white"
           )}
         >
-          Ready to <span className="font-medium text-teal-500">Start</span>?
+          Ready to <span className="font-medium text-teal-500">Build</span>?
         </h2>
         <p
           className={cn(
-            "mt-4 text-lg max-w-xl mx-auto",
-            isLight ? "text-zinc-600" : "text-zinc-400"
+            "mt-4 text-lg max-w-xl mx-auto drop-shadow-[0_2px_12px_rgba(0,0,0,0.4)]",
+            "text-white/90"
           )}
         >
-          Transparent pricing for complete GPT app development. No hidden fees, just results.
+          Content strategy + system + decision rules. No guesswork, just a repeatable engine.
         </p>
       </motion.div>
 
@@ -76,12 +76,18 @@ export function PricingSection() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.5 }}
-        className={cn(
-          "mt-12 text-center text-sm",
-          isLight ? "text-zinc-500" : "text-zinc-400"
-        )}
+        className="mt-12 text-center text-sm"
       >
-        <p>7-day money-back guarantee • No credit card required for consultation</p>
+        <p
+          className={cn(
+            "max-w-[92vw] px-3 text-base font-semibold tracking-[0.01em] drop-shadow-[0_2px_12px_rgba(0,0,0,0.35)]",
+            isLight
+              ? "text-zinc-800"
+              : "text-zinc-100"
+          )}
+        >
+          $2,000 fixed • 5 business day delivery • Strategy + system + decision rules
+        </p>
       </motion.div>
     </section>
   );
