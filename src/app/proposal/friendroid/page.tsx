@@ -38,15 +38,32 @@ export default function FriendroidProposal() {
     const container = containerRef.current;
     if (!container) return;
 
+    let rafId: number | null = null;
+    let lastIndex = 0;
+
     const handleScroll = () => {
-      const scrollPos = container.scrollTop;
-      const windowHeight = window.innerHeight;
-      const index = Math.round(scrollPos / windowHeight);
-      setActiveSection(index);
+      // Throttle with RAF to prevent excessive updates during rapid scrolling
+      if (rafId) return;
+
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        const scrollPos = container.scrollTop;
+        const windowHeight = window.innerHeight;
+        const index = Math.round(scrollPos / windowHeight);
+
+        // Only update state if index changed
+        if (index !== lastIndex) {
+          lastIndex = index;
+          setActiveSection(index);
+        }
+      });
     };
 
-    container.addEventListener("scroll", handleScroll);
-    return () => container.removeEventListener("scroll", handleScroll);
+    container.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      container.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   return (

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
-import { motion, useTransform } from "framer-motion";
+import { motion, useTransform, useSpring } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { SplineScene } from "@/components/ui/splite";
 import { useScrollProgress } from "./shared";
@@ -31,8 +31,9 @@ export function HeroSection() {
     setVh(window.innerHeight);
   }, []);
 
-  // Scale from smaller card to fullscreen over the scroll
-  const scale = useTransform(scrollY, [0, vh], [0.85, 1.35]);
+  // Scale with spring physics for smooth transitions during rapid scrolling
+  const rawScale = useTransform(scrollY, [0, vh], [0.92, 1.08]);
+  const scale = useSpring(rawScale, { stiffness: 100, damping: 30 });
 
   useEffect(() => {
     const desktop = window.matchMedia("(min-width: 768px)");
@@ -187,7 +188,10 @@ export function HeroSection() {
         aria-hidden 
       />
 
-      <motion.div style={{ scale }} className="w-full max-w-7xl will-change-transform">
+      <motion.div
+        style={{ scale }}
+        className="w-full max-w-7xl will-change-transform"
+      >
         <Card className="w-full h-[720px] rounded-3xl relative overflow-hidden bg-transparent border-0 shadow-none">
         
         <div className="flex h-full flex-col md:flex-row relative overflow-hidden rounded-3xl">

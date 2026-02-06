@@ -159,6 +159,10 @@ body {
   scroll-snap-type: y mandatory;
   overflow-y: scroll;
   height: 100vh;
+  /* GPU acceleration for smooth scrolling */
+  -webkit-overflow-scrolling: touch;
+  /* Optimize for scroll-linked animations */
+  scroll-behavior: auto;
 }
 
 .snap-section {
@@ -166,6 +170,8 @@ body {
   scroll-snap-stop: normal;
   min-height: 100vh;
   position: relative;
+  /* GPU hint without transform (avoids conflict with Framer Motion) */
+  backface-visibility: hidden;
 }
 
 /* Hero gradient */
