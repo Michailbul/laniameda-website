@@ -205,7 +205,7 @@ export function Phase0CurrentStateContent() {
               quarter: "M1-2",
               title: "Seed & Reach",
               description: "Build audience engine through repeatable content formats",
-              status: "planning",
+              status: "in-progress",
             },
             {
               quarter: "M3-5",
