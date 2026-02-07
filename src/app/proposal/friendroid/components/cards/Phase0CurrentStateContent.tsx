@@ -830,7 +830,7 @@ export function Phase0CurrentStateContent() {
             </li>
           </ul>
 
-          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 my-4">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 my-4 pb-20">
             <blockquote className="border-l-2 border-teal-400/60 pl-4 py-2 text-zinc-600 dark:text-zinc-400 italic text-[15px] flex-1">
               "Once you know what you know — getting there is easy"
             </blockquote>

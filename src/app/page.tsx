@@ -515,9 +515,7 @@ function ManifestoSection({
               onHoverChange={onMantraHoverChange}
             />
             <h2 className="text-[clamp(2.2rem,6.5vw,5.8rem)] font-medium uppercase leading-[0.88] tracking-[0.09em]">
-              Four rules.
-              <br />
-              No excuses.
+              what we beleive in
             </h2>
           </motion.div>
 

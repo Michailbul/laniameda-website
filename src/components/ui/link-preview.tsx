@@ -77,7 +77,7 @@ export const LinkPreview = ({
   return (
     <>
       {isMounted ? (
-        <div className="hidden">
+        <span className="hidden">
           <Image
             src={src}
             width={width}
@@ -87,7 +87,7 @@ export const LinkPreview = ({
             priority={true}
             alt="hidden image"
           />
-        </div>
+        </span>
       ) : null}
 
       <HoverCardPrimitive.Root

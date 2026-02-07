@@ -212,7 +212,8 @@ export function CanvasPageSection({
 
           <ExpandableCard
             title="Where we are today"
-            description="Current state"
+            src="/assets/strategy.png"
+            description="current state"
             imageSize="compact"
             icon={<MapPin className="w-6 h-6" />}
             className="w-[220px]"
@@ -233,8 +234,8 @@ export function CanvasPageSection({
         >
           <ExpandableCard
             title="Creative Treatment"
-            src="/assets/proposal-robot.png"
-            description="Strategy"
+            src="/assets/offer.png"
+            description="strategy"
             imageSize="compact"
             badge={<PhaseBadge phase={1} active />}
             className="w-[220px]"
@@ -253,7 +254,8 @@ export function CanvasPageSection({
           className="relative"
         >
           <ExpandableCard
-            title="Pilot"
+            title="Seed"
+            src="/assets/seed.png"
             description="4-week execution"
             imageSize="compact"
             icon={<Rocket className="w-6 h-6" />}
@@ -275,7 +277,8 @@ export function CanvasPageSection({
         >
           <ExpandableCard
             title="Content Market Fit"
-            description="Value-driven engagement"
+            src="/assets/cmf.png"
+            description="build trust"
             imageSize="compact"
             icon={<Zap className="w-6 h-6" />}
             badge={<PhaseBadge phase={3} />}

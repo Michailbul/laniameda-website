@@ -1029,7 +1029,7 @@ export function Phase1CreativeTreatmentContent() {
           </div>
         </motion.section>
 
-        <motion.section variants={fadeIn} className="flex justify-end pt-4">
+        <motion.section variants={fadeIn} className="flex justify-end pt-4 pb-20">
           <button
             type="button"
             onClick={() => {

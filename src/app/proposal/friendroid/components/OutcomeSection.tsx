@@ -18,31 +18,31 @@ const deliverables: OutcomeItem[] = [
     id: "clarity",
     title: "Crystal-Clear Brand Positioning",
     description:
-      "A concise, memorable brand narrative that instantly communicates your value. No more confused prospects-just immediate understanding of what you do and why it matters.",
-  },
-  {
-    id: "system",
-    title: "Repeatable Content System",
-    description:
-      "A documented playbook for creating consistent, high-quality content. You'll know exactly what to post, when to post it, and how each piece ties back to your business goals.",
-  },
-  {
-    id: "visuals",
-    title: "Premium Visual Identity",
-    description:
-      "A cohesive design language that elevates every touchpoint. From social posts to pitch decks, your visuals will signal quality and build trust before you say a word.",
-  },
-  {
-    id: "roadmap",
-    title: "Pilot-to-Scale Roadmap",
-    description:
-      "A concrete execution plan with clear milestones and priorities. You'll know exactly what to do next, with built-in flexibility to adapt as you learn what works.",
+      "Brand positioning, narrative and elevator pitch about who you are, what you stand for, how you gona help the audience",
   },
   {
     id: "library",
     title: "Tested Content Library",
     description:
       "A validated collection of content hypotheses, formats, and angles that resonate with your audience. Stop guessing-start executing with confidence based on real data.",
+  },
+  {
+    id: "system",
+    title: "Repeatable Content System",
+    description:
+      "A documented playbook and a system for creating consistent content. You'll know exactly what to post, when to post it, and how each piece ties back to the business goals, that will be utilized in the upcoming stages of content production, so that you dont spend time on ideas, have perfect certainty where your content engine and brand is going ",
+  }, 
+  {
+    id: "visuals",
+    title: "Visual direction",
+    description:
+      "A cohesive design language that elevates every touchpoint. From social posts to pitch decks, your visuals will signal quality and build trust before you say a word.",
+  }, 
+  {
+    id: "roadmap",
+    title: "Next steps Roadmap",
+    description:
+      "A concrete execution plan for the next stages. You'll know exactly what to do next, decision making rules.",
   },
 ];
 
@@ -51,7 +51,7 @@ const OUTCOME_NEW_SEGMENT = "proceed building";
 const OUTCOME_SHARED_WORD = "with";
 const OUTCOME_SEGMENT_WIDTH_BUFFER_PX = 10;
 const OUTCOME_INITIAL_HOLD_MS = 760;
-const OUTCOME_STRIKE_PHASE_MS = 820;
+const OUTCOME_STRIKE_PHASE_MS = 420;
 const OUTCOME_WITH_SHIFT_PHASE_MS = 520;
 const OUTCOME_REVEAL_PHASE_MS = 940;
 const OUTCOME_SETTLE_PHASE_MS = 680;
@@ -375,7 +375,7 @@ export function OutcomeSection({ replayTick }: OutcomeSectionProps) {
                           : { scaleX: 0, opacity: 0 }
                       }
                       transition={{
-                        duration: prefersReducedMotion ? 0 : 0.66,
+                        duration: prefersReducedMotion ? 0 : 0.54,
                         ease: [0.22, 1, 0.36, 1],
                       }}
                     />
@@ -387,26 +387,26 @@ export function OutcomeSection({ replayTick }: OutcomeSectionProps) {
                   style={{ maxWidth: hasRevealedPhrase ? nextSegmentWidth : 0, opacity: hasRevealedPhrase ? 1 : 0 }}
                 >
                   <motion.span
-                    className="inline-block -mb-[0.08em] pb-[0.08em] pr-[0.1em]"
+                    className="inline-block -mb-[0.08em] bg-gradient-to-r from-teal-200 via-teal-300 to-cyan-300 bg-clip-text pb-[0.08em] pr-[0.1em] text-transparent"
                     initial={false}
                     animate={
                       hasRevealedPhrase
                         ? {
                             y: 0,
                             opacity: 1,
-                            textShadow:
+                            filter:
                               headlinePhase === "final"
                                 ? [
-                                    "0 0 0 rgba(45,212,191,0)",
-                                    "0 0 18px rgba(45,212,191,0.52)",
-                                    "0 0 10px rgba(45,212,191,0.34)",
+                                    "drop-shadow(0 0 0 rgba(45,212,191,0))",
+                                    "drop-shadow(0 0 16px rgba(45,212,191,0.58))",
+                                    "drop-shadow(0 0 8px rgba(45,212,191,0.34))",
                                   ]
-                                : "0 0 18px rgba(45,212,191,0.52)",
+                                : "drop-shadow(0 0 16px rgba(45,212,191,0.58))",
                           }
                         : {
                             y: "0.64em",
                             opacity: 0,
-                            textShadow: "0 0 0 rgba(45,212,191,0)",
+                            filter: "drop-shadow(0 0 0 rgba(45,212,191,0))",
                           }
                     }
                     transition={{
@@ -425,8 +425,8 @@ export function OutcomeSection({ replayTick }: OutcomeSectionProps) {
                 animate={hasShiftedWith ? { x: 24 } : { x: 0 }}
                 transition={{
                   type: "spring",
-                  stiffness: 230,
-                  damping: 20,
+                  stiffness: 210,
+                  damping: 24,
                   mass: 0.8,
                   duration: prefersReducedMotion ? 0 : undefined,
                 }}
