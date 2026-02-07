@@ -5,6 +5,7 @@ import { RoadmapCard } from "@/components/ui/roadmap-card";
 import { PatternCard } from "@/components/ui/pattern-card";
 import { Card } from "@/components/ui/card";
 import DatabaseWithRestApi from "@/components/ui/database-with-rest-api";
+import { LinkPreview } from "@/components/ui/link-preview";
 
 const fadeIn = {
   initial: { opacity: 0, y: 12 },
@@ -117,6 +118,7 @@ const skipStepItems = [
 
 export function Phase0CurrentStateContent() {
   return (
+    <div data-magnetic="false">
     <motion.div
       className="space-y-10 w-full min-w-0"
       variants={stagger}
@@ -131,7 +133,13 @@ export function Phase0CurrentStateContent() {
           Where we are today and where we wanna get
         </h2>
         <p className="text-zinc-600 dark:text-white/70 leading-relaxed max-w-2xl">
-          At Laniameda, we believe in <span className="font-cursive"> begin-with-the-end-in-mind</span> approach.
+          At{" "}
+          <LinkPreview
+            url="https://www.laniameda.space/"
+            className="font-bold bg-clip-text text-transparent bg-gradient-to-br from-purple-500 to-pink-500"
+          >
+            Laniameda
+          </LinkPreview>, we believe in <span className="font-cursive"> begin-with-the-end-in-mind</span> approach.
           So let us reverse engineer what success means.
         </p>
       </motion.header>
@@ -822,50 +830,41 @@ export function Phase0CurrentStateContent() {
             </li>
           </ul>
 
-          <blockquote className="border-l-2 border-teal-400/60 pl-4 py-2 my-4 text-zinc-600 dark:text-zinc-400 italic text-[15px]">
-            "Once you know what you know — getting there is easy"
-          </blockquote>
-        </div>
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 my-4">
+            <blockquote className="border-l-2 border-teal-400/60 pl-4 py-2 text-zinc-600 dark:text-zinc-400 italic text-[15px] flex-1">
+              "Once you know what you know — getting there is easy"
+            </blockquote>
 
-        <div className="flex items-center gap-4 pt-2">
-          <button
-            type="button"
-            onClick={() => {
-              // Close the currently expanded card
-              const closeButton = document.querySelector('[aria-label="Close card"]') as HTMLButtonElement;
-              if (closeButton) {
-                closeButton.click();
-              }
-
-              // Wait for collapse animation then scroll to and open Creative Treatment
-              setTimeout(() => {
-                // Find the Creative Treatment collapsed card by its title
-                const cards = document.querySelectorAll('[role="dialog"]');
-                for (const card of cards) {
-                  const titleEl = card.querySelector('h3');
-                  if (titleEl?.textContent?.toLowerCase().includes('creative treatment')) {
-                    // Scroll the card into view first
-                    (card as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    // Then click to open after scroll animation
-                    setTimeout(() => {
-                      (card as HTMLElement).click();
-                    }, 300);
-                    break;
+            <button
+              type="button"
+              onClick={() => {
+                const closeButton = document.querySelector('[aria-label="Close card"]') as HTMLButtonElement;
+                if (closeButton) closeButton.click();
+                setTimeout(() => {
+                  const cards = document.querySelectorAll('[role="dialog"]');
+                  for (const card of cards) {
+                    const titleEl = card.querySelector('h3');
+                    if (titleEl?.textContent?.toLowerCase().includes('creative treatment')) {
+                      (card as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
+                      setTimeout(() => (card as HTMLElement).click(), 300);
+                      break;
+                    }
                   }
-                }
-              }, 400);
-            }}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white text-[14px] font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500/20"
-          >
-            Explore the Creative Treatment package
-            <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-          </button>
-          <span className="text-[13px] text-zinc-500 dark:text-zinc-400">$2,000 · 5 business days</span>
+                }, 400);
+              }}
+              className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white text-[14px] font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500/20 cursor-pointer"
+            >
+              Explore the Creative Treatment package
+              <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </button>
+          </div>
+        
         </div>
       </motion.section>
 
     </motion.div>
+    </div>
   );
 }

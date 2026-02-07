@@ -170,14 +170,27 @@ export function MagneticCursor({
         event.clientY >= 0 &&
         event.clientY <= window.innerHeight;
 
-      gsap.to(cursorEl, { opacity: isInViewport ? 1 : 0, duration: 0.2, overwrite: "auto" });
-
+      // Check if cursor is over expanded card (z-[100] overlay)
       const target = event.target as HTMLElement;
+      let isOverExpandedCard = false;
+      let checkEl: HTMLElement | null = target;
+      while (checkEl) {
+        const zIndex = window.getComputedStyle(checkEl).zIndex;
+        if (zIndex && parseInt(zIndex) >= 100) {
+          isOverExpandedCard = true;
+          break;
+        }
+        checkEl = checkEl.parentElement;
+      }
+
+      const shouldShowCursor = isInViewport && !isOverExpandedCard;
+      gsap.to(cursorEl, { opacity: shouldShowCursor ? 1 : 0, duration: 0.2, overwrite: "auto" });
+
       const isTextContent =
         ["P", "SPAN", "H1", "H2", "H3", "H4", "H5", "H6"].includes(target.tagName) ||
         window.getComputedStyle(target).cursor === "text";
 
-      if (isTextContent && !state.hover.isHovered && !state.isDetaching) {
+      if (isTextContent && !state.hover.isHovered && !state.isDetaching && shouldShowCursor) {
         gsap.to(cursorEl, { scaleX: 0.5, scaleY: 1.5, duration: 0.3, overwrite: "auto" });
       }
     };

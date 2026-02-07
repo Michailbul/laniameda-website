@@ -4,36 +4,47 @@ import { motion } from "framer-motion";
 import { PricingCardWithFeatures } from "@/components/ui/pricing-card-with-features";
 import { useTheme } from "./ThemeContext";
 import { cn } from "@/lib/utils";
+import { useReplayAnimation } from "./useReplayAnimation";
 
-export function PricingSection() {
+interface PricingSectionProps {
+  replayTick: number;
+}
+
+export function PricingSection({ replayTick }: PricingSectionProps) {
   const { theme } = useTheme();
   const isLight = theme === "light";
+  const headingControls = useReplayAnimation({
+    replayTick,
+    fromY: 30,
+    duration: 0.8,
+  });
+  const cardControls = useReplayAnimation({
+    replayTick,
+    fromY: 40,
+    fromScale: 0.95,
+    delay: 0.2,
+    duration: 0.7,
+  });
+  const badgesControls = useReplayAnimation({
+    replayTick,
+    fromY: 14,
+    delay: 0.45,
+    duration: 0.6,
+  });
 
   return (
     <section
       id="pricing"
       className={cn(
-        "snap-section relative min-h-screen overflow-hidden flex flex-col items-center justify-center py-24",
-        "bg-transparent"
+        "snap-section relative h-[100svh] overflow-hidden bg-transparent",
       )}
     >
-      {/* Subtle grid pattern - matching NextPageSection */}
-      <div
-        className={cn(
-          "absolute inset-0 bg-[size:60px_60px]",
-          isLight
-            ? "bg-[linear-gradient(rgba(0,0,0,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.04)_1px,transparent_1px)]"
-            : "bg-[linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)]"
-        )}
-        aria-hidden
-      />
-
+      <div className="relative z-10 mx-auto flex h-full w-full max-w-5xl flex-col items-center justify-center px-6 pb-8 pt-20 md:pb-8 md:pt-24">
       {/* Section header */}
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="text-center mb-16 relative z-10"
+        animate={headingControls}
+        initial={false}
+        className="text-center mb-8 md:mb-10"
       >
         <span
           className={cn(
@@ -45,7 +56,7 @@ export function PricingSection() {
         </span>
         <h2
           className={cn(
-            "mt-4 text-4xl md:text-5xl font-light tracking-[-0.02em] drop-shadow-[0_4px_20px_rgba(0,0,0,0.45)]",
+            "mt-3 text-4xl md:text-[2.8rem] font-light tracking-[-0.02em] drop-shadow-[0_4px_20px_rgba(0,0,0,0.45)]",
             "text-white"
           )}
         >
@@ -53,7 +64,7 @@ export function PricingSection() {
         </h2>
         <p
           className={cn(
-            "mt-4 text-lg max-w-xl mx-auto drop-shadow-[0_2px_12px_rgba(0,0,0,0.4)]",
+            "mt-3 text-lg max-w-xl mx-auto drop-shadow-[0_2px_12px_rgba(0,0,0,0.4)]",
             "text-white/90"
           )}
         >
@@ -63,20 +74,18 @@ export function PricingSection() {
 
       {/* Pricing Card */}
       <motion.div
-        initial={{ opacity: 0, y: 40, scale: 0.95 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-        className="relative z-10"
+        animate={cardControls}
+        initial={false}
+        className="relative z-10 w-full max-w-[min(464px,92vw)]"
       >
         <PricingCardWithFeatures />
       </motion.div>
 
       {/* Trust badges */}
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6, delay: 0.5 }}
-        className="mt-12 text-center text-sm"
+        animate={badgesControls}
+        initial={false}
+        className="mt-6 text-center text-sm md:mt-8"
       >
         <p
           className={cn(
@@ -89,6 +98,17 @@ export function PricingSection() {
           $2,000 fixed • 5 business day delivery • Strategy + system + decision rules
         </p>
       </motion.div>
+      </div>
+      {/* Subtle grid pattern - matching NextPageSection */}
+      <div
+        className={cn(
+          "absolute inset-0 bg-[size:60px_60px]",
+          isLight
+            ? "bg-[linear-gradient(rgba(0,0,0,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.04)_1px,transparent_1px)]"
+            : "bg-[linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)]"
+        )}
+        aria-hidden
+      />
     </section>
   );
 }

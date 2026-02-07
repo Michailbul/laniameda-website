@@ -25,7 +25,7 @@ export const PricingCardWithFeatures = (): React.JSX.Element => {
 
   return (
     <TooltipProvider>
-      <Card className="w-full max-w-[464px] rounded-[38px] border border-border bg-card text-card-foreground p-[23px] flex flex-col gap-6 shadow-sm">
+      <Card className="w-full max-w-[464px] rounded-[34px] border border-border bg-card text-card-foreground p-4 md:p-5 flex flex-col gap-4 shadow-sm">
         {/* Header */}
         <div>
           <h2 className="text-xl font-semibold leading-[24px]">
@@ -37,13 +37,13 @@ export const PricingCardWithFeatures = (): React.JSX.Element => {
         </div>
 
         {/* Features */}
-        <CardContent className="rounded-[33px] border border-border bg-background px-[27px] py-[30px] flex flex-col gap-[25px]">
+        <CardContent className="rounded-[28px] border border-border bg-background px-5 py-5 md:px-6 md:py-6 flex flex-col gap-4">
             {features.map((f, i) => (
               <Tooltip key={i}>
                 <TooltipTrigger asChild>
                   <div className="flex items-center gap-3 cursor-pointer select-none text-muted-foreground hover:text-foreground transition-colors">
-                    <FaCheck className="text-primary w-5 h-5 shrink-0" />
-                    <span className="text-base leading-[19px]">{f.label}</span>
+                    <FaCheck className="text-primary w-4 h-4 shrink-0" />
+                    <span className="text-[15px] leading-[18px]">{f.label}</span>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent
@@ -57,10 +57,10 @@ export const PricingCardWithFeatures = (): React.JSX.Element => {
         </CardContent>
 
         {/* Footer */}
-        <div className="flex flex-col gap-4 px-[6px] sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-col gap-3 px-1 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex flex-col">
             <span className="text-sm leading-none text-muted-foreground">Fixed price</span>
-            <span className="mt-1 text-[38px] font-medium leading-[0.94] tracking-tight">$2,000</span>
+            <span className="mt-1 text-[34px] font-medium leading-[0.94] tracking-tight">$2,000</span>
           </div>
 
           <a
@@ -70,7 +70,7 @@ export const PricingCardWithFeatures = (): React.JSX.Element => {
             className="block w-full sm:w-[220px]"
           >
             <GradientSlideButton
-              className="h-[58px] w-full rounded-[39px] border-[3px] border-white/20 bg-zinc-950 text-[20px] font-medium text-white shadow-lg hover:text-white sm:h-[62px]"
+              className="h-[52px] w-full rounded-[36px] border-[3px] border-white/20 bg-zinc-950 text-[18px] font-medium text-white shadow-lg hover:text-white sm:h-[56px]"
               colorFrom="#14B8A6"
               colorTo="#0F766E"
             >

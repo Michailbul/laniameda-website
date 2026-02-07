@@ -57,7 +57,7 @@ export function DisplayCards({ cards, className, scale = 1 }: DisplayCardsProps)
     },
     {
       className: "[grid-area:stack] translate-x-32 translate-y-20 hover:translate-y-10",
-    },
+    },      
   ];
 
   const displayCards = cards || defaultCards;

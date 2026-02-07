@@ -4,6 +4,11 @@ import type React from "react"
 import { useState, useCallback, useRef, useEffect } from "react"
 
 export const previewData = {
+    laniameda: {
+        image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=560&h=320&fit=crop",
+        title: "Laniameda",
+        subtitle: "Creative studio for emerging tech brands",
+    },
     midjourney: {
         image: "https://images.unsplash.com/photo-1695144244472-a4543101ef35?w=560&h=320&fit=crop",
         title: "Midjourney",
@@ -241,5 +246,45 @@ export const PreviewCard = ({
                 <div className="preview-card-subtitle">{data.subtitle}</div>
             </div>
         </div>
+    )
+}
+
+export function HoverPreview({
+    children,
+    previewKey = "laniameda",
+    className = "",
+}: {
+    children: React.ReactNode
+    previewKey?: string
+    className?: string
+}) {
+    const {
+        activePreview,
+        position,
+        isVisible,
+        cardRef,
+        handleHoverStart,
+        handleHoverMove,
+        handleHoverEnd,
+    } = useHoverPreview()
+
+    return (
+        <>
+            <HoverLink
+                previewKey={previewKey}
+                onHoverStart={handleHoverStart}
+                onHoverMove={handleHoverMove}
+                onHoverEnd={handleHoverEnd}
+                className={className}
+            >
+                {children}
+            </HoverLink>
+            <PreviewCard
+                data={activePreview}
+                position={position}
+                isVisible={isVisible}
+                cardRef={cardRef}
+            />
+        </>
     )
 }

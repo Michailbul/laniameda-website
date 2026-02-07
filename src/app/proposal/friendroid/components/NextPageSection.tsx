@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { motion } from "framer-motion";
 import { ExpandableCard } from "@/components/ui/expandable-card";
 import { useTheme } from "./ThemeContext";
@@ -9,8 +10,9 @@ import {
   Phase0CurrentStateContent,
   Phase1CreativeTreatmentContent,
   Phase2PilotContent,
-  Phase3ScaleContent,
+  ContentMarketFit,
 } from "./cards";
+import { useReplayAnimation } from "./useReplayAnimation";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Phase Badge
@@ -46,11 +48,78 @@ const cardExpandedStyles = cn(
 // Main Section Component
 // ─────────────────────────────────────────────────────────────────────────────
 
-export function CanvasPageSection() {
+interface ExpandedCardScrollSyncState {
+  active: boolean;
+  progress: number;
+}
+
+interface CanvasPageSectionProps {
+  onExpandedCardScrollSyncChange?: (state: ExpandedCardScrollSyncState) => void;
+  replayTick: number;
+}
+
+export function CanvasPageSection({
+  onExpandedCardScrollSyncChange,
+  replayTick,
+}: CanvasPageSectionProps) {
   const { theme } = useTheme();
   const isLight = theme === "light";
   const phase0MarkdownPath = "/assets/proposal/phase0-current-state.md";
   const phase0MarkdownFilename = "friendroid-phase0-current-state.md";
+  const activeCardRef = React.useRef<string | null>(null);
+  const headerControls = useReplayAnimation({
+    replayTick,
+    fromY: 30,
+    duration: 0.8,
+  });
+  const phase0Controls = useReplayAnimation({
+    replayTick,
+    fromY: 40,
+    delay: 0.1,
+    duration: 0.7,
+  });
+  const indicatorControls = useReplayAnimation({
+    replayTick,
+    fromY: 10,
+    delay: 0.95,
+    duration: 0.6,
+  });
+  const phase1Controls = useReplayAnimation({
+    replayTick,
+    fromY: 40,
+    delay: 0.2,
+    duration: 0.7,
+  });
+  const phase2Controls = useReplayAnimation({
+    replayTick,
+    fromY: 40,
+    delay: 0.3,
+    duration: 0.7,
+  });
+  const phase3Controls = useReplayAnimation({
+    replayTick,
+    fromY: 40,
+    delay: 0.4,
+    duration: 0.7,
+  });
+
+  const handleCardActiveChange = React.useCallback((cardId: string, active: boolean) => {
+    if (active) {
+      activeCardRef.current = cardId;
+      onExpandedCardScrollSyncChange?.({ active: true, progress: 0 });
+      return;
+    }
+
+    if (activeCardRef.current === cardId) {
+      activeCardRef.current = null;
+      onExpandedCardScrollSyncChange?.({ active: false, progress: 0 });
+    }
+  }, [onExpandedCardScrollSyncChange]);
+
+  const handleCardScrollProgressChange = React.useCallback((cardId: string, progress: number) => {
+    if (activeCardRef.current !== cardId) return;
+    onExpandedCardScrollSyncChange?.({ active: true, progress });
+  }, [onExpandedCardScrollSyncChange]);
 
   const downloadButton = (
     <motion.a
@@ -88,9 +157,8 @@ export function CanvasPageSection() {
 
       {/* Section header — Tesla typography */}
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        animate={headerControls}
+        initial={false}
         className="text-center mb-20 relative z-10"
       >
         <span
@@ -116,16 +184,14 @@ export function CanvasPageSection() {
       <div className="relative flex items-start justify-center gap-6 md:gap-8 px-6 flex-wrap max-w-6xl">
         {/* Phase 0: Current State */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+          animate={phase0Controls}
+          initial={false}
           className="relative"
         >
           {/* "You are here" indicator */}
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1, duration: 0.6 }}
+            animate={indicatorControls}
+            initial={false}
             className="absolute -bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 z-20"
           >
             <motion.div
@@ -152,6 +218,8 @@ export function CanvasPageSection() {
             className="w-[220px]"
             classNameExpanded={cardExpandedStyles}
             headerAction={downloadButton}
+            onActiveChange={(active) => handleCardActiveChange("phase-0", active)}
+            onExpandedScrollProgressChange={(progress) => handleCardScrollProgressChange("phase-0", progress)}
           >
             <Phase0CurrentStateContent />
           </ExpandableCard>
@@ -159,9 +227,8 @@ export function CanvasPageSection() {
 
         {/* Phase 1: Creative Treatment */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          animate={phase1Controls}
+          initial={false}
           className="relative"
         >
           <ExpandableCard
@@ -172,6 +239,8 @@ export function CanvasPageSection() {
             badge={<PhaseBadge phase={1} active />}
             className="w-[220px]"
             classNameExpanded={cardExpandedStyles}
+            onActiveChange={(active) => handleCardActiveChange("phase-1", active)}
+            onExpandedScrollProgressChange={(progress) => handleCardScrollProgressChange("phase-1", progress)}
           >
             <Phase1CreativeTreatmentContent />
           </ExpandableCard>
@@ -179,9 +248,8 @@ export function CanvasPageSection() {
 
         {/* Phase 2: Pilot */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          animate={phase2Controls}
+          initial={false}
           className="relative"
         >
           <ExpandableCard
@@ -192,28 +260,31 @@ export function CanvasPageSection() {
             badge={<PhaseBadge phase={2} />}
             className="w-[220px]"
             classNameExpanded={cn(cardExpandedStyles, "[&_strong]:text-violet-300")}
+            onActiveChange={(active) => handleCardActiveChange("phase-2", active)}
+            onExpandedScrollProgressChange={(progress) => handleCardScrollProgressChange("phase-2", progress)}
           >
             <Phase2PilotContent />
           </ExpandableCard>
         </motion.div>
 
-        {/* Phase 3: Scale */}
+        {/* Phase 3: Content Market Fit */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          animate={phase3Controls}
+          initial={false}
           className="relative"
         >
           <ExpandableCard
-            title="Scale"
-            description="Ongoing growth engine"
+            title="Content Market Fit"
+            description="Value-driven engagement"
             imageSize="compact"
             icon={<Zap className="w-6 h-6" />}
             badge={<PhaseBadge phase={3} />}
             className="w-[220px]"
             classNameExpanded={cn(cardExpandedStyles, "[&_strong]:text-emerald-300")}
+            onActiveChange={(active) => handleCardActiveChange("phase-3", active)}
+            onExpandedScrollProgressChange={(progress) => handleCardScrollProgressChange("phase-3", progress)}
           >
-            <Phase3ScaleContent />
+            <ContentMarketFit />
           </ExpandableCard>
         </motion.div>
       </div>

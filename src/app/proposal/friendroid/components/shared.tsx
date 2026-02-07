@@ -3,6 +3,13 @@
 import { motion, useScroll, MotionValue } from "framer-motion";
 import { createContext, useContext, RefObject } from "react";
 
+export const FRIENDROID_SECTIONS = ["hero", "next-page", "outcome", "pricing"] as const;
+export type FriendroidSectionId = (typeof FRIENDROID_SECTIONS)[number];
+
+export function isFriendroidSectionId(value: string): value is FriendroidSectionId {
+    return (FRIENDROID_SECTIONS as readonly string[]).includes(value);
+}
+
 // Scroll progress context for parallax animations
 interface ScrollContextValue {
     scrollY: MotionValue<number>;
@@ -97,43 +104,6 @@ export function StaggerItem({ children, className = "" }: { children: React.Reac
     );
 }
 
-// Navigation dots for scroll-snap sections
-export function NavDots({ sections, activeIndex }: { sections: string[]; activeIndex: number }) {
-    const handleNavClick = (event: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
-        event.preventDefault();
-
-        const targetSection = document.getElementById(sectionId);
-        if (!targetSection) return;
-
-        const snapContainer = targetSection.closest(".snap-container");
-        if (snapContainer instanceof HTMLElement) {
-            snapContainer.scrollTo({ top: targetSection.offsetTop, behavior: "smooth" });
-        } else {
-            targetSection.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
-
-        window.history.replaceState(null, "", `#${sectionId}`);
-    };
-
-    return (
-        <div className="fixed right-8 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-3">
-            {sections.map((section, i) => (
-                <a
-                    key={section}
-                    href={`#${section}`}
-                    onClick={(event) => handleNavClick(event, section)}
-                    className={`w-2 h-2 rounded-full transition-all duration-300 ${activeIndex === i
-                        ? "bg-cyan scale-150"
-                        : "bg-white/30 hover:bg-white/60"
-                        }`}
-                    title={section}
-                    aria-current={activeIndex === i ? "true" : undefined}
-                />
-            ))}
-        </div>
-    );
-}
-
 // Top navigation bar
 export function TopNav({ activeSection = 0 }: { activeSection?: number }) {
     const isHero = activeSection === 0;
@@ -156,13 +126,17 @@ export function TopNav({ activeSection = 0 }: { activeSection?: number }) {
                         : "opacity-0 -translate-y-4 pointer-events-none"
                         }`}
                 >
-                    {["Package", "Deliverables", "Pricing"].map((item) => (
+                    {[
+                        { label: "offer", href: "#hero" },
+                        { label: "outcomes", href: "#deliverables" },
+                        { label: "pricing", href: "#pricing" },
+                    ].map((item) => (
                         <a
-                            key={item}
-                            href={`#${item.toLowerCase()}`}
+                            key={item.label}
+                            href={item.href}
                             className="text-black/70 text-sm hover:text-black transition-colors"
                         >
-                            {item}
+                            {item.label}
                         </a>
                     ))}
                     <a

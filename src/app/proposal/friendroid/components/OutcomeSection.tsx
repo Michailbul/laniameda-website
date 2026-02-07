@@ -1,9 +1,11 @@
 "use client";
 
 import * as React from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { Check, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTheme } from "./ThemeContext";
+import { useReplayAnimation } from "./useReplayAnimation";
 
 interface OutcomeItem {
   id: string;
@@ -43,6 +45,16 @@ const deliverables: OutcomeItem[] = [
       "A validated collection of content hypotheses, formats, and angles that resonate with your audience. Stop guessing-start executing with confidence based on real data.",
   },
 ];
+
+const OUTCOME_OLD_SEGMENT = "walk away";
+const OUTCOME_NEW_SEGMENT = "proceed building";
+const OUTCOME_SHARED_WORD = "with";
+const OUTCOME_SEGMENT_WIDTH_BUFFER_PX = 10;
+const OUTCOME_INITIAL_HOLD_MS = 760;
+const OUTCOME_STRIKE_PHASE_MS = 820;
+const OUTCOME_WITH_SHIFT_PHASE_MS = 520;
+const OUTCOME_REVEAL_PHASE_MS = 940;
+const OUTCOME_SETTLE_PHASE_MS = 680;
 
 function OutcomeAccordion({
   item,
@@ -175,43 +187,156 @@ function OutcomeAccordion({
   );
 }
 
-export function OutcomeSection() {
+interface OutcomeSectionProps {
+  replayTick: number;
+}
+
+export function OutcomeSection({ replayTick }: OutcomeSectionProps) {
   const [openId, setOpenId] = React.useState<string>("clarity");
+  const [headlinePhase, setHeadlinePhase] = React.useState<
+    "idle" | "strike" | "space" | "reveal" | "settle" | "final"
+  >("idle");
+  const [hasPlayedHeadline, setHasPlayedHeadline] = React.useState(false);
+  const [segmentWidths, setSegmentWidths] = React.useState({ old: 0, next: 0 });
+  const headingRef = React.useRef<HTMLHeadingElement | null>(null);
+  const oldSegmentMeasureRef = React.useRef<HTMLSpanElement | null>(null);
+  const nextSegmentMeasureRef = React.useRef<HTMLSpanElement | null>(null);
   const { theme } = useTheme();
   const isLight = theme === "light";
+  const prefersReducedMotion = useReducedMotion();
+  const headingControls = useReplayAnimation({
+    replayTick,
+    fromY: 28,
+    duration: 0.72,
+  });
+  const panelControls = useReplayAnimation({
+    replayTick,
+    fromY: 38,
+    delay: 0.12,
+    duration: 0.78,
+  });
 
   const handleToggle = (id: string) => {
     setOpenId((current) => (current === id ? "" : id));
   };
 
+  React.useLayoutEffect(() => {
+    const measure = () => {
+      const oldWidth = oldSegmentMeasureRef.current?.getBoundingClientRect().width ?? 0;
+      const nextWidth = nextSegmentMeasureRef.current?.getBoundingClientRect().width ?? 0;
+
+      setSegmentWidths((current) => {
+        if (Math.abs(current.old - oldWidth) < 0.5 && Math.abs(current.next - nextWidth) < 0.5) {
+          return current;
+        }
+        return { old: oldWidth, next: nextWidth };
+      });
+    };
+
+    measure();
+    window.addEventListener("resize", measure);
+    if ("fonts" in document) {
+      // Re-measure after custom fonts settle to keep inline spacing exact.
+      void (document as Document & { fonts?: { ready?: Promise<unknown> } }).fonts?.ready?.then(measure);
+    }
+
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+
+  React.useEffect(() => {
+    if (!headingRef.current || hasPlayedHeadline) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        setHasPlayedHeadline(true);
+        observer.disconnect();
+
+        if (prefersReducedMotion) {
+          setHeadlinePhase("final");
+        }
+      },
+      { threshold: 0.45 }
+    );
+
+    observer.observe(headingRef.current);
+    return () => observer.disconnect();
+  }, [hasPlayedHeadline, prefersReducedMotion]);
+
+  React.useEffect(() => {
+    if (!hasPlayedHeadline || prefersReducedMotion || headlinePhase !== "idle") return;
+
+    const timeoutId = window.setTimeout(() => {
+      setHeadlinePhase("strike");
+    }, OUTCOME_INITIAL_HOLD_MS);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [hasPlayedHeadline, prefersReducedMotion, headlinePhase]);
+
+  React.useEffect(() => {
+    if (headlinePhase !== "strike") return;
+
+    const timeoutId = window.setTimeout(() => {
+      setHeadlinePhase("space");
+    }, OUTCOME_STRIKE_PHASE_MS);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [headlinePhase]);
+
+  React.useEffect(() => {
+    if (headlinePhase !== "space") return;
+
+    const timeoutId = window.setTimeout(() => {
+      setHeadlinePhase("reveal");
+    }, OUTCOME_WITH_SHIFT_PHASE_MS);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [headlinePhase]);
+
+  React.useEffect(() => {
+    if (headlinePhase !== "reveal") return;
+
+    const timeoutId = window.setTimeout(() => {
+      setHeadlinePhase("settle");
+    }, OUTCOME_REVEAL_PHASE_MS);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [headlinePhase]);
+
+  React.useEffect(() => {
+    if (headlinePhase !== "settle") return;
+
+    const timeoutId = window.setTimeout(() => {
+      setHeadlinePhase("final");
+    }, OUTCOME_SETTLE_PHASE_MS);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [headlinePhase]);
+
+  const hasStruckPhrase = headlinePhase !== "idle";
+  const hasShiftedWith = headlinePhase === "space" || headlinePhase === "reveal";
+  const hasRevealedPhrase = headlinePhase === "reveal" || headlinePhase === "settle" || headlinePhase === "final";
+  const oldSegmentWidth =
+    segmentWidths.old > 0
+      ? `${Math.ceil(segmentWidths.old + OUTCOME_SEGMENT_WIDTH_BUFFER_PX)}px`
+      : `${OUTCOME_OLD_SEGMENT.length + 1}ch`;
+  const nextSegmentWidth =
+    segmentWidths.next > 0
+      ? `${Math.ceil(segmentWidths.next + OUTCOME_SEGMENT_WIDTH_BUFFER_PX)}px`
+      : `${OUTCOME_NEW_SEGMENT.length + 1}ch`;
+
   return (
     <section
-      id="deliverables"
+      id="outcome"
       aria-label="Outcome"
       className="snap-section relative w-full overflow-hidden bg-transparent"
     >
-      <div
-        className={cn(
-          "absolute inset-0 bg-[size:60px_60px]",
-          isLight
-            ? "bg-[linear-gradient(rgba(0,0,0,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.04)_1px,transparent_1px)]"
-            : "bg-[linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)]"
-        )}
-        aria-hidden
-      />
-
-      <div
-        className={cn(
-          "pointer-events-none absolute inset-x-0 top-0 h-40",
-          isLight
-            ? "bg-gradient-to-b from-teal-50/65 to-transparent"
-            : "bg-gradient-to-b from-teal-500/8 to-transparent"
-        )}
-        aria-hidden
-      />
-
       <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-5xl flex-col justify-center px-6 py-20 md:py-24">
-        <div className="mb-10 text-center">
+        <motion.div
+          animate={headingControls}
+          initial={false}
+          className="mb-10 text-center"
+        >
           <p
             className={cn(
               "text-[11px] font-mono uppercase tracking-[0.3em]",
@@ -223,12 +348,104 @@ export function OutcomeSection() {
             Outcome
           </p>
           <h2
+            ref={headingRef}
             className={cn(
-              "mt-4 text-4xl font-light tracking-[-0.02em] sm:text-5xl drop-shadow-[0_4px_20px_rgba(0,0,0,0.45)]",
+              "mt-4 text-4xl font-light leading-[1.08] tracking-[-0.02em] sm:text-5xl drop-shadow-[0_4px_20px_rgba(0,0,0,0.45)]",
               "text-white"
             )}
           >
-            What you walk away with
+            <span aria-hidden className="inline-flex items-baseline whitespace-nowrap">
+              <span>What you&nbsp;</span>
+
+              <span className="relative inline-flex items-baseline">
+                <span
+                  className="inline-block overflow-hidden whitespace-nowrap align-baseline transition-[max-width,opacity] duration-[760ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
+                  style={{ maxWidth: hasRevealedPhrase ? 0 : oldSegmentWidth, opacity: hasRevealedPhrase ? 0 : 1 }}
+                >
+                  <span className="relative inline-block -mb-[0.08em] pb-[0.08em] pr-[0.1em]">
+                    {OUTCOME_OLD_SEGMENT}
+                    <motion.span
+                      aria-hidden
+                      className="pointer-events-none absolute left-0 top-1/2 h-[2px] w-full -translate-y-1/2 rounded-full bg-white/95"
+                      style={{ transformOrigin: "0% 50%" }}
+                      initial={false}
+                      animate={
+                        hasStruckPhrase
+                          ? { scaleX: 1, opacity: 1 }
+                          : { scaleX: 0, opacity: 0 }
+                      }
+                      transition={{
+                        duration: prefersReducedMotion ? 0 : 0.66,
+                        ease: [0.22, 1, 0.36, 1],
+                      }}
+                    />
+                  </span>
+                </span>
+
+                <span
+                  className="inline-block overflow-hidden whitespace-nowrap align-baseline transition-[max-width,opacity] duration-[920ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
+                  style={{ maxWidth: hasRevealedPhrase ? nextSegmentWidth : 0, opacity: hasRevealedPhrase ? 1 : 0 }}
+                >
+                  <motion.span
+                    className="inline-block -mb-[0.08em] pb-[0.08em] pr-[0.1em]"
+                    initial={false}
+                    animate={
+                      hasRevealedPhrase
+                        ? {
+                            y: 0,
+                            opacity: 1,
+                            textShadow:
+                              headlinePhase === "final"
+                                ? [
+                                    "0 0 0 rgba(45,212,191,0)",
+                                    "0 0 18px rgba(45,212,191,0.52)",
+                                    "0 0 10px rgba(45,212,191,0.34)",
+                                  ]
+                                : "0 0 18px rgba(45,212,191,0.52)",
+                          }
+                        : {
+                            y: "0.64em",
+                            opacity: 0,
+                            textShadow: "0 0 0 rgba(45,212,191,0)",
+                          }
+                    }
+                    transition={{
+                      duration: prefersReducedMotion ? 0 : 0.86,
+                      ease: [0.2, 0.9, 0.3, 1],
+                    }}
+                  >
+                    {OUTCOME_NEW_SEGMENT}
+                  </motion.span>
+                </span>
+              </span>
+
+              <motion.span
+                className="ml-[0.16em] inline-block"
+                initial={false}
+                animate={hasShiftedWith ? { x: 24 } : { x: 0 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 230,
+                  damping: 20,
+                  mass: 0.8,
+                  duration: prefersReducedMotion ? 0 : undefined,
+                }}
+              >
+                {OUTCOME_SHARED_WORD}
+              </motion.span>
+            </span>
+            <span className="sr-only">
+              {`What you ${
+                hasRevealedPhrase
+                  ? `${OUTCOME_NEW_SEGMENT} ${OUTCOME_SHARED_WORD}`
+                  : `${OUTCOME_OLD_SEGMENT} ${OUTCOME_SHARED_WORD}`
+              }`}
+            </span>
+            <span aria-hidden className="pointer-events-none fixed -left-[9999px] -top-[9999px] whitespace-nowrap opacity-0">
+              <span ref={oldSegmentMeasureRef}>{OUTCOME_OLD_SEGMENT}</span>
+              <span className="mx-2" />
+              <span ref={nextSegmentMeasureRef}>{OUTCOME_NEW_SEGMENT}</span>
+            </span>
           </h2>
           <p
             className={cn(
@@ -238,9 +455,11 @@ export function OutcomeSection() {
           >
             Five focused deliverables you can use immediately to build a repeatable content engine.
           </p>
-        </div>
+        </motion.div>
 
-        <div
+        <motion.div
+          animate={panelControls}
+          initial={false}
           className={cn(
             "mx-auto w-full max-w-4xl rounded-3xl border p-4 sm:p-6 md:p-8",
             isLight
@@ -279,7 +498,7 @@ export function OutcomeSection() {
               ))}
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

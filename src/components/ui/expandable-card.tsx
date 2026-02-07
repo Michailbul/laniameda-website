@@ -16,6 +16,7 @@ interface ExpandableCardProps {
   icon?: React.ReactNode;
   imageSize?: "default" | "compact";
   headerAction?: React.ReactNode;
+  onExpandedScrollProgressChange?: (progress: number) => void;
 }
 
 export function ExpandableCard({
@@ -30,10 +31,16 @@ export function ExpandableCard({
   icon,
   imageSize = "default",
   headerAction,
+  onExpandedScrollProgressChange,
 }: ExpandableCardProps) {
   const [active, setActive] = React.useState(false);
   const cardRef = React.useRef<HTMLDivElement>(null);
+  const progressCallbackRef = React.useRef(onExpandedScrollProgressChange);
   const id = React.useId();
+
+  React.useEffect(() => {
+    progressCallbackRef.current = onExpandedScrollProgressChange;
+  }, [onExpandedScrollProgressChange]);
 
   const handleSetActive = React.useCallback((value: boolean) => {
     setActive(value);
@@ -65,6 +72,42 @@ export function ExpandableCard({
       document.removeEventListener("touchstart", handleClickOutside);
     };
   }, [active, handleSetActive]);
+
+  React.useEffect(() => {
+    if (!active) {
+      progressCallbackRef.current?.(0);
+      return;
+    }
+
+    const scrollContainer = cardRef.current;
+    if (!scrollContainer) return;
+
+    let rafId: number | null = null;
+
+    const emitProgress = () => {
+      const maxScroll = scrollContainer.scrollHeight - scrollContainer.clientHeight;
+      const progress = maxScroll > 0 ? scrollContainer.scrollTop / maxScroll : 0;
+      progressCallbackRef.current?.(Math.min(1, Math.max(0, progress)));
+    };
+
+    const scheduleEmit = () => {
+      if (rafId !== null) return;
+      rafId = window.requestAnimationFrame(() => {
+        rafId = null;
+        emitProgress();
+      });
+    };
+
+    emitProgress();
+    scrollContainer.addEventListener("scroll", scheduleEmit, { passive: true });
+
+    return () => {
+      scrollContainer.removeEventListener("scroll", scheduleEmit);
+      if (rafId !== null) {
+        window.cancelAnimationFrame(rafId);
+      }
+    };
+  }, [active]);
 
   return (
     <>

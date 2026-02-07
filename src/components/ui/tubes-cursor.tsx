@@ -1,6 +1,13 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+
+const CLICK_CYCLE_PALETTES = [
+  ["#FF006E", "#FB5607", "#FFBE0B"],
+  ["#8338EC", "#3A86FF", "#06FFB4"],
+  ["#F72585", "#7209B7", "#4CC9F0"],
+  ["#E63946", "#F77F00", "#FCBF49"],
+];
 
 declare module "threejs-components/build/cursors/tubes1.min.js" {
   export default function TubesCursor(
@@ -23,20 +30,21 @@ declare module "threejs-components/build/cursors/tubes1.min.js" {
   };
 }
 
-export default function HeroSection() {
+interface TubesCursorProps {
+  autoCycleActive?: boolean;
+  cycleIntervalSeconds?: number;
+  cycleStartDelaySeconds?: number;
+}
+
+export default function TubesCursor({
+  autoCycleActive = false,
+  cycleIntervalSeconds = 0.9,
+  cycleStartDelaySeconds = 0,
+}: TubesCursorProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const appRef = useRef<{ tubes?: { setColors: (colors: string[]) => void; setLightsColors: (colors: string[]) => void }; dispose?: () => void } | null>(null);
+  const paletteIndexRef = useRef(0);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-
-  const randomColors = (count: number): string[] => {
-    const palettes = [
-      ["#FF006E", "#FB5607", "#FFBE0B"],
-      ["#8338EC", "#3A86FF", "#06FFB4"],
-      ["#F72585", "#7209B7", "#4CC9F0"],
-      ["#E63946", "#F77F00", "#FCBF49"],
-    ];
-    return palettes[Math.floor(Math.random() * palettes.length)].slice(0, count);
-  };
 
   useEffect(() => {
     const initTimer = setTimeout(() => {
@@ -80,21 +88,65 @@ export default function HeroSection() {
     };
   }, []);
 
-  const handleClick = () => {
-    if (appRef.current) {
-      const newTubeColors = randomColors(3);
-      const newLightColors = randomColors(4);
-      
-      if (appRef.current.tubes) {
-        appRef.current.tubes.setColors(newTubeColors);
-        appRef.current.tubes.setLightsColors(newLightColors);
-      }
+  const cyclePalette = useCallback(() => {
+    if (!appRef.current?.tubes) {
+      return;
     }
-  };
+
+    const palette = CLICK_CYCLE_PALETTES[paletteIndexRef.current % CLICK_CYCLE_PALETTES.length];
+    paletteIndexRef.current += 1;
+
+    const newTubeColors = palette.slice(0, 3);
+    const newLightColors = Array.from({ length: 4 }, (_, index) => palette[index % palette.length]);
+    appRef.current.tubes.setColors(newTubeColors);
+    appRef.current.tubes.setLightsColors(newLightColors);
+  }, []);
+
+  useEffect(() => {
+    const isInteractiveTarget = (target: EventTarget | null) => {
+      if (!(target instanceof Element)) {
+        return false;
+      }
+      return Boolean(target.closest("a, button, input, textarea, select, label, [role='button']"));
+    };
+
+    const handleGlobalClick = (event: MouseEvent) => {
+      if (isInteractiveTarget(event.target)) {
+        return;
+      }
+      cyclePalette();
+    };
+
+    window.addEventListener("click", handleGlobalClick, true);
+    return () => {
+      window.removeEventListener("click", handleGlobalClick, true);
+    };
+  }, [cyclePalette]);
+
+  useEffect(() => {
+    if (!autoCycleActive) {
+      return;
+    }
+    const delayMs = Math.max(cycleStartDelaySeconds, 0) * 1000;
+    const intervalMs = Math.max(cycleIntervalSeconds, 0.2) * 1000;
+    let intervalId: number | undefined;
+    const timeoutId = window.setTimeout(() => {
+      cyclePalette();
+      intervalId = window.setInterval(() => {
+        cyclePalette();
+      }, intervalMs);
+    }, delayMs);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      if (intervalId !== undefined) {
+        window.clearInterval(intervalId);
+      }
+    };
+  }, [autoCycleActive, cycleIntervalSeconds, cycleStartDelaySeconds, cyclePalette]);
 
   return (
     <div
-      onClick={handleClick}
       className="relative h-screen w-screen bg-black overflow-hidden cursor-pointer"
     >
       {/* Film grain overlay */}
