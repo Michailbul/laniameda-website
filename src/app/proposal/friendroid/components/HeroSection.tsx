@@ -270,7 +270,7 @@ export function HeroSection({
         cursorSize={40}
       >
         {isHeroFullyLoaded ? (
-          <header className="fixed left-0 right-0 top-0 z-[60] flex h-16 items-center justify-between px-6 md:px-10">
+          <header className="fixed left-0 right-0 top-0 z-[60] flex h-16 items-center justify-between px-4 md:px-10">
             <Link
               data-magnetic
               href="/"
@@ -279,7 +279,7 @@ export function HeroSection({
               Laniameda
             </Link>
 
-            <nav className="flex items-center gap-0 border border-white/[0.06] bg-white/[0.03] backdrop-blur-sm">
+            <nav className="hidden items-center gap-0 border border-white/[0.06] bg-white/[0.03] backdrop-blur-sm md:flex">
               {NAV_ITEMS.map((item, index) => {
                 const isActive = activeSection === item.sectionId;
                 return (
@@ -313,18 +313,45 @@ export function HeroSection({
               </a>
             </nav>
 
-            <div className="w-20" />
+            <div className="hidden w-20 md:block" />
+
+            <div className="flex items-center gap-1.5 md:hidden">
+              {NAV_ITEMS.map((item) => {
+                const isActive = activeSection === item.sectionId;
+                return (
+                  <a
+                    key={`mobile-${item.label}`}
+                    href={`#${item.sectionId}`}
+                    onClick={(event) => handleNavClick(event, item.sectionId)}
+                    className={`rounded-full border px-2.5 py-1.5 text-[10px] uppercase tracking-[0.12em] transition-colors ${
+                      isActive
+                        ? "border-white/35 bg-white/20 text-white"
+                        : "border-white/10 bg-white/[0.04] text-white/70"
+                    }`}
+                  >
+                    {item.label}
+                  </a>
+                );
+              })}
+              <a
+                href="#pricing"
+                onClick={(event) => handleNavClick(event, "pricing")}
+                className="rounded-full border border-white/80 bg-white px-3 py-1.5 text-[10px] font-medium uppercase tracking-[0.12em] text-black"
+              >
+                Start
+              </a>
+            </div>
           </header>
         ) : null}
 
         <section
           id="hero"
-          className="snap-section relative flex h-[100svh] items-center justify-center overflow-hidden bg-transparent"
+          className="snap-section relative flex min-h-[100svh] items-center justify-center overflow-hidden bg-transparent py-20 md:h-[100svh] md:py-0"
         >
           <HeroBackdrop isLight={isLight} />
 
           <div
-            className={`relative z-10 w-full max-w-7xl px-6 pb-8 pt-20 transition-opacity duration-500 md:px-16 md:pb-6 md:pt-[4.5rem] ${
+            className={`relative z-10 w-full max-w-7xl px-4 pb-8 pt-16 transition-opacity duration-500 md:px-16 md:pb-6 md:pt-[4.5rem] ${
               isHeroFullyLoaded
                 ? "visible opacity-100"
                 : "pointer-events-none invisible opacity-0"
@@ -337,12 +364,12 @@ export function HeroSection({
               initial={false}
               className="origin-center transform-gpu will-change-transform"
             >
-              <Card className="relative isolate h-[min(620px,calc(100svh-8.5rem))] w-full overflow-hidden rounded-3xl border-0 bg-transparent shadow-none md:h-[min(660px,calc(100svh-8.5rem))]">
+              <Card className="relative isolate h-auto min-h-[440px] w-full overflow-hidden rounded-3xl border-0 bg-transparent shadow-none md:h-[min(660px,calc(100svh-8.5rem))] md:min-h-[560px]">
                 <div className="relative flex h-full flex-col overflow-hidden rounded-3xl md:flex-row">
                   <motion.div
                     animate={leftPanelControls}
                     initial={false}
-                    className="relative z-10 flex flex-1 flex-col bg-[#0a0a0a] p-8 shadow-[8px_0_40px_rgba(0,0,0,0.4)] md:mr-[-50px] md:rounded-r-[40px] md:p-12"
+                    className="relative z-10 flex flex-1 flex-col bg-[#0a0a0a] p-6 shadow-[8px_0_40px_rgba(0,0,0,0.4)] md:mr-[-50px] md:rounded-r-[40px] md:p-12"
                   >
                     <div className="flex flex-1 flex-col justify-center">
                       <motion.div animate={badgeControls} initial={false}>
@@ -438,7 +465,7 @@ export function HeroSection({
                   <motion.div
                     animate={rightPanelControls}
                     initial={false}
-                    className="relative z-0 flex-1 bg-white md:ml-[-40px] md:rounded-l-[60px]"
+                    className="relative z-0 min-h-[160px] flex-1 bg-white md:ml-[-40px] md:min-h-0 md:rounded-l-[60px]"
                   >
                     <div
                       className="absolute left-1/2 top-1/2 h-80 w-80 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-radial from-gray-300/40 via-gray-200/30 to-transparent blur-[100px]"

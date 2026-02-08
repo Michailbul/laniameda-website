@@ -59,8 +59,6 @@ export default function FriendroidProposal() {
       progress: 0,
     });
   const [isMobile, setIsMobile] = useState(false);
-  const [showMobileExperienceModal, setShowMobileExperienceModal] =
-    useState(false);
   const [isHeroReady, setIsHeroReady] = useState(false);
 
   const jumpToSection = useCallback(
@@ -272,7 +270,6 @@ export default function FriendroidProposal() {
     const syncMobileState = (event?: MediaQueryListEvent) => {
       const mobileViewport = event ? event.matches : mediaQuery.matches;
       setIsMobile(mobileViewport);
-      setShowMobileExperienceModal(mobileViewport);
     };
 
     syncMobileState();
@@ -314,7 +311,7 @@ export default function FriendroidProposal() {
             />
             <OutcomeSection replayTick={replayTicks.outcome} />
             <PricingSection replayTick={replayTicks.pricing} />
-            {isHeroReady ? (
+            {isHeroReady && !isMobile ? (
               <ScrollSectionRail
                 activeSection={activeSection}
                 onNavSelect={navigateToSection}
@@ -327,34 +324,6 @@ export default function FriendroidProposal() {
             ) : null}
           </ScrollProvider>
         </div>
-        {isMobile && showMobileExperienceModal ? (
-          <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/75 px-5 backdrop-blur-sm">
-            <div
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="mobile-experience-modal-title"
-              className="w-full max-w-sm rounded-3xl border border-white/20 bg-[#120707]/95 p-6 text-white shadow-[0_20px_80px_rgba(255,88,0,0.35)]"
-            >
-              <p
-                id="mobile-experience-modal-title"
-                className="text-xl font-semibold leading-tight"
-              >
-                Best experience on desktop
-              </p>
-              <p className="mt-3 text-sm text-white/75">
-                This proposal is designed for large screens. You can continue on
-                mobile, but desktop gives the full experience.
-              </p>
-              <button
-                type="button"
-                onClick={() => setShowMobileExperienceModal(false)}
-                className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-white px-4 py-3 text-sm font-semibold text-[#111111] transition hover:bg-white/90 active:scale-[0.99]"
-              >
-                Continue on mobile
-              </button>
-            </div>
-          </div>
-        ) : null}
       </ThemeProvider>
     </>
   );

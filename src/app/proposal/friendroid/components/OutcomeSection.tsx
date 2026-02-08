@@ -200,7 +200,7 @@ function OutcomeAccordion({
         <div className="overflow-hidden">
           <p
             className={cn(
-              "pb-4 pl-[4.5rem] pr-4 text-sm leading-relaxed",
+              "pb-4 pl-12 pr-4 text-sm leading-relaxed sm:pl-[4.5rem]",
               isLight ? "text-zinc-600" : "text-zinc-400"
             )}
           >
@@ -402,7 +402,7 @@ export function OutcomeSection({ replayTick }: OutcomeSectionProps) {
           <h2
             ref={headingRef}
             className={cn(
-              "mt-3 text-3xl font-light leading-[1.08] tracking-[-0.02em] sm:text-4xl drop-shadow-[0_4px_20px_rgba(0,0,0,0.45)]",
+              "mt-3 text-2xl font-light leading-[1.08] tracking-[-0.02em] sm:text-3xl md:text-4xl drop-shadow-[0_4px_20px_rgba(0,0,0,0.45)]",
               "text-white"
             )}
           >

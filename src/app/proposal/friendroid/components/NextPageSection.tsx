@@ -322,7 +322,7 @@ export function CanvasPageSection({
       ref={sectionRef}
       id="next-page"
       className={cn(
-        "snap-section relative min-h-screen overflow-hidden flex flex-col items-center justify-center py-24",
+        "snap-section relative min-h-screen overflow-hidden flex flex-col items-center justify-center py-16 md:py-24",
         "bg-transparent"
       )}
     >
@@ -339,7 +339,7 @@ export function CanvasPageSection({
 
       {/* Section header — Tesla typography */}
       <motion.div
-        className="text-center mb-20 relative z-10"
+        className="text-center mb-10 md:mb-20 relative z-10"
         initial={headingHiddenState}
         animate={showBaseHeading ? headingVisibleState : headingHiddenState}
         transition={headingTransition}
@@ -396,13 +396,13 @@ export function CanvasPageSection({
       </motion.div>
 
       {/* Cards grid */}
-      <div className="relative flex items-start justify-center gap-4 md:gap-6 px-4 flex-nowrap max-w-7xl">
+      <div className="relative flex items-start gap-4 md:gap-6 px-4 flex-nowrap max-w-7xl w-full overflow-x-auto md:overflow-x-visible md:justify-center [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] pb-16 md:pb-0">
         {/* Phase 0: Current State */}
         <motion.div
           animate={revealedCardCount >= 1 ? getCardVisibleState() : cardHiddenState}
           transition={cardTransition}
           initial={cardHiddenState}
-          className="relative"
+          className="relative shrink-0"
         >
           {/* "You are here" indicator */}
           <motion.div
@@ -449,7 +449,7 @@ export function CanvasPageSection({
           animate={revealedCardCount >= 2 ? getCardVisibleState() : cardHiddenState}
           transition={cardTransition}
           initial={cardHiddenState}
-          className="relative"
+          className="relative shrink-0"
         >
           <ExpandableCard
             title="Creative Treatment"
@@ -473,7 +473,7 @@ export function CanvasPageSection({
           animate={revealedCardCount >= 3 ? getCardVisibleState() : cardHiddenState}
           transition={cardTransition}
           initial={cardHiddenState}
-          className="relative"
+          className="relative shrink-0"
         >
           <ExpandableCard
             title="Seed"
@@ -498,7 +498,7 @@ export function CanvasPageSection({
           animate={revealedCardCount >= 4 ? getCardVisibleState() : cardHiddenState}
           transition={cardTransition}
           initial={cardHiddenState}
-          className="relative"
+          className="relative shrink-0"
         >
           <ExpandableCard
             title="Content Market Fit"
@@ -523,7 +523,7 @@ export function CanvasPageSection({
           animate={revealedCardCount >= 5 ? getCardVisibleState(0.5) : cardHiddenState}
           transition={cardTransition}
           initial={cardHiddenState}
-          className="relative"
+          className="relative shrink-0"
           ref={growthPopoverRef}
         >
           {/* Popover */}

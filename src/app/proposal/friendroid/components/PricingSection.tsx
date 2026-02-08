@@ -39,10 +39,10 @@ export function PricingSection({ replayTick }: PricingSectionProps) {
     <section
       id="pricing"
       className={cn(
-        "snap-section relative h-[100svh] overflow-hidden bg-transparent",
+        "snap-section relative min-h-[100svh] overflow-hidden bg-transparent",
       )}
     >
-      <div className="relative z-10 mx-auto flex h-full w-full max-w-5xl flex-col items-center justify-center px-6 pb-8 pt-20 md:pb-8 md:pt-24">
+      <div className="relative z-10 mx-auto flex min-h-[100svh] w-full max-w-5xl flex-col items-center justify-center px-6 pb-8 pt-20 md:pb-8 md:pt-24">
       {/* Section header */}
       <motion.div
         animate={headingControls}
