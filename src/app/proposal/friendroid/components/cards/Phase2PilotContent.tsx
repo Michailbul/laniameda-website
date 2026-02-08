@@ -80,7 +80,12 @@ export function Phase2PilotContent() {
                 const cards = document.querySelectorAll('[role="dialog"]');
                 for (const card of cards) {
                   const titleEl = card.querySelector('h3');
-                  if (titleEl?.textContent?.toLowerCase().includes('scale')) {
+                  const normalizedTitle = titleEl?.textContent?.toLowerCase() ?? "";
+                  if (
+                    normalizedTitle.includes("content market fit") ||
+                    normalizedTitle.includes("cmf") ||
+                    normalizedTitle.includes("scale")
+                  ) {
                     (card as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
                     setTimeout(() => (card as HTMLElement).click(), 300);
                     break;

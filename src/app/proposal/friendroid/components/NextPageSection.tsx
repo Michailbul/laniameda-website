@@ -68,21 +68,18 @@ export function CanvasPageSection({
   const sectionRef = React.useRef<HTMLElement | null>(null);
   const prefersReducedMotion = useReducedMotion();
 
-  // Phase 0 paths
-  const phase0MarkdownPath = "/assets/proposal/phase0-current-state.md";
-  const phase0MarkdownFilename = "friendroid-phase0-current-state.md";
+  // Phase markdown download paths in public/assets
+  const phase0MarkdownPath = "/assets/phase0-current-state.md";
+  const phase0MarkdownFilename = "phase0-current-state.md";
 
-  // Phase 1 paths
-  const phase1MarkdownPath = "/assets/proposal/phase1-creative-treatment.md";
-  const phase1MarkdownFilename = "friendroid-phase1-creative-treatment.md";
+  const phase1MarkdownPath = "/assets/phase1-creative-treatment.md";
+  const phase1MarkdownFilename = "phase1-creative-treatment.md";
 
-  // Phase 2 paths
-  const phase2MarkdownPath = "/assets/proposal/phase2-pilot.md";
-  const phase2MarkdownFilename = "friendroid-phase2-pilot.md";
+  const phase2MarkdownPath = "/assets/phase2-seed.md";
+  const phase2MarkdownFilename = "phase2-seed.md";
 
-  // Phase 3 paths
-  const phase3MarkdownPath = "/assets/proposal/phase3-scale.md";
-  const phase3MarkdownFilename = "friendroid-phase3-scale.md";
+  const phase3MarkdownPath = "/assets/phase3-cmf.md";
+  const phase3MarkdownFilename = "phase3-cmf.md";
   const activeCardRef = React.useRef<string | null>(null);
   const [shouldStartSequence, setShouldStartSequence] = React.useState(false);
   const [revealedCardCount, setRevealedCardCount] = React.useState(0);
@@ -390,8 +387,10 @@ export function CanvasPageSection({
                 </motion.span>
               </span>
             )}
-            <span>{activePhaseWord ? "Phases to " : " Phases to "}</span>
-            <span className="font-medium text-teal-500">Scale</span>
+            <span>
+              {activePhaseWord ? "Phases to " : "\u00A0Phases to "}
+              <span className="font-medium text-teal-500">Scale</span>
+            </span>
           </span>
         </h2>
       </motion.div>

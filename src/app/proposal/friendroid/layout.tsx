@@ -23,7 +23,7 @@ export default function ProposalLayout({
         as="fetch"
         crossOrigin="anonymous"
       />
-      {children}
+      <div className="select-none">{children}</div>
     </>
   );
 }

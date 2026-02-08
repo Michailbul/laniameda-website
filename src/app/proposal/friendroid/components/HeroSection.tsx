@@ -2,7 +2,13 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { motion, useReducedMotion, useSpring, useTransform } from "framer-motion";
+import {
+  AnimatePresence,
+  motion,
+  useReducedMotion,
+  useSpring,
+  useTransform,
+} from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { SplineScene } from "@/components/ui/splite";
 import { ArrowUpRight } from "lucide-react";
@@ -10,6 +16,7 @@ import { useTheme } from "./ThemeContext";
 import HyperTextParagraph from "@/components/ui/hyper-text-with-decryption";
 import { ProposalBadge } from "@/components/ui/proposal-badge";
 import { MagneticCursor } from "@/components/ui/magnetic-cursor";
+import { CoreSpinLoader } from "@/components/ui/core-spin-loader";
 import { useScrollProgress, type FriendroidSectionId } from "./shared";
 import { useReplayAnimation } from "./useReplayAnimation";
 
@@ -34,20 +41,60 @@ interface HeroSectionProps {
   activeSection?: FriendroidSectionId;
   onNavSelect: (sectionId: FriendroidSectionId) => void;
   replayTick: number;
+  onReadyStateChange?: (isReady: boolean) => void;
 }
 
 const NAV_ITEMS: Array<{ label: string; sectionId: FriendroidSectionId }> = [
-  { label: "Offer", sectionId: "hero" },
-  { label: "What you get", sectionId: "next-page" },
+  { label: "Home", sectionId: "hero" },
+  { label: "Offer", sectionId: "next-page" },
   { label: "Outcome", sectionId: "outcome" },
 ];
+const SPLINE_MIN_LOADER_MS = 1000;
+
+function HeroBackdrop({ isLight }: { isLight: boolean }) {
+  return (
+    <>
+      <div
+        className={`absolute inset-0 bg-[size:60px_60px] ${
+          isLight
+            ? "bg-[linear-gradient(rgba(0,0,0,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.04)_1px,transparent_1px)]"
+            : "bg-[linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)]"
+        }`}
+        aria-hidden
+      />
+
+      <div
+        className={`absolute left-1/2 top-0 h-[600px] w-[800px] -translate-x-1/2 blur-3xl ${
+          isLight
+            ? "bg-gradient-radial from-gray-300/[0.20] via-gray-200/[0.10] to-transparent"
+            : "bg-gradient-radial from-white/[0.08] via-white/[0.03] to-transparent"
+        }`}
+        aria-hidden
+      />
+
+      <div
+        className={`absolute bottom-0 right-0 h-[400px] w-[600px] blur-3xl ${
+          isLight
+            ? "bg-gradient-radial from-gray-200/[0.15] via-transparent to-transparent"
+            : "bg-gradient-radial from-white/[0.05] via-transparent to-transparent"
+        }`}
+        aria-hidden
+      />
+    </>
+  );
+}
 
 export function HeroSection({
   activeSection = "hero",
   onNavSelect,
   replayTick,
+  onReadyStateChange,
 }: HeroSectionProps) {
   const [shouldRenderSpline, setShouldRenderSpline] = useState(false);
+  const [hasHeroMounted, setHasHeroMounted] = useState(false);
+  const [hasEvaluatedSplinePreference, setHasEvaluatedSplinePreference] = useState(false);
+  const [hasSplineLoaded, setHasSplineLoaded] = useState(false);
+  const [hasSplineMinimumDelayElapsed, setHasSplineMinimumDelayElapsed] = useState(false);
   const [viewportHeight, setViewportHeight] = useState(900);
   const { theme } = useTheme();
   const { scrollY } = useScrollProgress();
@@ -118,6 +165,11 @@ export function HeroSection({
     return () => window.removeEventListener("resize", updateViewportHeight);
   }, []);
 
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => setHasHeroMounted(true));
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+
   const rawScale = useTransform(scrollY, [0, viewportHeight], [0.95, 1.1]);
   const scale = useSpring(rawScale, {
     stiffness: 105,
@@ -130,8 +182,18 @@ export function HeroSection({
     const desktop = window.matchMedia("(min-width: 768px)");
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-    const update = () =>
-      setShouldRenderSpline(desktop.matches && !reducedMotion.matches);
+    const update = () => {
+      const shouldEnableSpline = desktop.matches && !reducedMotion.matches;
+      setShouldRenderSpline(shouldEnableSpline);
+      setHasEvaluatedSplinePreference(true);
+      setHasSplineLoaded(!shouldEnableSpline);
+      if (shouldEnableSpline) {
+        setHasSplineMinimumDelayElapsed(false);
+      }
+      if (!shouldEnableSpline) {
+        splineAppRef.current = null;
+      }
+    };
     update();
 
     desktop.addEventListener("change", update);
@@ -143,7 +205,16 @@ export function HeroSection({
   }, []);
 
   useEffect(() => {
-    if (!shouldRenderSpline || !splineAppRef.current) return;
+    if (!hasEvaluatedSplinePreference || !shouldRenderSpline) return;
+    const timer = window.setTimeout(() => {
+      setHasSplineMinimumDelayElapsed(true);
+    }, SPLINE_MIN_LOADER_MS);
+
+    return () => window.clearTimeout(timer);
+  }, [hasEvaluatedSplinePreference, shouldRenderSpline]);
+
+  useEffect(() => {
+    if (!shouldRenderSpline || !hasSplineLoaded || !splineAppRef.current) return;
 
     const handleMouseMove = (event: MouseEvent) => {
       const head =
@@ -166,7 +237,18 @@ export function HeroSection({
 
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, [shouldRenderSpline]);
+  }, [shouldRenderSpline, hasSplineLoaded]);
+
+  const hasMetMinimumLoaderTime = !shouldRenderSpline || hasSplineMinimumDelayElapsed;
+  const isHeroFullyLoaded =
+    hasHeroMounted &&
+    hasEvaluatedSplinePreference &&
+    hasSplineLoaded &&
+    hasMetMinimumLoaderTime;
+
+  useEffect(() => {
+    onReadyStateChange?.(isHeroFullyLoaded);
+  }, [isHeroFullyLoaded, onReadyStateChange]);
 
   const handleNavClick = useCallback(
     (
@@ -187,84 +269,68 @@ export function HeroSection({
         blendMode="exclusion"
         cursorSize={40}
       >
-        <header className="fixed left-0 right-0 top-0 z-[60] flex h-16 items-center justify-between px-6 md:px-10">
-          <Link
-            data-magnetic
-            href="/"
-            className="text-[11px] font-medium uppercase tracking-[0.25em] text-white/90 transition-colors duration-300 hover:text-white"
-          >
-            Laniameda
-          </Link>
-
-          <nav className="flex items-center gap-0 border border-white/[0.06] bg-white/[0.03] backdrop-blur-sm">
-            {NAV_ITEMS.map((item, index) => {
-              const isActive = activeSection === item.sectionId;
-              return (
-                <a
-                  data-magnetic
-                  key={item.label}
-                  href={`#${item.sectionId}`}
-                  onClick={(event) => handleNavClick(event, item.sectionId)}
-                  className={`relative px-6 py-3 text-[11px] font-normal uppercase tracking-[0.12em] transition-all duration-200 ${
-                    isActive
-                      ? "bg-white/[0.12] text-white"
-                      : "text-white/50 hover:bg-white/[0.05] hover:text-white"
-                  } ${index > 0 ? "border-l border-white/[0.06]" : ""}`}
-                >
-                  {item.label}
-                </a>
-              );
-            })}
-
-            <a
+        {isHeroFullyLoaded ? (
+          <header className="fixed left-0 right-0 top-0 z-[60] flex h-16 items-center justify-between px-6 md:px-10">
+            <Link
               data-magnetic
-              href="#pricing"
-              onClick={(event) => handleNavClick(event, "pricing")}
-              className={`border-l border-white/[0.06] px-6 py-3 text-[11px] font-medium uppercase tracking-[0.12em] transition-all duration-200 ${
-                activeSection === "pricing"
-                  ? "bg-white/85 text-black"
-                  : "bg-white text-black hover:bg-white/90"
-              }`}
+              href="/"
+              className="text-[11px] font-medium uppercase tracking-[0.25em] text-white/90 transition-colors duration-300 hover:text-white"
             >
-              Start Project
-            </a>
-          </nav>
+              Laniameda
+            </Link>
 
-          <div className="w-20" />
-        </header>
+            <nav className="flex items-center gap-0 border border-white/[0.06] bg-white/[0.03] backdrop-blur-sm">
+              {NAV_ITEMS.map((item, index) => {
+                const isActive = activeSection === item.sectionId;
+                return (
+                  <a
+                    data-magnetic
+                    key={item.label}
+                    href={`#${item.sectionId}`}
+                    onClick={(event) => handleNavClick(event, item.sectionId)}
+                    className={`relative px-6 py-3 text-[11px] font-normal uppercase tracking-[0.12em] transition-all duration-200 ${
+                      isActive
+                        ? "bg-white/[0.12] text-white"
+                        : "text-white/50 hover:bg-white/[0.05] hover:text-white"
+                    } ${index > 0 ? "border-l border-white/[0.06]" : ""}`}
+                  >
+                    {item.label}
+                  </a>
+                );
+              })}
+
+              <a
+                data-magnetic
+                href="#pricing"
+                onClick={(event) => handleNavClick(event, "pricing")}
+                className={`border-l border-white/[0.06] px-6 py-3 text-[11px] font-medium uppercase tracking-[0.12em] transition-all duration-200 ${
+                  activeSection === "pricing"
+                    ? "bg-white/85 text-black"
+                    : "bg-white text-black hover:bg-white/90"
+                }`}
+              >
+                Start Project
+              </a>
+            </nav>
+
+            <div className="w-20" />
+          </header>
+        ) : null}
 
         <section
           id="hero"
           className="snap-section relative flex h-[100svh] items-center justify-center overflow-hidden bg-transparent"
         >
-          <div
-            className={`absolute inset-0 bg-[size:60px_60px] ${
-              isLight
-                ? "bg-[linear-gradient(rgba(0,0,0,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.04)_1px,transparent_1px)]"
-                : "bg-[linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)]"
-            }`}
-            aria-hidden
-          />
+          <HeroBackdrop isLight={isLight} />
 
           <div
-            className={`absolute left-1/2 top-0 h-[600px] w-[800px] -translate-x-1/2 blur-3xl ${
-              isLight
-                ? "bg-gradient-radial from-gray-300/[0.20] via-gray-200/[0.10] to-transparent"
-                : "bg-gradient-radial from-white/[0.08] via-white/[0.03] to-transparent"
+            className={`relative z-10 w-full max-w-7xl px-6 pb-8 pt-20 transition-opacity duration-500 md:px-16 md:pb-6 md:pt-[4.5rem] ${
+              isHeroFullyLoaded
+                ? "visible opacity-100"
+                : "pointer-events-none invisible opacity-0"
             }`}
-            aria-hidden
-          />
-
-          <div
-            className={`absolute bottom-0 right-0 h-[400px] w-[600px] blur-3xl ${
-              isLight
-                ? "bg-gradient-radial from-gray-200/[0.15] via-transparent to-transparent"
-                : "bg-gradient-radial from-white/[0.05] via-transparent to-transparent"
-            }`}
-            aria-hidden
-          />
-
-          <div className="w-full max-w-7xl px-6 pb-8 pt-20 md:px-16 md:pb-6 md:pt-[4.5rem]">
+            aria-hidden={!isHeroFullyLoaded}
+          >
             <motion.div
               style={parallaxStyle}
               animate={heroShellControls}
@@ -330,7 +396,7 @@ export function HeroSection({
                         initial={false}
                         className="mt-8 flex flex-wrap gap-3"
                       >
-                        {["Brand Strategy", "Visual Identity", "Content plan data base"].map(
+                        {["Brand Strategy", "Visual Identity", "Content plan DB"].map(
                           (benefit) => (
                             <span
                               key={benefit}
@@ -383,6 +449,7 @@ export function HeroSection({
                         className="h-full w-full pointer-events-none"
                         onLoad={(spline) => {
                           splineAppRef.current = spline as SplineApp;
+                          setHasSplineLoaded(true);
                         }}
                       />
                     ) : (
@@ -403,6 +470,27 @@ export function HeroSection({
               </Card>
             </motion.div>
           </div>
+
+          <AnimatePresence>
+            {!isHeroFullyLoaded ? (
+              <motion.div
+                key="hero-loader"
+                initial={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+                className="absolute inset-0 z-50 flex items-center justify-center"
+              >
+                <HeroBackdrop isLight={isLight} />
+                <div
+                  className={`absolute inset-0 ${isLight ? "bg-white/70" : "bg-black/45"}`}
+                  aria-hidden
+                />
+                <div className="relative z-10">
+                  <CoreSpinLoader />
+                </div>
+              </motion.div>
+            ) : null}
+          </AnimatePresence>
         </section>
       </MagneticCursor>
     </>

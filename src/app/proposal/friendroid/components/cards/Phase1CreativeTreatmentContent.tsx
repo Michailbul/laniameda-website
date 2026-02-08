@@ -1039,7 +1039,8 @@ export function Phase1CreativeTreatmentContent() {
                 const cards = document.querySelectorAll('[role="dialog"]');
                 for (const card of cards) {
                   const titleEl = card.querySelector('h3');
-                  if (titleEl?.textContent?.toLowerCase().includes('pilot')) {
+                  const normalizedTitle = titleEl?.textContent?.toLowerCase() ?? "";
+                  if (normalizedTitle.includes("seed") || normalizedTitle.includes("pilot")) {
                     (card as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
                     setTimeout(() => (card as HTMLElement).click(), 300);
                     break;

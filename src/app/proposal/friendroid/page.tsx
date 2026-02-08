@@ -61,6 +61,7 @@ export default function FriendroidProposal() {
   const [isMobile, setIsMobile] = useState(false);
   const [showMobileExperienceModal, setShowMobileExperienceModal] =
     useState(false);
+  const [isHeroReady, setIsHeroReady] = useState(false);
 
   const jumpToSection = useCallback(
     (
@@ -305,6 +306,7 @@ export default function FriendroidProposal() {
               activeSection={activeSection}
               onNavSelect={navigateToSection}
               replayTick={replayTicks.hero}
+              onReadyStateChange={setIsHeroReady}
             />
             <CanvasPageSection
               replayTick={replayTicks["next-page"]}
@@ -312,15 +314,17 @@ export default function FriendroidProposal() {
             />
             <OutcomeSection replayTick={replayTicks.outcome} />
             <PricingSection replayTick={replayTicks.pricing} />
-            <ScrollSectionRail
-              activeSection={activeSection}
-              onNavSelect={navigateToSection}
-              expandedCardState={
-                activeSection === "next-page"
-                  ? expandedCardRailState
-                  : { active: false, progress: 0 }
-              }
-            />
+            {isHeroReady ? (
+              <ScrollSectionRail
+                activeSection={activeSection}
+                onNavSelect={navigateToSection}
+                expandedCardState={
+                  activeSection === "next-page"
+                    ? expandedCardRailState
+                    : { active: false, progress: 0 }
+                }
+              />
+            ) : null}
           </ScrollProvider>
         </div>
         {isMobile && showMobileExperienceModal ? (

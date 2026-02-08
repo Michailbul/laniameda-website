@@ -71,7 +71,7 @@ export function PricingSection({ replayTick }: PricingSectionProps) {
             "text-white/90"
           )}
         >
-          Content strategy + system + decision rules. No guesswork, just a repeatable engine.
+          Content strategy + Content Plan + Brand identity + Decision rules
         </p>
       </motion.div>
 

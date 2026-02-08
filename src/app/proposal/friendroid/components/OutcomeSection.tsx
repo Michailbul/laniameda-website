@@ -26,19 +26,19 @@ const deliverables: OutcomeItem[] = [
     id: "content-strategy",
     title: "Content Strategy",
     description:
-      "a plan on how to build audience throug content - what content to use, what tools to use, example formats and content ideas ready to be executed",
+      "a plan on how to build audience throug content - what content to use, what tools to use, example formats and content ideas ready to be executed. Content strategies and example workflows to build a value delivery engine for the right avatars, maintaining premium brand appearance.",
     tag: "Notion + .md",
   },
   {
     id: "library",
-    title: "Content plan Library",
+    title: "Content plan library",
     description:
       "A structurized collection of content hypotheses, example formats, content ideas ready to be executed. With the precise instructions how to align it within your niche and your brand, so you dont spend time ideating on later stages. We build a library that will be updated as the content production stage kicks in, making it easy to track, ideate and build on top of.",
     tag: "Notion DB",
   },
   {
     id: "system",
-    title: "Repeatable Content System",
+    title: "Content plan system",
     description: "Prioritization system - what to post where in what cadence and proportion. Have 100% clarity about what you gonna do next day with content. What to prioritize at each step, based on the metrics",
     tag: "Notion + .md",
   },
@@ -88,7 +88,7 @@ function OutcomeAccordion({
       <button
         onClick={onToggle}
         className={cn(
-          "group relative flex w-full items-center justify-between gap-4 rounded-xl py-5 text-left",
+          "group relative flex w-full items-center justify-between gap-3 rounded-xl py-4 text-left",
           "transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/60 focus-visible:ring-offset-0",
           isOpen
             ? isLight
@@ -99,8 +99,8 @@ function OutcomeAccordion({
             : "hover:bg-white/[0.03]"
         )}
       >
-        <div className="flex items-center gap-4">
-          <div className="relative flex w-9 shrink-0 items-center">
+        <div className="flex items-center gap-3">
+          <div className="relative flex w-8 shrink-0 items-center">
             <span
               className={cn(
                 "font-mono text-xs tracking-[0.22em] transition-colors duration-200",
@@ -129,7 +129,7 @@ function OutcomeAccordion({
 
           <div
             className={cn(
-              "flex h-8 w-8 items-center justify-center rounded-full border transition-colors duration-200",
+              "flex h-7 w-7 items-center justify-center rounded-full border transition-colors duration-200",
               isOpen
                 ? isLight
                   ? "border-teal-600 bg-teal-600 text-white"
@@ -139,12 +139,12 @@ function OutcomeAccordion({
                 : "border-white/15 bg-white/5 text-zinc-400 group-hover:border-teal-400/60 group-hover:text-teal-300"
             )}
           >
-            <Check className="h-4 w-4" />
+            <Check className="h-3.5 w-3.5" />
           </div>
 
           <span
             className={cn(
-              "text-base font-medium transition-colors duration-200 sm:text-lg",
+              "text-sm font-medium transition-colors duration-200 sm:text-base",
               isOpen
                 ? isLight
                   ? "text-zinc-900"
@@ -161,7 +161,7 @@ function OutcomeAccordion({
         <div className="flex items-center gap-3">
           <span
             className={cn(
-              "hidden sm:inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors duration-200",
+              "hidden sm:inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium transition-colors duration-200",
               isLight
                 ? "bg-zinc-100 text-zinc-600 group-hover:bg-zinc-200"
                 : "bg-white/10 text-zinc-400 group-hover:bg-white/15"
@@ -172,7 +172,7 @@ function OutcomeAccordion({
 
           <ChevronDown
             className={cn(
-              "h-5 w-5 shrink-0 transition-transform duration-200",
+              "h-4 w-4 shrink-0 transition-transform duration-200",
               isOpen ? "rotate-180" : "rotate-0",
               isLight ? "text-zinc-500" : "text-zinc-400"
             )}
@@ -200,7 +200,7 @@ function OutcomeAccordion({
         <div className="overflow-hidden">
           <p
             className={cn(
-              "pb-5 pl-[5.25rem] pr-4 text-base leading-relaxed",
+              "pb-4 pl-[4.5rem] pr-4 text-sm leading-relaxed",
               isLight ? "text-zinc-600" : "text-zinc-400"
             )}
           >
@@ -217,7 +217,7 @@ interface OutcomeSectionProps {
 }
 
 export function OutcomeSection({ replayTick }: OutcomeSectionProps) {
-  const [openId, setOpenId] = React.useState<string>("clarity");
+  const [openId, setOpenId] = React.useState<string>("");
   const [headlinePhase, setHeadlinePhase] = React.useState<
     "idle" | "strike" | "space" | "reveal" | "settle" | "final"
   >("idle");
@@ -383,11 +383,11 @@ export function OutcomeSection({ replayTick }: OutcomeSectionProps) {
       aria-label="Outcome"
       className="snap-section relative w-full overflow-hidden bg-transparent"
     >
-      <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-5xl flex-col justify-center px-6 py-20 md:py-24">
+      <div className="relative z-10 mx-auto flex h-[100svh] w-full max-w-4xl flex-col justify-center px-5 py-10 md:py-12">
         <motion.div
           animate={headingControls}
           initial={false}
-          className="mb-10 text-center"
+          className="mb-7 text-center"
         >
           <p
             className={cn(
@@ -402,7 +402,7 @@ export function OutcomeSection({ replayTick }: OutcomeSectionProps) {
           <h2
             ref={headingRef}
             className={cn(
-              "mt-4 text-4xl font-light leading-[1.08] tracking-[-0.02em] sm:text-5xl drop-shadow-[0_4px_20px_rgba(0,0,0,0.45)]",
+              "mt-3 text-3xl font-light leading-[1.08] tracking-[-0.02em] sm:text-4xl drop-shadow-[0_4px_20px_rgba(0,0,0,0.45)]",
               "text-white"
             )}
           >
@@ -501,7 +501,7 @@ export function OutcomeSection({ replayTick }: OutcomeSectionProps) {
           </h2>
           <p
             className={cn(
-              "mx-auto mt-4 max-w-2xl text-base leading-relaxed drop-shadow-[0_2px_12px_rgba(0,0,0,0.4)]",
+              "mx-auto mt-3 max-w-xl text-sm leading-relaxed drop-shadow-[0_2px_12px_rgba(0,0,0,0.4)]",
               "text-white/90"
             )}
           >
@@ -513,16 +513,16 @@ export function OutcomeSection({ replayTick }: OutcomeSectionProps) {
           animate={panelControls}
           initial={false}
           className={cn(
-            "mx-auto w-full max-w-4xl rounded-3xl border p-4 sm:p-6 md:p-8",
+            "mx-auto w-full max-w-3xl rounded-2xl border p-3 sm:p-5 md:p-6",
             isLight
               ? "border-zinc-200 bg-white shadow-[0_8px_30px_rgba(15,23,42,0.06)]"
               : "border-white/10 bg-zinc-950/70 shadow-[0_10px_32px_rgba(0,0,0,0.28)]"
           )}
         >
-          <div className="mb-4">
+          <div className="mb-3">
             <span
               className={cn(
-                "inline-flex rounded-full border px-3 py-1 text-[11px] font-mono uppercase tracking-[0.2em]",
+                "inline-flex rounded-full border px-2.5 py-0.5 text-[10px] font-mono uppercase tracking-[0.18em]",
                 isLight
                   ? "border-teal-200 bg-teal-50 text-teal-700"
                   : "border-teal-400/25 bg-teal-500/10 text-teal-300"
@@ -537,7 +537,7 @@ export function OutcomeSection({ replayTick }: OutcomeSectionProps) {
               <div className={cn("absolute bottom-0 left-[8px] top-0 w-px", isLight ? "bg-zinc-200" : "bg-white/12")} />
             </div>
 
-            <div className="space-y-0 pl-6">
+            <div className="space-y-0 pl-5">
               {deliverables.map((outcome, index) => (
                 <motion.div
                   key={outcome.id}
