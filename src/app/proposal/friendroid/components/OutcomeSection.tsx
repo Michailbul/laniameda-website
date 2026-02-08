@@ -339,7 +339,7 @@ export function OutcomeSection({ replayTick }: OutcomeSectionProps) {
       transition: {
         duration: prefersReducedMotion ? 0.24 : 0.45,
         delay: prefersReducedMotion ? 0 : 0.08 + index * 0.06,
-        ease: [0.16, 1, 0.3, 1],
+        ease: [0.16, 1, 0.3, 1] as const,
       },
     }),
   };

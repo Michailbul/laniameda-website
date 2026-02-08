@@ -36,7 +36,7 @@ type DeepPartial<T> = {
  * Deep merge utility - merges objects with proper type handling
  * Later objects override earlier ones (rightmost wins)
  */
-function deepMerge<T extends Record<string, unknown>>(...objects: Array<DeepPartial<T> | undefined>): T {
+function deepMerge<T extends object>(...objects: Array<DeepPartial<T> | undefined>): T {
   const result = {} as T;
   
   for (const obj of objects) {
@@ -50,13 +50,13 @@ function deepMerge<T extends Record<string, unknown>>(...objects: Array<DeepPart
         value !== null && 
         !Array.isArray(value) &&
         key in result &&
-        typeof result[key as keyof T] === "object" &&
-        result[key as keyof T] !== null &&
-        !Array.isArray(result[key as keyof T])
+        typeof (result as Record<string, unknown>)[key] === "object" &&
+        (result as Record<string, unknown>)[key] !== null &&
+        !Array.isArray((result as Record<string, unknown>)[key])
       ) {
         // Recursively merge nested objects
         (result as Record<string, unknown>)[key] = deepMerge(
-          result[key as keyof T] as Record<string, unknown>,
+          (result as Record<string, unknown>)[key] as Record<string, unknown>,
           value as Record<string, unknown>
         );
       } else {

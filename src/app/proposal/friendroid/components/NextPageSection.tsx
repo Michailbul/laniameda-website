@@ -181,14 +181,14 @@ export function CanvasPageSection({
   const cardTransition = React.useMemo(
     () => ({
       duration: prefersReducedMotion ? 0.24 : 0.98,
-      ease: [0.16, 1, 0.3, 1],
+      ease: [0.16, 1, 0.3, 1] as const,
     }),
     [prefersReducedMotion]
   );
   const indicatorTransition = React.useMemo(
     () => ({
       duration: prefersReducedMotion ? 0.26 : 0.83,
-      ease: [0.16, 1, 0.3, 1],
+      ease: [0.16, 1, 0.3, 1] as const,
     }),
     [prefersReducedMotion]
   );
@@ -206,7 +206,7 @@ export function CanvasPageSection({
   const tokenFadeTransition = React.useMemo(
     () => ({
       duration: prefersReducedMotion ? 0.18 : 0.32,
-      ease: "easeInOut",
+      ease: "easeInOut" as const,
     }),
     [prefersReducedMotion]
   );
@@ -221,7 +221,7 @@ export function CanvasPageSection({
   const headingTransition = React.useMemo(
     () => ({
       duration: prefersReducedMotion ? 0.2 : 0.72,
-      ease: [0.16, 1, 0.3, 1],
+      ease: [0.16, 1, 0.3, 1] as const,
     }),
     [prefersReducedMotion]
   );
