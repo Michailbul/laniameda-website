@@ -45,7 +45,7 @@ export function Phase2PilotContent() {
       <p className="text-zinc-700 dark:text-zinc-300 mt-2">
         At this stage, everything is done <strong className="text-zinc-900 dark:text-white">manually</strong> — no heavy AI automation. We test the pipeline by hand to learn what works and what doesn't.  
         <LinkPreview
-          url="https://www.laniameda.space/"
+          url="https://www.laniameda.space"
           className="font-bold bg-clip-text text-transparent bg-gradient-to-br from-purple-500 to-pink-500"
         >
          Laniameda

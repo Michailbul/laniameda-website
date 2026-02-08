@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { motion, useAnimationControls, useReducedMotion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { GradientSlideButton } from "@/components/ui/gradient-slide-button";
 import {
@@ -12,50 +11,15 @@ import {
 } from "@/components/ui/tooltip";
 import { FaCheck } from "react-icons/fa6";
 
-interface PricingCardWithFeaturesProps {
-  animateRows?: boolean;
-  rowRevealTick?: number;
-}
-
-export const PricingCardWithFeatures = ({
-  animateRows = false,
-  rowRevealTick = 0,
-}: PricingCardWithFeaturesProps): React.JSX.Element => {
-  const rowAnimationControls = useAnimationControls();
-  const prefersReducedMotion = useReducedMotion();
-
+export const PricingCardWithFeatures = (): React.JSX.Element => {
   const features = [
-    { label: "Hypotheses Content Library", info: "Content ideas database. Never spend time about WHAT to create." },
+    { label: "Content Plan Library", info: "Content ideas database. Never spend time about wondering WHAT to create." },
     { label: "Prioritization System", info: "Never split focus" },
-    { label: "Content Strategy", info: "Audience definition, 4–6 content pillars, daily action points." },
-    { label: "Repurposing Blueprint", info: "One topic → multiple pieces." },
-    { label: "Brand Kernel", info: "Narrative, positioning, promise." },
-    { label: "Visual Direction", info: "References + do/don't list." },
-    { label: "Metrics + Decision Rules", info: "Scale / improve / kill loop." },
-    { label: "Pilot → Scale Roadmap", info: "Step-by-step next phase." },
+    { label: "Content Strategy", info: "Certainty on how to build audience not views" },    
+    { label: "Brand Kernel", info: "perfect clarity on what your brand is about and how to use it to build connected audience" },
+    { label: "Visual Direction", info: "References for visual styles, colors, layouts, editing styles, carousel designs" },
+    { label: "Execution roadmap", info: "Step-by-step next phases action points" },
   ];
-
-  React.useEffect(() => {
-    if (!animateRows) {
-      rowAnimationControls.set({ opacity: 1, y: 0 });
-      return;
-    }
-
-    rowAnimationControls.set(prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 10 });
-    const frameId = window.requestAnimationFrame(() => {
-      void rowAnimationControls.start((index: number) => ({
-        opacity: 1,
-        y: 0,
-        transition: {
-          delay: prefersReducedMotion ? 0 : 0.08 + index * 0.05,
-          duration: prefersReducedMotion ? 0.22 : 0.36,
-          ease: [0.16, 1, 0.3, 1],
-        },
-      }));
-    });
-
-    return () => window.cancelAnimationFrame(frameId);
-  }, [animateRows, prefersReducedMotion, rowAnimationControls, rowRevealTick]);
 
   return (
     <TooltipProvider>
@@ -75,15 +39,10 @@ export const PricingCardWithFeatures = ({
             {features.map((f, i) => (
               <Tooltip key={i}>
                 <TooltipTrigger asChild>
-                  <motion.div
-                    custom={i}
-                    animate={rowAnimationControls}
-                    initial={false}
-                    className="flex items-center gap-3 cursor-pointer select-none text-muted-foreground hover:text-foreground transition-colors"
-                  >
+                  <div className="flex items-center gap-3 cursor-pointer select-none text-muted-foreground hover:text-foreground transition-colors">
                     <FaCheck className="text-primary w-4 h-4 shrink-0" />
                     <span className="text-[15px] leading-[18px]">{f.label}</span>
-                  </motion.div>
+                  </div>
                 </TooltipTrigger>
                 <TooltipContent
                   side="top"

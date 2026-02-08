@@ -555,7 +555,7 @@ export function Phase1CreativeTreatmentContent() {
           </h4>
 
           <p className="max-w-3xl text-[14px] leading-relaxed text-zinc-600 dark:text-zinc-400">
-            Recurring narrative formats that we stick to, based on the brand narrative, the stage we are currently in (content pillar on stage Seed is different from stage Content Market Fit) that works in adjacent niches, and how to repurpose them in robotics niche.
+            Recurring narrative formats that we stick to, based on the brand narrative, the stage we are currently in (content pillar on stage Seed is different from stage Content Market Fit) that works in adjacent niches, and how to repurpose them in robotics niche, for example: 
           </p>
 
           <div className="space-y-4">

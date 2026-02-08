@@ -135,7 +135,7 @@ export function Phase0CurrentStateContent() {
         <p className="text-zinc-600 dark:text-white/70 leading-relaxed max-w-2xl">
           At{" "}
           <LinkPreview
-            url="https://www.laniameda.space/"
+            url="https://www.laniameda.space"
             className="font-bold bg-clip-text text-transparent bg-gradient-to-br from-purple-500 to-pink-500"
           >
             Laniameda

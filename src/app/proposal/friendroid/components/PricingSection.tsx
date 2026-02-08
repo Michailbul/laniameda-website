@@ -84,7 +84,7 @@ export function PricingSection({ replayTick }: PricingSectionProps) {
         <PricingCardWithFeatures animateRows rowRevealTick={replayTick} />
       </motion.div>
 
-      {/* Trust badges */}
+      {/* Guarantee */}
       <motion.div
         animate={badgesControls}
         initial={false}
@@ -98,7 +98,7 @@ export function PricingSection({ replayTick }: PricingSectionProps) {
               : "text-zinc-100"
           )}
         >
-          $2,000 fixed • 10 days delivery • Strategy + Brand + Content plan
+          Guarantee: we will work with you until you 100% certain that this is the direction you would want your brand to grow further
         </p>
       </motion.div>
       </div>

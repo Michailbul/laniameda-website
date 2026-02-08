@@ -181,14 +181,14 @@ export function CanvasPageSection({
   const cardTransition = React.useMemo(
     () => ({
       duration: prefersReducedMotion ? 0.24 : 0.98,
-      ease: [0.16, 1, 0.3, 1] as const,
+      ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
     }),
     [prefersReducedMotion]
   );
   const indicatorTransition = React.useMemo(
     () => ({
       duration: prefersReducedMotion ? 0.26 : 0.83,
-      ease: [0.16, 1, 0.3, 1] as const,
+      ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
     }),
     [prefersReducedMotion]
   );
@@ -221,7 +221,7 @@ export function CanvasPageSection({
   const headingTransition = React.useMemo(
     () => ({
       duration: prefersReducedMotion ? 0.2 : 0.72,
-      ease: [0.16, 1, 0.3, 1] as const,
+      ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
     }),
     [prefersReducedMotion]
   );
@@ -365,7 +365,7 @@ export function CanvasPageSection({
             <span>Three</span>
             {activePhaseWord && (
               <span className="relative inline-grid align-middle">
-                <span className="invisible font-medium whitespace-nowrap">(five)</span>
+                <span className="invisible font-medium whitespace-nowrap"> (five) </span>
                 <motion.span
                   className={cn(
                     "absolute inset-0 whitespace-nowrap font-medium",
@@ -375,7 +375,7 @@ export function CanvasPageSection({
                   animate={{ opacity: showFourToken ? 1 : 0 }}
                   transition={tokenFadeTransition}
                 >
-                  (four)
+                  {" (four) "}
                 </motion.span>
                 <motion.span
                   className={cn(
@@ -386,11 +386,11 @@ export function CanvasPageSection({
                   animate={{ opacity: showFiveToken ? 1 : 0 }}
                   transition={tokenFadeTransition}
                 >
-                  (five)
+                  {" (five) "}
                 </motion.span>
               </span>
             )}
-            <span> Phases to </span>
+            <span>{activePhaseWord ? "Phases to " : " Phases to "}</span>
             <span className="font-medium text-teal-500">Scale</span>
           </span>
         </h2>

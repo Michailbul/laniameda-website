@@ -11,6 +11,7 @@ interface OutcomeItem {
   id: string;
   title: string;
   description: string;
+  tag: string;
 }
 
 const deliverables: OutcomeItem[] = [
@@ -19,30 +20,41 @@ const deliverables: OutcomeItem[] = [
     title: "Crystal-Clear Brand Positioning",
     description:
       "Brand positioning, narrative and elevator pitch about who you are, what you stand for, how you gona help the audience",
+    tag: "Notion + .md",
+  },
+  {
+    id: "content-strategy",
+    title: "Content Strategy",
+    description:
+      "a plan on how to build audience throug content - what content to use, what tools to use, example formats and content ideas ready to be executed",
+    tag: "Notion + .md",
   },
   {
     id: "library",
-    title: "Content Library",
+    title: "Content plan Library",
     description:
-      "A structurized collection of content hypotheses, example formats, content ideas ready to be executed. With the precise instructions how to align it within your niche and your brand, so you dont spend time ideating on later stages. We build a library that will be updated as the content production stage kicks in, making it easy to track, ideate and build on top of. ",
+      "A structurized collection of content hypotheses, example formats, content ideas ready to be executed. With the precise instructions how to align it within your niche and your brand, so you dont spend time ideating on later stages. We build a library that will be updated as the content production stage kicks in, making it easy to track, ideate and build on top of.",
+    tag: "Notion DB",
   },
   {
     id: "system",
     title: "Repeatable Content System",
-    description:
-      "A documented playbook and a system for consistent content creation. You'll know exactly what to post, when to post it, and how each piece ties back to the business goals, that will be utilized in the upcoming stages of content production, so that you dont spend time on ideas, have perfect certainty where your content engine and brand is going ",
-  }, 
+    description: "Prioritization system - what to post where in what cadence and proportion. Have 100% clarity about what you gonna do next day with content. What to prioritize at each step, based on the metrics",
+    tag: "Notion + .md",
+  },
   {
     id: "visuals",
     title: "Visual direction",
     description:
       "A library of visual references for future visual content design. You will receive an organized figma canvas style of reference directions we may proceed and build up on top of. (Premium layouts, branded UI, carousels examples etc)",
-  }, 
+    tag: "Figma",
+  },
   {
-    id: "roadmap",
-    title: "Next steps Roadmap",
+    id: "actions plan",
+    title: "Action Plan",
     description:
-      "A concrete execution plan for the next stages. ",
+      "A step by step execution plan for the next stages, so you have perfect clarity and certainty on the roadmap and action points for the next 3 months. You will have a full strategy document that we will work with you on till you 100% feel confident in what you building,",
+    tag: "Notion + .md",
   },
 ];
 
@@ -146,13 +158,26 @@ function OutcomeAccordion({
           </span>
         </div>
 
-        <ChevronDown
-          className={cn(
-            "h-5 w-5 shrink-0 transition-transform duration-200",
-            isOpen ? "rotate-180" : "rotate-0",
-            isLight ? "text-zinc-500" : "text-zinc-400"
-          )}
-        />
+        <div className="flex items-center gap-3">
+          <span
+            className={cn(
+              "hidden sm:inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors duration-200",
+              isLight
+                ? "bg-zinc-100 text-zinc-600 group-hover:bg-zinc-200"
+                : "bg-white/10 text-zinc-400 group-hover:bg-white/15"
+            )}
+          >
+            {item.tag}
+          </span>
+
+          <ChevronDown
+            className={cn(
+              "h-5 w-5 shrink-0 transition-transform duration-200",
+              isOpen ? "rotate-180" : "rotate-0",
+              isLight ? "text-zinc-500" : "text-zinc-400"
+            )}
+          />
+        </div>
       </button>
 
       {isOpen ? (
@@ -480,7 +505,7 @@ export function OutcomeSection({ replayTick }: OutcomeSectionProps) {
               "text-white/90"
             )}
           >
-            Five focused deliverables you can use immediately to build a foundational content engine.
+            Six focused deliverables you can use immediately to build a foundational content engine.
           </p>
         </motion.div>
 
