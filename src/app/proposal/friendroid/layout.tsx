@@ -3,7 +3,8 @@ import type { Metadata, Viewport } from "next";
 export const metadata: Metadata = {
   title: "Friendroid Proposal | Laniameda",
   description:
-    "Creative Treatment Package — Build a connected, trusted audience in the robotics niche. $2,000 / 5 business days.",
+       "Creative Treatment Package — first step to build a connected trusted audience in robotics niche. $2,000 / 10  days.",
+
 };
 
 export const viewport: Viewport = {
