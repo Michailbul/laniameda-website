@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { GradientSlideButton } from "@/components/ui/gradient-slide-button";
 import {
@@ -11,7 +12,15 @@ import {
 } from "@/components/ui/tooltip";
 import { FaCheck } from "react-icons/fa6";
 
-export const PricingCardWithFeatures = (): React.JSX.Element => {
+interface PricingCardWithFeaturesProps {
+  animateRows?: boolean;
+  rowRevealTick?: number;
+}
+
+export const PricingCardWithFeatures = ({
+  animateRows = false,
+  rowRevealTick = 0,
+}: PricingCardWithFeaturesProps): React.JSX.Element => {
   const features = [
     { label: "Content Plan Library", info: "Content ideas database. Never spend time about wondering WHAT to create." },
     { label: "Prioritization System", info: "Never split focus" },
@@ -37,12 +46,18 @@ export const PricingCardWithFeatures = (): React.JSX.Element => {
         {/* Features */}
         <CardContent className="rounded-[28px] border border-border bg-background px-5 py-5 md:px-6 md:py-6 flex flex-col gap-4">
             {features.map((f, i) => (
-              <Tooltip key={i}>
+              <Tooltip key={f.label}>
                 <TooltipTrigger asChild>
-                  <div className="flex items-center gap-3 cursor-pointer select-none text-muted-foreground hover:text-foreground transition-colors">
+                  <motion.div
+                    key={`feature-${i}-${animateRows ? rowRevealTick : 0}`}
+                    initial={animateRows ? { opacity: 0, y: 8 } : false}
+                    animate={animateRows ? { opacity: 1, y: 0 } : undefined}
+                    transition={animateRows ? { duration: 0.35, delay: i * 0.07 } : undefined}
+                    className="flex items-center gap-3 cursor-pointer select-none text-muted-foreground hover:text-foreground transition-colors"
+                  >
                     <FaCheck className="text-primary w-4 h-4 shrink-0" />
                     <span className="text-[15px] leading-[18px]">{f.label}</span>
-                  </div>
+                  </motion.div>
                 </TooltipTrigger>
                 <TooltipContent
                   side="top"

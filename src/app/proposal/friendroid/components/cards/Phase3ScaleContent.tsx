@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { FlowButton } from "@/components/ui/flow-button";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -60,6 +61,28 @@ export function ContentMarketFit() {
         <p className="text-lg font-medium text-teal-600 dark:text-teal-400">
           Audience connection established, value-driven content engine running, qualified leads flowing.
         </p>
+
+        <motion.section variants={fadeIn} className="flex justify-end pt-4 pb-20">
+          <FlowButton
+            text="What's after?"
+            onClick={() => {
+              const closeButton = document.querySelector('[aria-label="Close card"]') as HTMLButtonElement;
+              if (closeButton) closeButton.click();
+              setTimeout(() => {
+                const cards = document.querySelectorAll('[role="dialog"]');
+                for (const card of cards) {
+                  const titleEl = card.querySelector('h3');
+                  const normalizedTitle = titleEl?.textContent?.toLowerCase() ?? "";
+                  if (normalizedTitle.includes("growth")) {
+                    (card as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    setTimeout(() => (card as HTMLElement).click(), 300);
+                    break;
+                  }
+                }
+              }, 400);
+            }}
+          />
+        </motion.section>
       </motion.div>
     </div>
   );

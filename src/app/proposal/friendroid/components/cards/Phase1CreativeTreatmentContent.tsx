@@ -6,6 +6,7 @@ import { DisplayCards } from "@/components/ui/display-cards";
 import { BlurTextEffect } from "@/components/ui/blur-text-effect";
 import { RoadmapCard } from "@/components/ui/roadmap-card";
 import { PatternCard } from "@/components/ui/pattern-card";
+import { FlowButton } from "@/components/ui/flow-button";
 import {
   Table,
   TableBody,
@@ -1030,8 +1031,8 @@ export function Phase1CreativeTreatmentContent() {
         </motion.section>
 
         <motion.section variants={fadeIn} className="flex justify-end pt-4 pb-20">
-          <button
-            type="button"
+          <FlowButton
+            text="What's after?"
             onClick={() => {
               const closeButton = document.querySelector('[aria-label="Close card"]') as HTMLButtonElement;
               if (closeButton) closeButton.click();
@@ -1048,13 +1049,7 @@ export function Phase1CreativeTreatmentContent() {
                 }
               }, 400);
             }}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white text-[14px] font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500/20 cursor-pointer"
-          >
-            What&apos;s after?
-            <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-          </button>
+          />
         </motion.section>
       </motion.div>
     </div>
