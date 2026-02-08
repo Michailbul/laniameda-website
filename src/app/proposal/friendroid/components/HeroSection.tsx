@@ -413,8 +413,10 @@ export function HeroSection({
                         initial={false}
                         className="mt-auto pt-8"
                       >
-                        <div
+                        <a
                           data-magnetic
+                          href="#next-page"
+                          onClick={(event) => handleNavClick(event, "next-page")}
                           className="relative flex h-20 w-full max-w-[280px] items-center justify-between overflow-hidden rounded-xl bg-white px-5 text-gray-900 shadow-2xl transition-transform hover:scale-[1.02] md:h-[72px]"
                         >
                           <div className="flex flex-col gap-0.5">
@@ -426,7 +428,7 @@ export function HeroSection({
                           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-900 text-white">
                             <ArrowUpRight className="pointer-events-none h-4 w-4" />
                           </div>
-                        </div>
+                        </a>
                       </motion.div>
                     </div>
                   </motion.div>

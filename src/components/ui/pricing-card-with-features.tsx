@@ -72,7 +72,12 @@ export const PricingCardWithFeatures = ({
         {/* Footer */}
         <div className="flex flex-col gap-3 px-1 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex flex-col">
-            <span className="text-sm leading-none text-muted-foreground">Fixed price</span>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-sm leading-none text-muted-foreground">Fixed price</span>
+              <span className="text-xs font-medium leading-none text-muted-foreground/90">
+                • 10-day delivery
+              </span>
+            </div>
             <span className="mt-1 text-[34px] font-medium leading-[0.94] tracking-tight">$2,000</span>
           </div>
 
