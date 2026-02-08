@@ -597,7 +597,7 @@ function Header({ onManifestoClick }: { onManifestoClick: () => void }) {
       {/* Lets create Button Group with Arrow */}
       <div className="relative flex items-center group">
         <a
-          href="https://cal.com"
+          href="https://cal.com/michael-buloichyk-zwzdvl/30min"
           target="_blank"
           rel="noreferrer"
           className="absolute right-0 px-2.5 py-2 rounded-full bg-white text-black font-normal text-xs transition-all duration-300 hover:bg-white/90 cursor-pointer h-8 flex items-center justify-center -translate-x-10 group-hover:-translate-x-[76px] z-0"
@@ -607,7 +607,7 @@ function Header({ onManifestoClick }: { onManifestoClick: () => void }) {
           </svg>
         </a>
         <a
-          href="https://cal.com"
+          href="https://cal.com/michael-buloichyk-zwzdvl/30min"
           target="_blank"
           rel="noreferrer"
           className="px-6 py-2 rounded-full bg-white text-black font-normal text-xs transition-all duration-300 hover:bg-white/90 cursor-pointer h-8 flex items-center z-10"
