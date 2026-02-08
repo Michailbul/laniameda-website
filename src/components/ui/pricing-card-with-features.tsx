@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { motion, useAnimationControls, useReducedMotion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { GradientSlideButton } from "@/components/ui/gradient-slide-button";
 import {
@@ -11,10 +12,21 @@ import {
 } from "@/components/ui/tooltip";
 import { FaCheck } from "react-icons/fa6";
 
-export const PricingCardWithFeatures = (): React.JSX.Element => {
+interface PricingCardWithFeaturesProps {
+  animateRows?: boolean;
+  rowRevealTick?: number;
+}
+
+export const PricingCardWithFeatures = ({
+  animateRows = false,
+  rowRevealTick = 0,
+}: PricingCardWithFeaturesProps): React.JSX.Element => {
+  const rowAnimationControls = useAnimationControls();
+  const prefersReducedMotion = useReducedMotion();
+
   const features = [
-    { label: "Hypotheses Content Library", info: "Ranked content directions with priority order." },
-    { label: "Prioritization System", info: "Hero format + support format + publishing cadence." },
+    { label: "Hypotheses Content Library", info: "Content ideas database. Never spend time about WHAT to create." },
+    { label: "Prioritization System", info: "Never split focus" },
     { label: "Content Strategy", info: "Audience definition, 4–6 content pillars, daily action points." },
     { label: "Repurposing Blueprint", info: "One topic → multiple pieces." },
     { label: "Brand Kernel", info: "Narrative, positioning, promise." },
@@ -22,6 +34,28 @@ export const PricingCardWithFeatures = (): React.JSX.Element => {
     { label: "Metrics + Decision Rules", info: "Scale / improve / kill loop." },
     { label: "Pilot → Scale Roadmap", info: "Step-by-step next phase." },
   ];
+
+  React.useEffect(() => {
+    if (!animateRows) {
+      rowAnimationControls.set({ opacity: 1, y: 0 });
+      return;
+    }
+
+    rowAnimationControls.set(prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 10 });
+    const frameId = window.requestAnimationFrame(() => {
+      void rowAnimationControls.start((index: number) => ({
+        opacity: 1,
+        y: 0,
+        transition: {
+          delay: prefersReducedMotion ? 0 : 0.08 + index * 0.05,
+          duration: prefersReducedMotion ? 0.22 : 0.36,
+          ease: [0.16, 1, 0.3, 1],
+        },
+      }));
+    });
+
+    return () => window.cancelAnimationFrame(frameId);
+  }, [animateRows, prefersReducedMotion, rowAnimationControls, rowRevealTick]);
 
   return (
     <TooltipProvider>
@@ -41,10 +75,15 @@ export const PricingCardWithFeatures = (): React.JSX.Element => {
             {features.map((f, i) => (
               <Tooltip key={i}>
                 <TooltipTrigger asChild>
-                  <div className="flex items-center gap-3 cursor-pointer select-none text-muted-foreground hover:text-foreground transition-colors">
+                  <motion.div
+                    custom={i}
+                    animate={rowAnimationControls}
+                    initial={false}
+                    className="flex items-center gap-3 cursor-pointer select-none text-muted-foreground hover:text-foreground transition-colors"
+                  >
                     <FaCheck className="text-primary w-4 h-4 shrink-0" />
                     <span className="text-[15px] leading-[18px]">{f.label}</span>
-                  </div>
+                  </motion.div>
                 </TooltipTrigger>
                 <TooltipContent
                   side="top"

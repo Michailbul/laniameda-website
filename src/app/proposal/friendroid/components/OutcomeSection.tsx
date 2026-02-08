@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useAnimationControls, useReducedMotion } from "framer-motion";
 import { Check, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTheme } from "./ThemeContext";
@@ -22,27 +22,27 @@ const deliverables: OutcomeItem[] = [
   },
   {
     id: "library",
-    title: "Tested Content Library",
+    title: "Content Library",
     description:
-      "A validated collection of content hypotheses, formats, and angles that resonate with your audience. Stop guessing-start executing with confidence based on real data.",
+      "A structurized collection of content hypotheses, example formats, content ideas ready to be executed. With the precise instructions how to align it within your niche and your brand, so you dont spend time ideating on later stages. We build a library that will be updated as the content production stage kicks in, making it easy to track, ideate and build on top of. ",
   },
   {
     id: "system",
     title: "Repeatable Content System",
     description:
-      "A documented playbook and a system for creating consistent content. You'll know exactly what to post, when to post it, and how each piece ties back to the business goals, that will be utilized in the upcoming stages of content production, so that you dont spend time on ideas, have perfect certainty where your content engine and brand is going ",
+      "A documented playbook and a system for consistent content creation. You'll know exactly what to post, when to post it, and how each piece ties back to the business goals, that will be utilized in the upcoming stages of content production, so that you dont spend time on ideas, have perfect certainty where your content engine and brand is going ",
   }, 
   {
     id: "visuals",
     title: "Visual direction",
     description:
-      "A cohesive design language that elevates every touchpoint. From social posts to pitch decks, your visuals will signal quality and build trust before you say a word.",
+      "A library of visual references for future visual content design. You will receive an organized figma canvas style of reference directions we may proceed and build up on top of. (Premium layouts, branded UI, carousels examples etc)",
   }, 
   {
     id: "roadmap",
     title: "Next steps Roadmap",
     description:
-      "A concrete execution plan for the next stages. You'll know exactly what to do next, decision making rules.",
+      "A concrete execution plan for the next stages. ",
   },
 ];
 
@@ -208,13 +208,16 @@ export function OutcomeSection({ replayTick }: OutcomeSectionProps) {
     replayTick,
     fromY: 28,
     duration: 0.72,
+    startHiddenUntilReplay: true,
   });
   const panelControls = useReplayAnimation({
     replayTick,
     fromY: 38,
     delay: 0.12,
     duration: 0.78,
+    startHiddenUntilReplay: true,
   });
+  const accordionRowsControls = useAnimationControls();
 
   const handleToggle = (id: string) => {
     setOpenId((current) => (current === id ? "" : id));
@@ -313,9 +316,33 @@ export function OutcomeSection({ replayTick }: OutcomeSectionProps) {
     return () => window.clearTimeout(timeoutId);
   }, [headlinePhase]);
 
+  React.useEffect(() => {
+    accordionRowsControls.set("hidden");
+    const frameId = window.requestAnimationFrame(() => {
+      void accordionRowsControls.start("visible");
+    });
+
+    return () => window.cancelAnimationFrame(frameId);
+  }, [accordionRowsControls, replayTick]);
+
   const hasStruckPhrase = headlinePhase !== "idle";
   const hasShiftedWith = headlinePhase === "space" || headlinePhase === "reveal";
   const hasRevealedPhrase = headlinePhase === "reveal" || headlinePhase === "settle" || headlinePhase === "final";
+  const accordionRowVariants = {
+    hidden: {
+      opacity: 0,
+      y: prefersReducedMotion ? 0 : 14,
+    },
+    visible: (index: number) => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: prefersReducedMotion ? 0.24 : 0.45,
+        delay: prefersReducedMotion ? 0 : 0.08 + index * 0.06,
+        ease: [0.16, 1, 0.3, 1],
+      },
+    }),
+  };
   const oldSegmentWidth =
     segmentWidths.old > 0
       ? `${Math.ceil(segmentWidths.old + OUTCOME_SEGMENT_WIDTH_BUFFER_PX)}px`
@@ -453,7 +480,7 @@ export function OutcomeSection({ replayTick }: OutcomeSectionProps) {
               "text-white/90"
             )}
           >
-            Five focused deliverables you can use immediately to build a repeatable content engine.
+            Five focused deliverables you can use immediately to build a foundational content engine.
           </p>
         </motion.div>
 
@@ -487,14 +514,21 @@ export function OutcomeSection({ replayTick }: OutcomeSectionProps) {
 
             <div className="space-y-0 pl-6">
               {deliverables.map((outcome, index) => (
-                <OutcomeAccordion
+                <motion.div
                   key={outcome.id}
-                  item={outcome}
-                  index={index}
-                  isLight={isLight}
-                  isOpen={openId === outcome.id}
-                  onToggle={() => handleToggle(outcome.id)}
-                />
+                  custom={index}
+                  variants={accordionRowVariants}
+                  animate={accordionRowsControls}
+                  initial={false}
+                >
+                  <OutcomeAccordion
+                    item={outcome}
+                    index={index}
+                    isLight={isLight}
+                    isOpen={openId === outcome.id}
+                    onToggle={() => handleToggle(outcome.id)}
+                  />
+                </motion.div>
               ))}
             </div>
           </div>

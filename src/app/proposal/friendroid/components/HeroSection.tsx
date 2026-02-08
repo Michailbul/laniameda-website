@@ -74,6 +74,42 @@ export function HeroSection({
     duration: 0.82,
     delay: 0.12,
   });
+  const badgeControls = useReplayAnimation({
+    replayTick,
+    fromY: 18,
+    delay: 0.18,
+    duration: 0.58,
+  });
+  const headingControls = useReplayAnimation({
+    replayTick,
+    fromY: 20,
+    delay: 0.24,
+    duration: 0.62,
+  });
+  const paragraphControls = useReplayAnimation({
+    replayTick,
+    fromY: 18,
+    delay: 0.32,
+    duration: 0.58,
+  });
+  const priceControls = useReplayAnimation({
+    replayTick,
+    fromY: 16,
+    delay: 0.4,
+    duration: 0.56,
+  });
+  const chipsControls = useReplayAnimation({
+    replayTick,
+    fromY: 14,
+    delay: 0.46,
+    duration: 0.56,
+  });
+  const ctaControls = useReplayAnimation({
+    replayTick,
+    fromY: 14,
+    delay: 0.54,
+    duration: 0.58,
+  });
 
   useEffect(() => {
     const updateViewportHeight = () => setViewportHeight(window.innerHeight);
@@ -243,40 +279,58 @@ export function HeroSection({
                     className="relative z-10 flex flex-1 flex-col bg-[#0a0a0a] p-8 shadow-[8px_0_40px_rgba(0,0,0,0.4)] md:mr-[-50px] md:rounded-r-[40px] md:p-12"
                   >
                     <div className="flex flex-1 flex-col justify-center">
-                      <ProposalBadge
-                        data-magnetic
-                        data-magnetic-blend-mode="screen"
-                        text="Proposal for Friendroid"
-                        isLight={false}
-                      />
+                      <motion.div animate={badgeControls} initial={false}>
+                        <ProposalBadge
+                          data-magnetic
+                          data-magnetic-blend-mode="screen"
+                          text="Proposal for Friendroid"
+                          isLight={false}
+                        />
+                      </motion.div>
 
-                      <h1 className="mt-8 text-4xl font-medium tracking-tight text-white md:text-6xl">
+                      <motion.h1
+                        animate={headingControls}
+                        initial={false}
+                        className="mt-8 text-4xl font-medium tracking-tight text-white md:text-6xl"
+                      >
                         Creative Treatment
                         <br />
                         <span className="text-white/60">Package</span>
-                      </h1>
+                      </motion.h1>
 
-                      <p className="mt-5 max-w-xl text-[15px] font-light leading-relaxed text-white/70">
+                      <motion.p
+                        animate={paragraphControls}
+                        initial={false}
+                        className="mt-5 max-w-xl text-[15px] font-light leading-relaxed text-white/70"
+                      >
                         <HyperTextParagraph
-                          text="Build a connected, trusted audience in the robotics niche"
+                          text="Get clarity and certainty on how to build connected, trusted audience in the robotics niche"
                           highlightWords={["robotics"]}
                           className="text-[15px] font-light leading-relaxed"
                           theme="dark"
                         />
-                      </p>
+                      </motion.p>
 
-                      <div className="mt-10 flex items-baseline gap-3">
+                      <motion.div
+                        animate={priceControls}
+                        initial={false}
+                        className="mt-10 flex items-baseline gap-3"
+                      >
                         <span className="text-4xl font-extralight tracking-tight text-white md:text-5xl">
                           $2,000
                         </span>
                         <span className="text-xl text-white/50">/</span>
                         <span className="text-lg font-light text-white/70">10 days</span>
-                      </div>
+                      </motion.div>
 
                       <div className="mt-8 h-px w-16 bg-gradient-to-r from-white/60 to-transparent" />
 
-                      <div className="mt-8 flex flex-wrap gap-3">
-                        {["Brand Strategy", "Visual Identity", "Content Framework"].map(
+                      <motion.div
+                        animate={chipsControls}
+                        initial={false}
+                        className="mt-8 flex flex-wrap gap-3"
+                      >
+                        {["Brand Strategy", "Visual Identity", "Content plan data base"].map(
                           (benefit) => (
                             <span
                               key={benefit}
@@ -286,22 +340,28 @@ export function HeroSection({
                             </span>
                           )
                         )}
-                      </div>
+                      </motion.div>
 
-                      <div
-                        data-magnetic
-                        className="relative mt-8 flex h-28 w-full max-w-sm items-center justify-between overflow-hidden rounded-2xl bg-white px-6 text-gray-900 shadow-2xl transition-transform hover:scale-[1.02]"
+                      <motion.div
+                        animate={ctaControls}
+                        initial={false}
+                        className="mt-auto pt-8"
                       >
-                        <div className="flex flex-col gap-1">
-                          <span className="text-xs font-medium uppercase tracking-widest opacity-60">
-                            Explore
-                          </span>
-                          <span className="text-xl font-bold tracking-tight">The offer</span>
+                        <div
+                          data-magnetic
+                          className="relative flex h-20 w-full max-w-[280px] items-center justify-between overflow-hidden rounded-xl bg-white px-5 text-gray-900 shadow-2xl transition-transform hover:scale-[1.02] md:h-[72px]"
+                        >
+                          <div className="flex flex-col gap-0.5">
+                            <span className="text-[11px] font-medium uppercase tracking-widest opacity-60">
+                              Explore
+                            </span>
+                            <span className="text-lg font-semibold tracking-tight">The offer</span>
+                          </div>
+                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-900 text-white">
+                            <ArrowUpRight className="pointer-events-none h-4 w-4" />
+                          </div>
                         </div>
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-900 text-white">
-                          <ArrowUpRight className="pointer-events-none h-5 w-5" />
-                        </div>
-                      </div>
+                      </motion.div>
                     </div>
                   </motion.div>
 

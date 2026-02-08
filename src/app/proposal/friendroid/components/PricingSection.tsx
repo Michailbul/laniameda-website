@@ -17,6 +17,7 @@ export function PricingSection({ replayTick }: PricingSectionProps) {
     replayTick,
     fromY: 30,
     duration: 0.8,
+    startHiddenUntilReplay: true,
   });
   const cardControls = useReplayAnimation({
     replayTick,
@@ -24,12 +25,14 @@ export function PricingSection({ replayTick }: PricingSectionProps) {
     fromScale: 0.95,
     delay: 0.2,
     duration: 0.7,
+    startHiddenUntilReplay: true,
   });
   const badgesControls = useReplayAnimation({
     replayTick,
     fromY: 14,
     delay: 0.45,
     duration: 0.6,
+    startHiddenUntilReplay: true,
   });
 
   return (
@@ -78,7 +81,7 @@ export function PricingSection({ replayTick }: PricingSectionProps) {
         initial={false}
         className="relative z-10 w-full max-w-[min(464px,92vw)]"
       >
-        <PricingCardWithFeatures />
+        <PricingCardWithFeatures animateRows rowRevealTick={replayTick} />
       </motion.div>
 
       {/* Trust badges */}
@@ -95,7 +98,7 @@ export function PricingSection({ replayTick }: PricingSectionProps) {
               : "text-zinc-100"
           )}
         >
-          $2,000 fixed • 5 business day delivery • Strategy + system + decision rules
+          $2,000 fixed • 10 days delivery • Strategy + Brand + Content plan
         </p>
       </motion.div>
       </div>

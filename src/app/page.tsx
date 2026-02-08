@@ -14,8 +14,17 @@ function BottomRightLoader() {
   )
 }
 
-function BottomRightPlaybackDock({ isPlaying, isMantraHovered }: { isPlaying: boolean; isMantraHovered: boolean }) {
+function BottomRightPlaybackDock({
+  isPlaying,
+  isMantraHovered,
+  hasMantraActivated,
+}: {
+  isPlaying: boolean
+  isMantraHovered: boolean
+  hasMantraActivated: boolean
+}) {
   const showArtwork = isPlaying || isMantraHovered
+  const shouldAnimateVinyl = hasMantraActivated && (isPlaying || isMantraHovered)
 
   return (
     <div className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-[70] pointer-events-none">
@@ -35,10 +44,11 @@ function BottomRightPlaybackDock({ isPlaying, isMantraHovered }: { isPlaying: bo
               albumArt={MANTRA_TRACK_ALBUM_ART}
               isSong={true}
               isLoading={false}
-              isPlaying={isPlaying}
               dockMode={true}
               showHoverExtras={false}
               sizePreset="dock"
+              showVinyl={hasMantraActivated}
+              isPlaying={shouldAnimateVinyl}
             />
           </motion.div>
         ) : (
@@ -58,7 +68,7 @@ function BottomRightPlaybackDock({ isPlaying, isMantraHovered }: { isPlaying: bo
   )
 }
 
-function HeroContent() {
+function HeroContent({ onHowWeWorkClick }: { onHowWeWorkClick: () => void }) {
   return (
     <main className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-6">
       <div className="text-center">
@@ -67,7 +77,6 @@ function HeroContent() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3 }}
           className="inline-flex items-center px-3 py-1 rounded-full bg-white/5 backdrop-blur-sm mb-8 relative"
-          style={{ filter: "url(#glass-effect)" }}
         >
           <div className="absolute top-0 left-1 right-1 h-px bg-linear-to-r from-transparent via-white/20 to-transparent rounded-full" />
           <span className="text-white/90 text-xs font-light relative z-10">Creative studio</span>
@@ -109,7 +118,11 @@ function HeroContent() {
           transition={{ duration: 0.8, delay: 0.9 }}
           className="pointer-events-auto flex items-center justify-center gap-4 flex-wrap"
         >
-          <button className="px-8 py-3 rounded-full bg-transparent border border-white/30 text-white font-normal text-xs transition-all duration-200 hover:bg-white/10 hover:border-white/50 cursor-pointer">
+          <button
+            type="button"
+            onClick={onHowWeWorkClick}
+            className="px-8 py-3 rounded-full bg-transparent border border-white/30 text-white font-normal text-xs transition-all duration-200 hover:bg-white/10 hover:border-white/50 cursor-pointer"
+          >
             How we work
           </button>
           <a
@@ -138,12 +151,22 @@ const MANTRA_TARGET_VOLUME = 0.9
 const MANTRA_START_AT_SECONDS = 207.2
 const MANTRA_TUBES_CYCLE_SECONDS = 0.67
 const MANTRA_TUBES_START_DELAY_SECONDS = 0.3
+const SECTION_TRANSITION_SECONDS = 0.72
+const SECTION_LOCK_MS = 760
+const WHEEL_TRIGGER_THRESHOLD = 24
+const SWIPE_TRIGGER_THRESHOLD = 42
 const MANTRA_TRACK_ARTIST = "Drake"
 const MANTRA_TRACK_TITLE = "Search & Rescue"
 const MANTRA_TRACK_ALBUM_ART =
   "/assets/mantra.jpeg"
 
-function MantraAudioBadge({ onAudioActivityChange }: { onAudioActivityChange: (isActive: boolean) => void }) {
+function MantraAudioBadge({
+  onAudioActivityChange,
+  onActivationChange,
+}: {
+  onAudioActivityChange: (isActive: boolean) => void
+  onActivationChange: (isActivated: boolean) => void
+}) {
   const audioRef = useRef<HTMLAudioElement>(null)
   const rampFrameRef = useRef<number | null>(null)
   const pauseTimerRef = useRef<number | null>(null)
@@ -227,7 +250,8 @@ function MantraAudioBadge({ onAudioActivityChange }: { onAudioActivityChange: (i
     }
 
     setIsActivated(true)
-  }, [isActivated, prepareStartPoint])
+    onActivationChange(true)
+  }, [isActivated, onActivationChange, prepareStartPoint])
 
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -471,9 +495,11 @@ function MantraAudioBadge({ onAudioActivityChange }: { onAudioActivityChange: (i
 
 function MantraAudioBadgeWithHover({
   onAudioActivityChange,
+  onActivationChange,
   onHoverChange,
 }: {
   onAudioActivityChange: (isActive: boolean) => void
+  onActivationChange: (isActivated: boolean) => void
   onHoverChange: (isHovered: boolean) => void
 }) {
   return (
@@ -483,16 +509,18 @@ function MantraAudioBadgeWithHover({
       onFocus={() => onHoverChange(true)}
       onBlur={() => onHoverChange(false)}
     >
-      <MantraAudioBadge onAudioActivityChange={onAudioActivityChange} />
+      <MantraAudioBadge onAudioActivityChange={onAudioActivityChange} onActivationChange={onActivationChange} />
     </div>
   )
 }
 
 function ManifestoSection({
   onMantraAudioActivityChange,
+  onMantraActivationChange,
   onMantraHoverChange,
 }: {
   onMantraAudioActivityChange: (isActive: boolean) => void
+  onMantraActivationChange: (isActivated: boolean) => void
   onMantraHoverChange: (isHovered: boolean) => void
 }) {
   return (
@@ -512,6 +540,7 @@ function ManifestoSection({
           >
             <MantraAudioBadgeWithHover
               onAudioActivityChange={onMantraAudioActivityChange}
+              onActivationChange={onMantraActivationChange}
               onHoverChange={onMantraHoverChange}
             />
             <h2 className="text-[clamp(2.2rem,6.5vw,5.8rem)] font-medium uppercase leading-[0.88] tracking-[0.09em]">
@@ -566,7 +595,7 @@ function Header({ onManifestoClick }: { onManifestoClick: () => void }) {
       </nav>
 
       {/* Lets create Button Group with Arrow */}
-      <div className="relative flex items-center group" style={{ filter: "url(#gooey-filter)" }}>
+      <div className="relative flex items-center group">
         <a
           href="https://cal.com"
           target="_blank"
@@ -591,47 +620,40 @@ function Header({ onManifestoClick }: { onManifestoClick: () => void }) {
 }
 
 export default function Home() {
-  const scrollContainerRef = useRef<HTMLDivElement>(null)
   const currentSectionRef = useRef(0)
   const isAnimatingRef = useRef(false)
   const unlockTimerRef = useRef<number | null>(null)
+  const touchStartYRef = useRef<number | null>(null)
+  const [activeSection, setActiveSection] = useState(0)
   const [isMantraAudioActive, setIsMantraAudioActive] = useState(false)
+  const [hasMantraActivated, setHasMantraActivated] = useState(false)
   const [isMantraHovered, setIsMantraHovered] = useState(false)
 
   const scrollToSection = useCallback((sectionIndex: number) => {
-    const container = scrollContainerRef.current
-    if (!container) {
+    if (isAnimatingRef.current) {
       return
     }
-
-    const sections = container.querySelectorAll<HTMLElement>("[data-scroll-section]")
-    const maxIndex = sections.length - 1
+    const maxIndex = 1
     const nextIndex = Math.max(0, Math.min(sectionIndex, maxIndex))
-    const nextSection = sections[nextIndex]
-    if (!nextSection) {
+    if (nextIndex === currentSectionRef.current) {
       return
     }
 
     isAnimatingRef.current = true
     currentSectionRef.current = nextIndex
-    nextSection.scrollIntoView({ behavior: "smooth", block: "start" })
+    setActiveSection(nextIndex)
 
     if (unlockTimerRef.current) {
       window.clearTimeout(unlockTimerRef.current)
     }
     unlockTimerRef.current = window.setTimeout(() => {
       isAnimatingRef.current = false
-    }, 700)
+    }, SECTION_LOCK_MS)
   }, [])
 
   useEffect(() => {
-    const container = scrollContainerRef.current
-    if (!container) {
-      return
-    }
-
     const handleWheel = (event: WheelEvent) => {
-      if (Math.abs(event.deltaY) < 16) {
+      if (Math.abs(event.deltaY) < WHEEL_TRIGGER_THRESHOLD) {
         return
       }
       event.preventDefault()
@@ -657,20 +679,38 @@ export default function Home() {
       }
     }
 
-    const handleScroll = () => {
-      const viewportHeight = container.clientHeight
-      const index = Math.round(container.scrollTop / viewportHeight)
-      currentSectionRef.current = Math.max(0, index)
+    const handleTouchStart = (event: TouchEvent) => {
+      touchStartYRef.current = event.changedTouches[0]?.clientY ?? null
     }
 
-    container.addEventListener("wheel", handleWheel, { passive: false })
-    container.addEventListener("scroll", handleScroll, { passive: true })
+    const handleTouchEnd = (event: TouchEvent) => {
+      if (isAnimatingRef.current || touchStartYRef.current === null) {
+        touchStartYRef.current = null
+        return
+      }
+      const endY = event.changedTouches[0]?.clientY
+      if (typeof endY !== "number") {
+        touchStartYRef.current = null
+        return
+      }
+      const delta = touchStartYRef.current - endY
+      touchStartYRef.current = null
+      if (Math.abs(delta) < SWIPE_TRIGGER_THRESHOLD) {
+        return
+      }
+      scrollToSection(currentSectionRef.current + (delta > 0 ? 1 : -1))
+    }
+
+    window.addEventListener("wheel", handleWheel, { passive: false })
     window.addEventListener("keydown", handleKeyDown)
+    window.addEventListener("touchstart", handleTouchStart, { passive: true })
+    window.addEventListener("touchend", handleTouchEnd, { passive: true })
 
     return () => {
-      container.removeEventListener("wheel", handleWheel)
-      container.removeEventListener("scroll", handleScroll)
+      window.removeEventListener("wheel", handleWheel)
       window.removeEventListener("keydown", handleKeyDown)
+      window.removeEventListener("touchstart", handleTouchStart)
+      window.removeEventListener("touchend", handleTouchEnd)
       if (unlockTimerRef.current) {
         window.clearTimeout(unlockTimerRef.current)
       }
@@ -682,7 +722,7 @@ export default function Home() {
   }, [scrollToSection])
 
   return (
-    <div className="relative min-h-screen w-screen bg-black">
+    <div className="relative min-h-screen w-screen bg-black select-none">
       <div className="fixed inset-0 z-0">
         <TubesCursor
           autoCycleActive={isMantraAudioActive}
@@ -691,57 +731,37 @@ export default function Home() {
         />
       </div>
 
-      <div
-        ref={scrollContainerRef}
-        className="relative z-20 h-screen snap-y snap-mandatory overflow-y-auto overscroll-none scroll-smooth"
-      >
-        <section data-scroll-section className="relative h-screen w-screen snap-start overflow-hidden">
-          {/* SVG Filters */}
-          <svg className="absolute inset-0 w-0 h-0">
-            <defs>
-              <filter id="glass-effect" x="-50%" y="-50%" width="200%" height="200%">
-                <feTurbulence baseFrequency="0.005" numOctaves="1" result="noise" />
-                <feDisplacementMap in="SourceGraphic" in2="noise" scale="0.3" />
-                <feColorMatrix
-                  type="matrix"
-                  values="1 0 0 0 0.02
-                      0 1 0 0 0.02
-                      0 0 1 0 0.05
-                      0 0 0 0.9 0"
-                  result="tint"
-                />
-              </filter>
-              <filter id="gooey-filter" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur" />
-                <feColorMatrix
-                  in="blur"
-                  mode="matrix"
-                  values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9"
-                  result="gooey"
-                />
-                <feComposite in="SourceGraphic" in2="gooey" operator="atop" />
-              </filter>
-            </defs>
-          </svg>
-
-          {/* Layout Overlay */}
-          <div className="absolute inset-0 z-20 flex flex-col pointer-events-none">
-            <div className="pointer-events-auto">
-              <Header onManifestoClick={scrollToManifesto} />
+      <div className="relative z-20 h-screen overflow-hidden overscroll-none" style={{ touchAction: "pan-x" }}>
+        <motion.div
+          className="relative h-full w-full will-change-transform"
+          animate={{ y: `${activeSection * -100}vh` }}
+          transition={{ duration: SECTION_TRANSITION_SECONDS, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <section className="relative h-screen w-screen overflow-hidden">
+            {/* Layout Overlay */}
+            <div className="absolute inset-0 z-20 flex flex-col pointer-events-none">
+              <div className="pointer-events-auto">
+                <Header onManifestoClick={scrollToManifesto} />
+              </div>
+              <div className="flex-1 relative pointer-events-none">
+                <HeroContent onHowWeWorkClick={scrollToManifesto} />
+              </div>
             </div>
-            <div className="flex-1 relative pointer-events-none">
-              <HeroContent />
-            </div>
+          </section>
+          <div className="h-screen w-screen">
+            <ManifestoSection
+              onMantraAudioActivityChange={setIsMantraAudioActive}
+              onMantraActivationChange={setHasMantraActivated}
+              onMantraHoverChange={setIsMantraHovered}
+            />
           </div>
-        </section>
-        <div data-scroll-section className="h-screen w-screen snap-start">
-          <ManifestoSection
-            onMantraAudioActivityChange={setIsMantraAudioActive}
-            onMantraHoverChange={setIsMantraHovered}
-          />
-        </div>
+        </motion.div>
       </div>
-      <BottomRightPlaybackDock isPlaying={isMantraAudioActive} isMantraHovered={isMantraHovered} />
+      <BottomRightPlaybackDock
+        isPlaying={isMantraAudioActive}
+        isMantraHovered={isMantraHovered}
+        hasMantraActivated={hasMantraActivated}
+      />
     </div>
   )
 }

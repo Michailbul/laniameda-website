@@ -17,6 +17,8 @@ interface ExpandableCardProps {
   imageSize?: "default" | "compact";
   headerAction?: React.ReactNode;
   onExpandedScrollProgressChange?: (progress: number) => void;
+  hideBottomBlurOnExpand?: boolean;
+  onClick?: () => void;
 }
 
 export function ExpandableCard({
@@ -32,6 +34,8 @@ export function ExpandableCard({
   imageSize = "default",
   headerAction,
   onExpandedScrollProgressChange,
+  hideBottomBlurOnExpand,
+  onClick,
 }: ExpandableCardProps) {
   const [active, setActive] = React.useState(false);
   const cardRef = React.useRef<HTMLDivElement>(null);
@@ -153,7 +157,10 @@ export function ExpandableCard({
                   ) : null}
                 </div>
               </motion.div>
-              <div className="relative h-full before:fixed before:inset-x-0 before:bottom-0 before:h-[70px] before:z-50 before:bg-gradient-to-t dark:before:from-zinc-950 before:from-zinc-50">
+              <div className={cn(
+                "relative h-full",
+                !hideBottomBlurOnExpand && "before:fixed before:inset-x-0 before:bottom-0 before:h-[70px] before:z-50 before:bg-gradient-to-t dark:before:from-zinc-950 before:from-zinc-50"
+              )}>
                 <div className="flex justify-between items-start p-8 h-auto">
                   <div>
                     <motion.p
@@ -220,7 +227,7 @@ export function ExpandableCard({
         aria-labelledby={`card-title-${id}`}
         aria-modal="true"
         layoutId={`card-${title}-${id}`}
-        onClick={() => handleSetActive(true)}
+        onClick={() => onClick ? onClick() : handleSetActive(true)}
         className={cn(
           "p-3 flex flex-col justify-between items-center bg-zinc-50 shadow-sm dark:shadow-none dark:bg-zinc-950 rounded-2xl cursor-pointer border border-gray-200/70 dark:border-zinc-900 relative",
           className,

@@ -36,6 +36,7 @@ interface MusicArtworkProps {
   dockMode?: boolean;
   showHoverExtras?: boolean;
   sizePreset?: "default" | "dock";
+  showVinyl?: boolean;
 }
 
 export default function MusicArtwork({
@@ -48,6 +49,7 @@ export default function MusicArtwork({
   dockMode = false,
   showHoverExtras = true,
   sizePreset = "default",
+  showVinyl,
 }: MusicArtworkProps) {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
@@ -59,7 +61,8 @@ export default function MusicArtwork({
   const isControlled = typeof isPlaying === "boolean";
   const effectivePlaying = isControlled ? isPlaying : internalIsPlaying;
   const shouldRenderHoverExtras = showHoverExtras && isHovered;
-  const showVinyl = dockMode ? true : isHovered || effectivePlaying;
+  const shouldShowVinyl =
+    typeof showVinyl === "boolean" ? showVinyl : dockMode ? true : isHovered || effectivePlaying;
   const artworkSizeClass = sizePreset === "dock" ? "w-24 h-24 sm:w-28 sm:h-28" : "w-48 h-48 sm:w-64 sm:h-64";
   const vinylSizeClass =
     sizePreset === "dock"
@@ -169,7 +172,7 @@ export default function MusicArtwork({
         {/* Vinyl record with enhanced animation and glow */}
         <div
           className={`absolute ${vinylOffsetClass} top-1/2 -translate-y-1/2 transition-all duration-500 ease-out ${
-            showVinyl ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12 sm:translate-x-24"
+            shouldShowVinyl ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12 sm:translate-x-24"
           }`}
         >
           <div className={`relative ${vinylSizeClass}`}>

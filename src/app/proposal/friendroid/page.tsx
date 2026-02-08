@@ -46,6 +46,10 @@ interface ExpandedCardRailState {
 export default function FriendroidProposal() {
   const containerRef = useRef<HTMLDivElement>(null);
   const hasInitialHashSyncRef = useRef(false);
+  const hasRegisteredInitialSectionRef = useRef(false);
+  const navTriggeredSectionRef = useRef<FriendroidSectionId | null>(null);
+  const arrivedSectionsRef = useRef<Set<FriendroidSectionId>>(new Set());
+  const [hasInitialHashSynced, setHasInitialHashSynced] = useState(false);
   const [activeSection, setActiveSection] = useState<FriendroidSectionId>("hero");
   const [replayTicks, setReplayTicks] =
     useState<Record<FriendroidSectionId, number>>(INITIAL_REPLAY_TICKS);
@@ -64,12 +68,18 @@ export default function FriendroidProposal() {
       const targetSection = document.getElementById(sectionId);
       if (!container || !targetSection) return;
 
+      const isNavJump = historyMode === "push";
+      if (isNavJump) {
+        navTriggeredSectionRef.current = sectionId;
+        arrivedSectionsRef.current.add(sectionId);
+        setReplayTicks((current) => ({
+          ...current,
+          [sectionId]: current[sectionId] + 1,
+        }));
+      }
+
       container.scrollTo({ top: targetSection.offsetTop, behavior: "auto" });
       setActiveSection(sectionId);
-      setReplayTicks((current) => ({
-        ...current,
-        [sectionId]: current[sectionId] + 1,
-      }));
 
       const hash = `#${sectionId}`;
       if (historyMode === "push") {
@@ -108,11 +118,13 @@ export default function FriendroidProposal() {
       if (isFriendroidSectionId(hashSection)) {
         jumpToSection(hashSection, "none");
         hasInitialHashSyncRef.current = true;
+        setHasInitialHashSynced(true);
         return;
       }
 
       jumpToSection("hero", "none");
       hasInitialHashSyncRef.current = true;
+      setHasInitialHashSynced(true);
     };
 
     const timer = window.setTimeout(() => {
@@ -123,6 +135,7 @@ export default function FriendroidProposal() {
         jumpToSection("hero", "none");
       }
       hasInitialHashSyncRef.current = true;
+      setHasInitialHashSynced(true);
     }, 80);
 
     window.addEventListener("hashchange", syncFromHash);
@@ -209,6 +222,37 @@ export default function FriendroidProposal() {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (!hasInitialHashSynced) return;
+
+    if (navTriggeredSectionRef.current === activeSection) {
+      navTriggeredSectionRef.current = null;
+      if (!hasRegisteredInitialSectionRef.current) {
+        hasRegisteredInitialSectionRef.current = true;
+      }
+      arrivedSectionsRef.current.add(activeSection);
+      return;
+    }
+
+    if (!hasRegisteredInitialSectionRef.current) {
+      hasRegisteredInitialSectionRef.current = true;
+      arrivedSectionsRef.current.add(activeSection);
+      return;
+    }
+
+    if (arrivedSectionsRef.current.has(activeSection)) return;
+    arrivedSectionsRef.current.add(activeSection);
+
+    const timerId = window.setTimeout(() => {
+      setReplayTicks((current) => ({
+        ...current,
+        [activeSection]: current[activeSection] + 1,
+      }));
+    }, 0);
+
+    return () => window.clearTimeout(timerId);
+  }, [activeSection, hasInitialHashSynced]);
 
   useEffect(() => {
     if (!hasInitialHashSyncRef.current) return;

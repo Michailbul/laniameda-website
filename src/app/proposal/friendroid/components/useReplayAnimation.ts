@@ -10,6 +10,7 @@ interface UseReplayAnimationOptions {
   fromX?: number;
   fromY?: number;
   fromScale?: number;
+  startHiddenUntilReplay?: boolean;
 }
 
 export function useReplayAnimation({
@@ -19,6 +20,7 @@ export function useReplayAnimation({
   fromX = 0,
   fromY = 24,
   fromScale = 1,
+  startHiddenUntilReplay = false,
 }: UseReplayAnimationOptions) {
   const controls = useAnimationControls();
   const prefersReducedMotion = useReducedMotion();
@@ -27,6 +29,11 @@ export function useReplayAnimation({
     const hidden = prefersReducedMotion
       ? { opacity: 0 }
       : { opacity: 0, x: fromX, y: fromY, scale: fromScale };
+
+    if (startHiddenUntilReplay && replayTick === 0) {
+      controls.set(hidden);
+      return;
+    }
 
     controls.set(hidden);
 
@@ -54,10 +61,10 @@ export function useReplayAnimation({
     fromScale,
     fromX,
     fromY,
+    startHiddenUntilReplay,
     prefersReducedMotion,
     replayTick,
   ]);
 
   return controls;
 }
-

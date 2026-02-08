@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 
 const CLICK_CYCLE_PALETTES = [
   ["#FF006E", "#FB5607", "#FFBE0B"],
@@ -42,9 +42,12 @@ export default function TubesCursor({
   cycleStartDelaySeconds = 0,
 }: TubesCursorProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const glowRef = useRef<HTMLDivElement>(null);
   const appRef = useRef<{ tubes?: { setColors: (colors: string[]) => void; setLightsColors: (colors: string[]) => void }; dispose?: () => void } | null>(null);
   const paletteIndexRef = useRef(0);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const pointerTargetRef = useRef({ x: 0, y: 0 });
+  const pointerRenderRef = useRef({ x: 0, y: 0 });
+  const pointerRafRef = useRef<number | null>(null);
 
   useEffect(() => {
     const initTimer = setTimeout(() => {
@@ -77,14 +80,55 @@ export default function TubesCursor({
   }, []);
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePos({ x: e.clientX, y: e.clientY });
+    const stopPointerLoop = () => {
+      if (pointerRafRef.current !== null) {
+        cancelAnimationFrame(pointerRafRef.current);
+        pointerRafRef.current = null;
+      }
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
+    const animateGlow = () => {
+      const target = pointerTargetRef.current;
+      const current = pointerRenderRef.current;
+      const easing = 0.16;
 
+      current.x += (target.x - current.x) * easing;
+      current.y += (target.y - current.y) * easing;
+
+      if (glowRef.current) {
+        const x = current.x - 300;
+        const y = current.y - 300;
+        glowRef.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      }
+
+      const dx = Math.abs(target.x - current.x);
+      const dy = Math.abs(target.y - current.y);
+      if (dx < 0.2 && dy < 0.2) {
+        pointerRafRef.current = null;
+        return;
+      }
+      pointerRafRef.current = requestAnimationFrame(animateGlow);
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      pointerTargetRef.current = { x: e.clientX, y: e.clientY };
+      if (pointerRafRef.current === null) {
+        pointerRafRef.current = requestAnimationFrame(animateGlow);
+      }
+    };
+
+    const centerX = window.innerWidth * 0.5;
+    const centerY = window.innerHeight * 0.5;
+    pointerTargetRef.current = { x: centerX, y: centerY };
+    pointerRenderRef.current = { x: centerX, y: centerY };
+    if (glowRef.current) {
+      glowRef.current.style.transform = `translate3d(${centerX - 300}px, ${centerY - 300}px, 0)`;
+    }
+
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
+      stopPointerLoop();
     };
   }, []);
 
@@ -103,17 +147,7 @@ export default function TubesCursor({
   }, []);
 
   useEffect(() => {
-    const isInteractiveTarget = (target: EventTarget | null) => {
-      if (!(target instanceof Element)) {
-        return false;
-      }
-      return Boolean(target.closest("a, button, input, textarea, select, label, [role='button']"));
-    };
-
-    const handleGlobalClick = (event: MouseEvent) => {
-      if (isInteractiveTarget(event.target)) {
-        return;
-      }
+    const handleGlobalClick = () => {
       cyclePalette();
     };
 
@@ -150,13 +184,15 @@ export default function TubesCursor({
       className="relative h-screen w-screen bg-black overflow-hidden cursor-pointer"
     >
       {/* Film grain overlay */}
-      <div className="absolute inset-0 z-50 pointer-events-none opacity-[0.035] mix-blend-overlay">
-        <svg className="w-full h-full">
-          <filter id="noiseFilter">
-            <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch"/>
-          </filter>
-          <rect width="100%" height="100%" filter="url(#noiseFilter)"/>
-        </svg>
+      <div
+        className="absolute inset-0 z-50 pointer-events-none opacity-[0.03] mix-blend-overlay"
+        style={{
+          backgroundImage:
+            "radial-gradient(rgba(255,255,255,0.14) 0.45px, transparent 0.45px), radial-gradient(rgba(255,255,255,0.08) 0.35px, transparent 0.35px)",
+          backgroundSize: "4px 4px, 3px 3px",
+          backgroundPosition: "0 0, 1px 1px",
+        }}
+      >
       </div>
 
       {/* Subtle grid overlay */}
@@ -171,26 +207,16 @@ export default function TubesCursor({
         }}
       />
 
-      {/* Animated corner accents */}
-      <div className="absolute top-8 left-8 z-20 flex flex-col gap-2">
-        <div className="w-12 h-[1px] bg-white/40 animate-pulse" />
-        <div className="w-6 h-[1px] bg-white/20 animate-pulse" style={{ animationDelay: '0.2s' }} />
-      </div>
-      <div className="absolute bottom-8 right-8 z-20 flex flex-col items-end gap-2">
-        <div className="w-6 h-[1px] bg-white/20 animate-pulse" style={{ animationDelay: '0.4s' }} />
-        <div className="w-12 h-[1px] bg-white/40 animate-pulse" style={{ animationDelay: '0.6s' }} />
-      </div>
-
       {/* Main canvas */}
       <canvas ref={canvasRef} className="absolute inset-0 z-0" />
 
       {/* Ambient glow effect following cursor */}
       <div 
-        className="absolute w-[600px] h-[600px] rounded-full pointer-events-none z-[1] opacity-20 blur-[120px] transition-transform duration-300 ease-out"
+        ref={glowRef}
+        className="absolute w-[600px] h-[600px] rounded-full pointer-events-none z-[1] opacity-20 blur-[120px] will-change-transform"
         style={{
           background: 'radial-gradient(circle, rgba(131,56,236,0.4) 0%, transparent 70%)',
-          left: mousePos.x - 300,
-          top: mousePos.y - 300,
+          transform: "translate3d(-300px, -300px, 0)",
         }}
       />
     </div>
