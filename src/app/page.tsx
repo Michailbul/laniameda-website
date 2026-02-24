@@ -3,16 +3,9 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import TubesCursor from "@/components/ui/tubes-cursor"
-import Loader from "@/components/ui/loader-15"
 import MusicArtwork from "@/components/ui/music-artwork"
-
-function BottomRightLoader() {
-  return (
-    <div className="origin-bottom-right scale-[0.34] sm:scale-[0.5]">
-      <Loader />
-    </div>
-  )
-}
+import InfiniteMenu from "@/components/ui/infinite-menu"
+import BlurText from "@/components/ui/blur-text"
 
 function BottomRightPlaybackDock({
   isPlaying,
@@ -60,7 +53,8 @@ function BottomRightPlaybackDock({
             transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
             className="pointer-events-none"
           >
-            <BottomRightLoader />
+            {/* Spinner removed as requested */}
+            <div className="w-8 h-8" />
           </motion.div>
         )}
       </AnimatePresence>
@@ -71,7 +65,7 @@ function BottomRightPlaybackDock({
 function HeroContent({ onHowWeWorkClick }: { onHowWeWorkClick: () => void }) {
   return (
     <main className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-6">
-      <div className="text-center">
+      <div className="text-center max-w-5xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -82,7 +76,6 @@ function HeroContent({ onHowWeWorkClick }: { onHowWeWorkClick: () => void }) {
           <span className="text-white/90 text-xs font-light relative z-10">Creative studio</span>
         </motion.div>
 
-        {/* Main Heading */}
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -92,7 +85,6 @@ function HeroContent({ onHowWeWorkClick }: { onHowWeWorkClick: () => void }) {
           Laniameda
         </motion.h1>
 
-        {/* Description */}
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -106,12 +98,12 @@ function HeroContent({ onHowWeWorkClick }: { onHowWeWorkClick: () => void }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.82 }}
-          className="mx-auto max-w-2xl text-sm font-light text-white/70 mb-8 leading-relaxed"
+          className="mx-auto max-w-2xl text-sm font-light text-white/70 mb-8 leading-relaxed flex flex-col items-center gap-1"
         >
-          We actually care about Art
+          <span>we actually do art</span>
+          <span className="text-[10px] uppercase tracking-[0.2em] opacity-40">no fucking slop content</span>
         </motion.p>
 
-        {/* Buttons */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -126,7 +118,7 @@ function HeroContent({ onHowWeWorkClick }: { onHowWeWorkClick: () => void }) {
             How we work
           </button>
           <a
-            href="https://cal.com"
+            href="https://cal.com/michael-buloichyk-zwzdvl/30min"
             target="_blank"
             rel="noreferrer"
             className="px-8 py-3 rounded-full bg-white text-black font-normal text-xs transition-all duration-200 hover:bg-white/90 cursor-pointer"
@@ -140,10 +132,10 @@ function HeroContent({ onHowWeWorkClick }: { onHowWeWorkClick: () => void }) {
 }
 
 const manifestoRules = [
-  "Attention to details",
-  "Never settle for mediocrity",
-  "Begin with the end in mind",
-  "Approach everything as art",
+  { title: "Attention to Details", desc: "Excellence lives in the micro-interactions" },
+  { title: "Never Settle for Mediocrity", desc: "middleground where everyone dies" },
+  { title: "Begin with the End in mind", desc: "Vision first, execution follows" },
+  { title: "Approach everything as Art", desc: "Approach every pixel with intention" },
 ]
 
 const MANTRA_AUDIO_SRC = "/assets/mantra.mp3"
@@ -151,14 +143,64 @@ const MANTRA_TARGET_VOLUME = 0.9
 const MANTRA_START_AT_SECONDS = 207.2
 const MANTRA_TUBES_CYCLE_SECONDS = 0.67
 const MANTRA_TUBES_START_DELAY_SECONDS = 0.3
-const SECTION_TRANSITION_SECONDS = 0.72
-const SECTION_LOCK_MS = 760
+const SECTION_TRANSITION_SECONDS = 0.9
+const SECTION_LOCK_MS = 940
 const WHEEL_TRIGGER_THRESHOLD = 24
 const SWIPE_TRIGGER_THRESHOLD = 42
 const MANTRA_TRACK_ARTIST = "Drake"
 const MANTRA_TRACK_TITLE = "Search & Rescue"
-const MANTRA_TRACK_ALBUM_ART =
-  "/assets/mantra.jpeg"
+const MANTRA_TRACK_ALBUM_ART = "/assets/mantra.jpeg"
+
+const UGC_IMAGES = Array.from({ length: 6 }, (_, i) => `/assets/ugc/ugc-${i + 1}.jpg`)
+
+const WHAT_WE_DO_MENU_ITEMS: Array<{
+  image: string
+  gradient?: [string, string]
+  video?: string
+  videoZoom?: number
+  images?: string[]
+  canvasEffect?: 'tubeCursor' | 'aiInput'
+  link: string
+  title: string
+  description: string
+}> = [
+  {
+    image: "",
+    gradient: ["#7C3AED", "#EC4899"],
+    link: "https://cal.com/michael-buloichyk-zwzdvl/30min",
+    title: "AI Creatives",
+    description: "AI-powered brand creatives that look crafted, not generated.",
+  },
+  {
+    image: "",
+    images: UGC_IMAGES,
+    link: "https://cal.com/michael-buloichyk-zwzdvl/30min",
+    title: "AI UGC",
+    description: "AI influencers and UGC content that feels authentic and converts.",
+  },
+  {
+    image: "",
+    video: "/assets/whatsyourdream.mp4",
+    videoZoom: 1.3,
+    link: "https://cal.com/michael-buloichyk-zwzdvl/30min",
+    title: "AI Filmmaking",
+    description: "Short-form cinematic AI animation production.",
+  },
+  {
+    image: "",
+    canvasEffect: "tubeCursor",
+    link: "https://cal.com/michael-buloichyk-zwzdvl/30min",
+    title: "Web Development",
+    description: "Build products people love — from idea to production.",
+  },
+  {
+    image: "",
+    canvasEffect: "aiInput",
+    link: "https://cal.com/michael-buloichyk-zwzdvl/30min",
+    title: "Agents & Automation",
+    description: "Custom AI agents and workflow automations that save hours daily.",
+  },
+]
 
 function MantraAudioBadge({
   onAudioActivityChange,
@@ -194,9 +236,7 @@ function MantraAudioBadge({
   const rampVolume = useCallback(
     (targetVolume: number, durationMs: number, easing: "in" | "out") => {
       const audio = audioRef.current
-      if (!audio) {
-        return
-      }
+      if (!audio) return
 
       const clampVolume = (value: number) => Math.min(1, Math.max(0, value))
       stopVolumeRamp()
@@ -223,9 +263,7 @@ function MantraAudioBadge({
   )
 
   const prepareStartPoint = useCallback((audio: HTMLAudioElement) => {
-    if (hasPreparedStartRef.current) {
-      return
-    }
+    if (hasPreparedStartRef.current) return
     const duration = Number.isFinite(audio.duration) ? audio.duration : NaN
     audio.currentTime =
       Number.isFinite(duration) && duration > 0
@@ -238,9 +276,7 @@ function MantraAudioBadge({
     setClickPulse((value) => value + 1)
     setHasAudioError(false)
 
-    if (isActivated) {
-      return
-    }
+    if (isActivated) return
 
     const audio = audioRef.current
     if (audio) {
@@ -265,9 +301,7 @@ function MantraAudioBadge({
 
   useEffect(() => {
     const audio = audioRef.current
-    if (!audio) {
-      return
-    }
+    if (!audio) return
 
     audio.loop = true
     audio.volume = 0
@@ -297,9 +331,7 @@ function MantraAudioBadge({
 
   useEffect(() => {
     const audio = audioRef.current
-    if (!audio || !isActivated) {
-      return
-    }
+    if (!audio || !isActivated) return
 
     let disposed = false
 
@@ -346,7 +378,7 @@ function MantraAudioBadge({
   const isReactive = isPlaying
 
   return (
-    <div className="mb-6">
+    <div className="mb-8">
       <motion.div
         role="button"
         tabIndex={0}
@@ -358,7 +390,7 @@ function MantraAudioBadge({
         onBlur={() => setIsHovered(false)}
         whileHover={{ x: 1.5 }}
         whileTap={{ scale: 0.992 }}
-        className="group relative inline-flex cursor-pointer select-none items-end gap-4 rounded-full px-2 py-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/45"
+        className="group relative inline-flex cursor-pointer select-none items-end gap-4 rounded-full px-3 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/45"
       >
         <motion.span
           aria-hidden="true"
@@ -527,10 +559,10 @@ function ManifestoSection({
     <section id="manifesto-section" className="relative z-40 h-screen overflow-hidden px-6 py-20 text-white">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-linear-to-b from-transparent via-black/45 to-black/75"
+        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-black/50 to-black/80"
       />
       <div className="relative mx-auto flex h-full w-full max-w-6xl items-center">
-        <div className="grid w-full gap-10 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-start">
+        <div className="grid w-full gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-start">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -543,64 +575,158 @@ function ManifestoSection({
               onActivationChange={onMantraActivationChange}
               onHoverChange={onMantraHoverChange}
             />
-            <h2 className="text-[clamp(2.2rem,6.5vw,5.8rem)] font-medium uppercase leading-[0.88] tracking-[0.09em]">
-              what we beleive in
+            <h2 className="text-[clamp(2rem,6vw,5rem)] font-semibold uppercase leading-[0.9] tracking-[0.06em]">
+              What We<br />
+              <span className="text-white/40">Believe In</span>
             </h2>
+            <p className="mt-6 text-white/40 text-sm leading-relaxed max-w-sm">
+              These principles guide every decision we make. They are the foundation of our craft.
+            </p>
           </motion.div>
 
-          <ol className="relative border-y border-white/20">
+          <div className="space-y-0">
             {manifestoRules.map((rule, index) => (
-              <motion.li
-                key={rule}
-                initial={{ opacity: 0, y: 32 }}
-                whileInView={{ opacity: 1, y: 0 }}
+              <motion.div
+                key={rule.title}
+                initial={{ opacity: 0, x: 32 }}
+                whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.65, delay: index * 0.12, ease: [0.16, 1, 0.3, 1] }}
                 viewport={{ once: true, amount: 0.6 }}
-                className="group relative grid grid-cols-[auto_1fr_auto] items-center gap-4 sm:gap-6 border-b border-white/15 py-5 sm:py-6 last:border-b-0"
+                className="group relative border-t border-white/10 py-8 first:border-t-0"
               >
-                <span className="font-mono text-sm tracking-[0.2em] text-white/55">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <h3 className="text-[clamp(1.15rem,3vw,2rem)] uppercase leading-tight tracking-[0.07em]">{rule}</h3>
-                <span
-                  aria-hidden="true"
-                  className="h-2 w-2 rounded-full bg-white/25 transition-all duration-300 group-hover:scale-125 group-hover:bg-white/90"
-                />
-              </motion.li>
+                <div className="flex items-start gap-6">
+                  <span className="text-[10px] font-mono tracking-[0.2em] text-white/30 pt-2">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <div className="flex-1">
+                    <h3 className="text-[clamp(1.1rem,2.5vw,1.6rem)] uppercase tracking-[0.08em] text-white/90 mb-2 group-hover:text-white transition-colors duration-300">
+                      {rule.title}
+                    </h3>
+                    <p className="text-white/40 text-sm leading-relaxed group-hover:text-white/60 transition-colors duration-300">
+                      {rule.desc}
+                    </p>
+                  </div>
+                  <motion.div
+                    className="w-2 h-2 rounded-full bg-white/20 mt-2"
+                    whileHover={{ scale: 1.5, backgroundColor: "rgba(255,255,255,0.9)" }}
+                    transition={{ duration: 0.2 }}
+                  />
+                </div>
+              </motion.div>
             ))}
-          </ol>
+          </div>
         </div>
       </div>
     </section>
   )
 }
 
-function Header({ onManifestoClick }: { onManifestoClick: () => void }) {
+function WhatWeDoSection() {
+  return (
+    <section id="what-we-do-section" className="relative z-40 h-screen w-screen overflow-hidden text-white">
+      <InfiniteMenu items={WHAT_WE_DO_MENU_ITEMS} scale={1.1} />
+
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.75)_0%,rgba(0,0,0,0.35)_40%,rgba(0,0,0,0.7)_100%)]"
+      />
+
+      <div className="pointer-events-none absolute left-6 top-6 z-20 rounded-2xl border border-white/20 bg-black/35 px-4 py-3 backdrop-blur-sm">
+        <span className="block text-[10px] uppercase tracking-[0.28em] text-white/55">What We Do</span>
+        <span className="mt-1 block text-[10px] uppercase tracking-[0.24em] text-white/40">Drag to explore</span>
+      </div>
+    </section>
+  )
+}
+
+function ManifestoTextSection() {
+  return (
+    <section id="manifesto-text-section" className="relative z-40 h-screen overflow-hidden px-6 text-white flex items-center justify-center font-mono">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-black/40"
+      />
+      <div className="relative mx-auto max-w-lg text-center">
+        <div className="space-y-6">
+          <div className="text-xs font-medium uppercase tracking-widest text-white/50 mb-8 border-b border-white/10 pb-4 inline-block px-4">
+            / thoughts / manifesto
+          </div>
+
+          <div className="text-sm leading-7 text-white/80 font-light space-y-6">
+            <p>
+              The modern world is noisy. AI changed things. It made it even noisier.
+              The social networks and web are filled with slop content, the one that was born just to get attention and views,
+              because it became so easy to do with AI nowadays.
+            </p>
+            <p>
+              Every person who can type now is a &quot;AI creator&quot;. <br />
+              <span className="text-white font-normal bg-white/10 px-1 py-0.5 rounded-sm">FUCK THAT.</span>
+            </p>
+            <p>
+              We do believe in technology.<br />
+              We do feel art.<br />
+              We know what differs Art from commerce.
+            </p>
+            <p className="italic text-white/50 border-l-2 border-white/20 pl-4 ml-8 text-left">
+              The feeling from number on a screen
+            </p>
+            <p>
+              Here at Laniameda we do everything with a touch of a soul.
+              We stay on frontier of AI revolution but we actually care about art.
+            </p>
+          </div>
+
+          <div className="pt-12 border-t border-white/10 mt-12">
+            <p className="text-[10px] uppercase tracking-widest text-white/40 mb-3">But what implies Art?</p>
+            <p className="text-base font-normal tracking-wide text-white/90">
+              It&apos;s how you <span className="text-white/40 opacity-50">&lt;</span> see the world <span className="text-white/40 opacity-50">&gt;</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function Header({ onManifestoClick, onWhatWeDoClick }: { onManifestoClick: () => void; onWhatWeDoClick: () => void }) {
   return (
     <motion.header
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8 }}
-      className="relative z-30 flex items-center justify-end p-6"
+      className="relative z-30 flex items-center justify-between p-6"
     >
-      {/* Navigation */}
-      <nav className="absolute left-1/2 -translate-x-1/2 flex items-center space-x-2">
+      <motion.div
+        className="text-white font-semibold text-lg tracking-tight"
+        whileHover={{ opacity: 0.8 }}
+        transition={{ duration: 0.2 }}
+      >
+        Laniameda
+      </motion.div>
+
+      <nav className="hidden sm:flex items-center gap-1">
         <button
           type="button"
           onClick={onManifestoClick}
-          className="text-white/80 hover:text-white text-xs font-light px-3 py-2 rounded-full hover:bg-white/10 transition-all duration-200"
+          className="text-white/60 hover:text-white text-xs font-medium px-4 py-2 rounded-full hover:bg-white/5 transition-all duration-200 tracking-wide"
         >
           Mantra
         </button>
+        <button
+          type="button"
+          onClick={onWhatWeDoClick}
+          className="text-white/60 hover:text-white text-xs font-medium px-4 py-2 rounded-full hover:bg-white/5 transition-all duration-200 tracking-wide"
+        >
+          What We Do
+        </button>
       </nav>
 
-      {/* Lets create Button Group with Arrow */}
       <div className="relative flex items-center group">
         <a
           href="https://cal.com/michael-buloichyk-zwzdvl/30min"
           target="_blank"
           rel="noreferrer"
-          className="absolute right-0 px-2.5 py-2 rounded-full bg-white text-black font-normal text-xs transition-all duration-300 hover:bg-white/90 cursor-pointer h-8 flex items-center justify-center -translate-x-10 group-hover:-translate-x-[76px] z-0"
+          className="absolute right-0 px-3 py-2 rounded-full bg-white text-black font-medium text-[10px] transition-all duration-300 hover:bg-white/90 cursor-pointer h-8 flex items-center justify-center -translate-x-10 group-hover:-translate-x-[70px] z-0"
         >
           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 17L17 7M17 7H7M17 7V17" />
@@ -610,9 +736,9 @@ function Header({ onManifestoClick }: { onManifestoClick: () => void }) {
           href="https://cal.com/michael-buloichyk-zwzdvl/30min"
           target="_blank"
           rel="noreferrer"
-          className="px-6 py-2 rounded-full bg-white text-black font-normal text-xs transition-all duration-300 hover:bg-white/90 cursor-pointer h-8 flex items-center z-10"
+          className="px-5 py-2 rounded-full bg-white text-black font-medium text-[11px] transition-all duration-300 hover:bg-white/90 cursor-pointer h-8 flex items-center z-10 tracking-wide"
         >
-          lets create
+          Let&apos;s Talk
         </a>
       </div>
     </motion.header>
@@ -630,14 +756,10 @@ export default function Home() {
   const [isMantraHovered, setIsMantraHovered] = useState(false)
 
   const scrollToSection = useCallback((sectionIndex: number) => {
-    if (isAnimatingRef.current) {
-      return
-    }
-    const maxIndex = 1
+    if (isAnimatingRef.current) return
+    const maxIndex = 3
     const nextIndex = Math.max(0, Math.min(sectionIndex, maxIndex))
-    if (nextIndex === currentSectionRef.current) {
-      return
-    }
+    if (nextIndex === currentSectionRef.current) return
 
     isAnimatingRef.current = true
     currentSectionRef.current = nextIndex
@@ -653,21 +775,15 @@ export default function Home() {
 
   useEffect(() => {
     const handleWheel = (event: WheelEvent) => {
-      if (Math.abs(event.deltaY) < WHEEL_TRIGGER_THRESHOLD) {
-        return
-      }
+      if (Math.abs(event.deltaY) < WHEEL_TRIGGER_THRESHOLD) return
       event.preventDefault()
-      if (isAnimatingRef.current) {
-        return
-      }
+      if (isAnimatingRef.current) return
       const direction = event.deltaY > 0 ? 1 : -1
       scrollToSection(currentSectionRef.current + direction)
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (isAnimatingRef.current) {
-        return
-      }
+      if (isAnimatingRef.current) return
 
       if (["ArrowDown", "PageDown", " "].includes(event.key)) {
         event.preventDefault()
@@ -695,9 +811,7 @@ export default function Home() {
       }
       const delta = touchStartYRef.current - endY
       touchStartYRef.current = null
-      if (Math.abs(delta) < SWIPE_TRIGGER_THRESHOLD) {
-        return
-      }
+      if (Math.abs(delta) < SWIPE_TRIGGER_THRESHOLD) return
       scrollToSection(currentSectionRef.current + (delta > 0 ? 1 : -1))
     }
 
@@ -721,6 +835,10 @@ export default function Home() {
     scrollToSection(1)
   }, [scrollToSection])
 
+  const scrollToWhatWeDo = useCallback(() => {
+    scrollToSection(3)
+  }, [scrollToSection])
+
   return (
     <div className="relative min-h-screen w-screen bg-black select-none">
       <div className="fixed inset-0 z-0">
@@ -737,26 +855,64 @@ export default function Home() {
           animate={{ y: `${activeSection * -100}vh` }}
           transition={{ duration: SECTION_TRANSITION_SECONDS, ease: [0.22, 1, 0.36, 1] }}
         >
+          {/* Section 0: Hero */}
           <section className="relative h-screen w-screen overflow-hidden">
-            {/* Layout Overlay */}
             <div className="absolute inset-0 z-20 flex flex-col pointer-events-none">
               <div className="pointer-events-auto">
-                <Header onManifestoClick={scrollToManifesto} />
+                <Header onManifestoClick={scrollToManifesto} onWhatWeDoClick={scrollToWhatWeDo} />
               </div>
               <div className="flex-1 relative pointer-events-none">
                 <HeroContent onHowWeWorkClick={scrollToManifesto} />
               </div>
             </div>
           </section>
-          <div className="h-screen w-screen">
+
+          {/* Section 1: Mantra (Old Manifesto) */}
+          <motion.div
+            className="h-screen w-screen origin-center will-change-transform"
+            animate={{
+              opacity: activeSection === 1 ? 1 : activeSection === 2 ? 0.26 : activeSection > 2 ? 0.12 : 1,
+              scale: activeSection === 2 ? 0.986 : 1,
+              y: activeSection === 2 ? -18 : 0,
+            }}
+            transition={{ duration: 0.84, ease: [0.22, 1, 0.36, 1] }}
+          >
             <ManifestoSection
               onMantraAudioActivityChange={setIsMantraAudioActive}
               onMantraActivationChange={setHasMantraActivated}
               onMantraHoverChange={setIsMantraHovered}
             />
-          </div>
+          </motion.div>
+
+          {/* Section 2: Manifesto Text Section */}
+          <motion.div
+            className="h-screen w-screen origin-center will-change-transform"
+            animate={{
+              opacity: activeSection === 2 ? 1 : activeSection === 1 ? 0.42 : activeSection === 3 ? 0.24 : 1,
+              scale: activeSection === 1 ? 1.018 : activeSection === 3 ? 0.975 : 1,
+              y: activeSection === 1 ? 24 : activeSection === 3 ? -6 : 0,
+              filter: activeSection === 3 ? "blur(6px)" : "blur(0px)",
+            }}
+            transition={{ duration: 0.88, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <ManifestoTextSection />
+          </motion.div>
+
+          {/* Section 3: What We Do */}
+          <motion.div
+            className="h-screen w-screen origin-center will-change-transform"
+            animate={{
+              opacity: activeSection === 3 ? 1 : activeSection === 2 ? 0.3 : 1,
+              scale: activeSection === 3 ? 1 : activeSection === 2 ? 1.045 : 1,
+              filter: activeSection === 3 ? "blur(0px)" : activeSection === 2 ? "blur(8px)" : "blur(0px)",
+            }}
+            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <WhatWeDoSection />
+          </motion.div>
         </motion.div>
       </div>
+
       <BottomRightPlaybackDock
         isPlaying={isMantraAudioActive}
         isMantraHovered={isMantraHovered}
