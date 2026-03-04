@@ -4,7 +4,6 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import TubesCursor from "@/components/ui/tubes-cursor"
 import MusicArtwork from "@/components/ui/music-artwork"
-import InfiniteMenu from "@/components/ui/infinite-menu"
 import BlurText from "@/components/ui/blur-text"
 
 function BottomRightPlaybackDock({
@@ -151,54 +150,42 @@ const MANTRA_TRACK_ARTIST = "Drake"
 const MANTRA_TRACK_TITLE = "Search & Rescue"
 const MANTRA_TRACK_ALBUM_ART = "/assets/mantra.jpeg"
 
-const UGC_IMAGES = Array.from({ length: 6 }, (_, i) => `/assets/ugc/ugc-${i + 1}.jpg`)
-
-const WHAT_WE_DO_MENU_ITEMS: Array<{
-  image: string
-  gradient?: [string, string]
-  video?: string
-  videoZoom?: number
-  images?: string[]
-  canvasEffect?: 'tubeCursor' | 'aiInput'
-  link: string
-  title: string
-  description: string
-}> = [
+const SERVICES = [
   {
-    image: "",
-    gradient: ["#7C3AED", "#EC4899"],
-    link: "https://cal.com/michael-buloichyk-zwzdvl/30min",
+    number: "01",
     title: "AI Creatives",
-    description: "AI-powered brand creatives that look crafted, not generated.",
+    description: "Brand visuals that look crafted, not generated.",
+    link: "https://cal.com/michael-buloichyk-zwzdvl/30min",
   },
   {
-    image: "",
-    images: UGC_IMAGES,
-    link: "https://cal.com/michael-buloichyk-zwzdvl/30min",
+    number: "02",
     title: "AI UGC",
-    description: "AI influencers and UGC content that feels authentic and converts.",
+    description: "AI-generated creator content that converts, not cringes.",
+    link: "https://cal.com/michael-buloichyk-zwzdvl/30min",
   },
   {
-    image: "",
-    video: "/assets/whatsyourdream.mp4",
-    videoZoom: 1.3,
-    link: "https://cal.com/michael-buloichyk-zwzdvl/30min",
+    number: "03",
     title: "AI Filmmaking",
-    description: "Short-form cinematic AI animation production.",
+    description: "Short-form cinematic production. AI-powered, human-directed.",
+    link: "https://cal.com/michael-buloichyk-zwzdvl/30min",
   },
   {
-    image: "",
-    canvasEffect: "tubeCursor",
+    number: "04",
+    title: "Products Development",
+    description: "Websites, apps, and products — from concept to production.",
     link: "https://cal.com/michael-buloichyk-zwzdvl/30min",
-    title: "Web Development",
-    description: "Build products people love — from idea to production.",
   },
   {
-    image: "",
-    canvasEffect: "aiInput",
+    number: "05",
+    title: "Agents",
+    description: "Custom AI agents that remove the work you hate.",
     link: "https://cal.com/michael-buloichyk-zwzdvl/30min",
-    title: "Agents & Automation",
-    description: "Custom AI agents and workflow automations that save hours daily.",
+  },
+  {
+    number: "06",
+    title: "AI Consultancy",
+    description: "Strategic AI direction for creative brands.",
+    link: "https://cal.com/michael-buloichyk-zwzdvl/30min",
   },
 ]
 
@@ -555,20 +542,22 @@ function ManifestoSection({
   onMantraActivationChange: (isActivated: boolean) => void
   onMantraHoverChange: (isHovered: boolean) => void
 }) {
+  const [hoveredRule, setHoveredRule] = useState<number | null>(null)
+
   return (
     <section id="manifesto-section" className="relative z-40 h-screen overflow-hidden px-6 py-20 text-white">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-black/50 to-black/80"
+        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/60 via-black/25 to-black/80"
       />
       <div className="relative mx-auto flex h-full w-full max-w-6xl items-center">
-        <div className="grid w-full gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-start">
+        <div className="grid w-full gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-center">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             viewport={{ once: true, amount: 0.55 }}
-            className="self-start"
+            className="self-start lg:self-center"
           >
             <MantraAudioBadgeWithHover
               onAudioActivityChange={onMantraAudioActivityChange}
@@ -584,7 +573,10 @@ function ManifestoSection({
             </p>
           </motion.div>
 
-          <div className="space-y-0">
+          <div
+            className="space-y-0"
+            onMouseLeave={() => setHoveredRule(null)}
+          >
             {manifestoRules.map((rule, index) => (
               <motion.div
                 key={rule.title}
@@ -592,25 +584,74 @@ function ManifestoSection({
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.65, delay: index * 0.12, ease: [0.16, 1, 0.3, 1] }}
                 viewport={{ once: true, amount: 0.6 }}
-                className="group relative border-t border-white/10 py-8 first:border-t-0"
+                className="group relative border-t border-white/10 first:border-t-0"
+                onMouseEnter={() => setHoveredRule(index)}
               >
-                <div className="flex items-start gap-6">
-                  <span className="text-[10px] font-mono tracking-[0.2em] text-white/30 pt-2">
+                {/* Left accent bar */}
+                <motion.div
+                  className="absolute left-0 top-3 bottom-3 w-[2px] rounded-full origin-top"
+                  animate={{
+                    scaleY: hoveredRule === index ? 1 : 0,
+                    opacity: hoveredRule === index ? 0.8 : 0,
+                  }}
+                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                  style={{ background: "linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.08))" }}
+                />
+
+                {/* Background glow */}
+                <motion.div
+                  className="absolute -inset-x-3 inset-y-0 rounded-lg pointer-events-none"
+                  animate={{ opacity: hoveredRule === index ? 1 : 0 }}
+                  transition={{ duration: 0.35 }}
+                  style={{ background: "linear-gradient(90deg, rgba(255,255,255,0.03), transparent 70%)" }}
+                />
+
+                <div className="relative flex items-start gap-5 py-7 pl-4">
+                  <motion.span
+                    className="text-[1.8rem] font-mono leading-none tracking-tight shrink-0 w-10 tabular-nums select-none"
+                    animate={{
+                      color:
+                        hoveredRule === null
+                          ? "rgba(255,255,255,0.1)"
+                          : hoveredRule === index
+                            ? "rgba(255,255,255,0.3)"
+                            : "rgba(255,255,255,0.04)",
+                    }}
+                    transition={{ duration: 0.35, ease: "easeOut" }}
+                  >
                     {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <div className="flex-1">
-                    <h3 className="text-[clamp(1.1rem,2.5vw,1.6rem)] uppercase tracking-[0.08em] text-white/90 mb-2 group-hover:text-white transition-colors duration-300">
+                  </motion.span>
+                  <div className="flex-1 pt-0.5">
+                    <motion.h3
+                      className="text-[clamp(1.1rem,2.5vw,1.5rem)] uppercase tracking-[0.08em] mb-1.5"
+                      animate={{
+                        color:
+                          hoveredRule === null
+                            ? "rgba(255,255,255,0.85)"
+                            : hoveredRule === index
+                              ? "rgba(255,255,255,1)"
+                              : "rgba(255,255,255,0.25)",
+                      }}
+                      transition={{ duration: 0.35, ease: "easeOut" }}
+                    >
                       {rule.title}
-                    </h3>
-                    <p className="text-white/40 text-sm leading-relaxed group-hover:text-white/60 transition-colors duration-300">
+                    </motion.h3>
+                    <motion.p
+                      className="text-sm leading-relaxed"
+                      animate={{
+                        color:
+                          hoveredRule === null
+                            ? "rgba(255,255,255,0.35)"
+                            : hoveredRule === index
+                              ? "rgba(255,255,255,0.6)"
+                              : "rgba(255,255,255,0.12)",
+                        y: hoveredRule === index ? 0 : 2,
+                      }}
+                      transition={{ duration: 0.35, ease: "easeOut" }}
+                    >
                       {rule.desc}
-                    </p>
+                    </motion.p>
                   </div>
-                  <motion.div
-                    className="w-2 h-2 rounded-full bg-white/20 mt-2"
-                    whileHover={{ scale: 1.5, backgroundColor: "rgba(255,255,255,0.9)" }}
-                    transition={{ duration: 0.2 }}
-                  />
                 </div>
               </motion.div>
             ))}
@@ -622,18 +663,179 @@ function ManifestoSection({
 }
 
 function WhatWeDoSection() {
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
+
   return (
     <section id="what-we-do-section" className="relative z-40 h-screen w-screen overflow-hidden text-white">
-      <InfiniteMenu items={WHAT_WE_DO_MENU_ITEMS} scale={1.1} />
-
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.75)_0%,rgba(0,0,0,0.35)_40%,rgba(0,0,0,0.7)_100%)]"
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background: "linear-gradient(160deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 35%, rgba(0,0,0,0.6) 100%)",
+        }}
       />
 
-      <div className="pointer-events-none absolute left-6 top-6 z-20 rounded-2xl border border-white/20 bg-black/35 px-4 py-3 backdrop-blur-sm">
-        <span className="block text-[10px] uppercase tracking-[0.28em] text-white/55">What We Do</span>
-        <span className="mt-1 block text-[10px] uppercase tracking-[0.24em] text-white/40">Drag to explore</span>
+      <div className="relative mx-auto flex h-full w-full max-w-6xl flex-col justify-center px-6">
+        {/* Editorial header — asymmetric split */}
+        <motion.div
+          className="mb-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          viewport={{ once: true, amount: 0.5 }}
+        >
+          <div>
+            <span className="text-[10px] uppercase tracking-[0.24em] font-mono text-white/30">
+              What We Do
+            </span>
+            <h2 className="mt-2 text-[clamp(1.8rem,5vw,3.5rem)] font-semibold uppercase leading-[0.92] tracking-[0.04em]">
+              The Work
+            </h2>
+          </div>
+          <p className="max-w-sm text-sm leading-relaxed text-white/35 sm:text-right">
+            Art, engineering, and emotional depth — applied to the things brands actually need.
+          </p>
+        </motion.div>
+
+        {/* Service List */}
+        <div
+          className="border-b border-white/10"
+          onMouseLeave={() => setHoveredIndex(null)}
+        >
+          {SERVICES.map((service, index) => (
+            <motion.a
+              key={service.number}
+              href={service.link}
+              target="_blank"
+              rel="noreferrer"
+              className="group relative flex items-center border-t border-white/10 no-underline"
+              initial={{ opacity: 0, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.55, delay: index * 0.07, ease: [0.16, 1, 0.3, 1] }}
+              viewport={{ once: true, amount: 0.3 }}
+              onMouseEnter={() => setHoveredIndex(index)}
+            >
+              {/* Left accent bar */}
+              <motion.div
+                className="absolute left-0 top-2 bottom-2 w-[2px] rounded-full origin-top"
+                animate={{
+                  scaleY: hoveredIndex === index ? 1 : 0,
+                  opacity: hoveredIndex === index ? 1 : 0,
+                }}
+                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                style={{ background: "linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,255,255,0.12))" }}
+              />
+
+              {/* Background glow */}
+              <motion.div
+                className="absolute inset-0 pointer-events-none"
+                animate={{ opacity: hoveredIndex === index ? 1 : 0 }}
+                transition={{ duration: 0.3 }}
+                style={{ background: "linear-gradient(90deg, rgba(255,255,255,0.04) 0%, transparent 60%)" }}
+              />
+
+              <div className="relative flex items-center gap-4 sm:gap-5 w-full py-3.5 sm:py-4 pl-4">
+                {/* Oversized number */}
+                <motion.span
+                  className="text-[1.4rem] sm:text-[1.8rem] font-mono leading-none tracking-tight tabular-nums shrink-0 w-8 sm:w-10 select-none"
+                  animate={{
+                    color:
+                      hoveredIndex === null
+                        ? "rgba(255,255,255,0.1)"
+                        : hoveredIndex === index
+                          ? "rgba(255,255,255,0.3)"
+                          : "rgba(255,255,255,0.04)",
+                  }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                >
+                  {service.number}
+                </motion.span>
+
+                {/* Title */}
+                <motion.span
+                  className="text-[clamp(1rem,2.5vw,1.5rem)] uppercase tracking-[0.06em] shrink-0"
+                  animate={{
+                    color:
+                      hoveredIndex === null
+                        ? "rgba(255,255,255,0.55)"
+                        : hoveredIndex === index
+                          ? "rgba(255,255,255,0.95)"
+                          : "rgba(255,255,255,0.18)",
+                  }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                >
+                  {service.title}
+                </motion.span>
+
+                {/* Description — always visible on mobile, hover-reveal on desktop */}
+                <span className="block text-xs text-white/30 sm:hidden flex-1 text-right leading-snug">
+                  {service.description}
+                </span>
+                <AnimatePresence>
+                  {hoveredIndex === index && (
+                    <motion.span
+                      className="hidden sm:block text-sm text-white/40 ml-auto flex-1 text-right pr-2"
+                      initial={{ opacity: 0, x: 10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 10 }}
+                      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                    >
+                      {service.description}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+
+                {/* Arrow in circle */}
+                <motion.span
+                  className="hidden sm:flex items-center justify-center shrink-0 w-7 h-7 rounded-full"
+                  animate={{
+                    opacity: hoveredIndex === index ? 1 : 0,
+                    scale: hoveredIndex === index ? 1 : 0.6,
+                    backgroundColor: hoveredIndex === index ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0)",
+                  }}
+                  transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 17L17 7M17 7H7M17 7V17" />
+                  </svg>
+                </motion.span>
+              </div>
+            </motion.a>
+          ))}
+        </div>
+
+        {/* CTA — elevated with availability indicator */}
+        <motion.div
+          className="mt-8 flex items-center gap-5"
+          initial={{ opacity: 0, y: 14 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          viewport={{ once: true, amount: 0.5 }}
+        >
+          <a
+            href="https://cal.com/michael-buloichyk-zwzdvl/30min"
+            target="_blank"
+            rel="noreferrer"
+            className="group/cta relative px-7 py-3 rounded-full border border-white/20 text-white text-xs font-normal transition-all duration-300 hover:border-white/40 overflow-hidden"
+          >
+            <span className="relative z-10 flex items-center gap-2.5">
+              Start a conversation
+              <svg className="w-3 h-3 transition-transform duration-300 group-hover/cta:translate-x-0.5 group-hover/cta:-translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 17L17 7M17 7H7M17 7V17" />
+              </svg>
+            </span>
+            <div className="absolute inset-0 bg-white/0 group-hover/cta:bg-white/5 transition-colors duration-300 rounded-full" />
+          </a>
+          <div className="flex items-center gap-2.5">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-40" />
+              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400/70" />
+            </span>
+            <span className="text-[10px] uppercase tracking-[0.24em] font-mono text-white/25">
+              30 min / free
+            </span>
+          </div>
+        </motion.div>
       </div>
     </section>
   )

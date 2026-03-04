@@ -630,6 +630,7 @@ interface MenuItem {
   videoZoom?: number;
   images?: string[];
   canvasEffect?: 'tubeCursor' | 'aiInput';
+  iframeUrl?: string;
   link: string;
   title: string;
   description: string;
@@ -892,6 +893,12 @@ class InfiniteGridMenu {
         video.playsInline = true;
         video.play().catch(() => {});
         this.videoItems.push({ video, index: i, zoom: item.videoZoom ?? 1 });
+      } else if (item.iframeUrl) {
+        // Pure black cell — invisible on the globe; the HTML iframe overlay is the preview
+        const x = (i % this.atlasSize) * cellSize;
+        const y = Math.floor(i / this.atlasSize) * cellSize;
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(x, y, cellSize, cellSize);
       } else if (item.canvasEffect === 'tubeCursor') {
         // Draw initial black cell; tube cursor renders per-frame
         const x = (i % this.atlasSize) * cellSize;
@@ -1342,10 +1349,15 @@ const InfiniteMenu: FC<InfiniteMenuProps> = ({ items = [], scale = 1.0 }) => {
   const [activeItem, setActiveItem] = useState<MenuItem | null>(null);
   const [isMoving, setIsMoving] = useState<boolean>(false);
   const [videoExpanded, setVideoExpanded] = useState(false);
+  const [iframeExpanded, setIframeExpanded] = useState(false);
   const videoOverlayRef = useRef<HTMLVideoElement | null>(null);
+  const iframeContainerRef = useRef<HTMLDivElement | null>(null);
+  const [iframeScale, setIframeScale] = useState(0.5);
   const expandTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const iframeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const fullscreenVideoSrc = items.find(item => item.video)?.video || null;
+  const fullscreenIframeSrc = items.find(item => item.iframeUrl)?.iframeUrl || null;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -1402,6 +1414,38 @@ const InfiniteMenu: FC<InfiniteMenuProps> = ({ items = [], scale = 1.0 }) => {
     };
   }, [activeItem?.video, isMoving]);
 
+  // Fullscreen iframe expand/collapse (same pattern as video)
+  useEffect(() => {
+    if (iframeTimerRef.current) {
+      clearTimeout(iframeTimerRef.current);
+      iframeTimerRef.current = null;
+    }
+
+    if (activeItem?.iframeUrl && !isMoving) {
+      iframeTimerRef.current = setTimeout(() => {
+        setIframeExpanded(true);
+      }, 800);
+    } else {
+      setIframeExpanded(false);
+    }
+
+    return () => {
+      if (iframeTimerRef.current) clearTimeout(iframeTimerRef.current);
+    };
+  }, [activeItem?.iframeUrl, isMoving]);
+
+  // Measure iframe circle to compute scale — fit 1920px width into the circle diameter
+  useEffect(() => {
+    const el = iframeContainerRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(([entry]) => {
+      const diameter = entry.contentRect.width;
+      if (diameter > 0) setIframeScale((diameter * 0.75) / 1920);
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   const handleButtonClick = () => {
     if (!activeItem?.link) return;
     if (activeItem.link.startsWith('http')) {
@@ -1451,6 +1495,48 @@ const InfiniteMenu: FC<InfiniteMenuProps> = ({ items = [], scale = 1.0 }) => {
             }}
           />
         </>
+      )}
+
+      {/* Circular iframe portal — full desktop site scaled into a disc */}
+      {fullscreenIframeSrc && (
+        <div
+          className="absolute inset-0 flex items-center justify-center pointer-events-none z-[5]"
+          style={{
+            opacity: iframeExpanded ? 1 : 0,
+            transition: iframeExpanded
+              ? 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1)'
+              : 'opacity 0.4s cubic-bezier(0.55, 0, 1, 0.45)',
+          }}
+        >
+          <div
+            ref={iframeContainerRef}
+            className="relative rounded-full overflow-hidden"
+            style={{
+              width: 'min(58vw, 68vh)',
+              height: 'min(58vw, 68vh)',
+              transform: iframeExpanded ? 'scale(1)' : 'scale(0.3)',
+              transition: iframeExpanded
+                ? 'transform 1s cubic-bezier(0.16, 1, 0.3, 1)'
+                : 'transform 0.4s cubic-bezier(0.55, 0, 1, 0.45)',
+              boxShadow: '0 0 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06)',
+            }}
+          >
+            <iframe
+              src={fullscreenIframeSrc}
+              title="Live Preview"
+              className="pointer-events-none origin-center absolute"
+              style={{
+                border: 'none',
+                width: '1920px',
+                height: '1080px',
+                top: '50%',
+                left: '50%',
+                transform: `translate(-50%, -50%) scale(${iframeScale})`,
+              }}
+              allow="accelerometer; autoplay; encrypted-media; gyroscope"
+            />
+          </div>
+        </div>
       )}
 
       {activeItem && (

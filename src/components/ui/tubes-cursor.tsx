@@ -50,31 +50,44 @@ export default function TubesCursor({
   const pointerRafRef = useRef<number | null>(null);
 
   useEffect(() => {
+    let disposed = false;
+
     const initTimer = setTimeout(() => {
       import("threejs-components/build/cursors/tubes1.min.js")
         .then((module) => {
+          if (disposed) return;
           const TubesCursor = module.default;
-          
+
           if (canvasRef.current) {
-            const app = TubesCursor(canvasRef.current, {
-              tubes: {
-                colors: ["#FF006E", "#8338EC", "#3A86FF"],
-                lights: {
-                  intensity: 180,
-                  colors: ["#FF006E", "#FB5607", "#FFBE0B", "#06FFB4"]
+            try {
+              const app = TubesCursor(canvasRef.current, {
+                tubes: {
+                  colors: ["#FF006E", "#8338EC", "#3A86FF"],
+                  lights: {
+                    intensity: 180,
+                    colors: ["#FF006E", "#FB5607", "#FFBE0B", "#06FFB4"]
+                  }
                 }
+              });
+              if (!disposed) {
+                appRef.current = app;
+              } else {
+                app.dispose?.();
               }
-            });
-            appRef.current = app;
+            } catch (err) {
+              console.warn("TubesCursor WebGL init failed (likely context limit during HMR):", err);
+            }
           }
         })
         .catch(err => console.error("Failed to load TubesCursor module:", err));
     }, 100);
 
     return () => {
+      disposed = true;
       clearTimeout(initTimer);
       if (appRef.current && typeof appRef.current.dispose === "function") {
         appRef.current.dispose();
+        appRef.current = null;
       }
     };
   }, []);
