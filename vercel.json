@@ -2,12 +2,12 @@
   "redirects": [
     {
       "source": "/andromeda",
-      "destination": "https://andromeda.laniameda.space/andromeda",
+      "destination": "https://andromeda.laniameda.space",
       "permanent": false
     },
     {
       "source": "/andromeda/:path*",
-      "destination": "https://andromeda.laniameda.space/andromeda/:path*",
+      "destination": "https://andromeda.laniameda.space",
       "permanent": false
     }
   ]
