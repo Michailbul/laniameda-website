@@ -1,8 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: 'export',
-  distDir: 'dist',
   turbopack: {
     root: process.cwd(),
   },
@@ -20,6 +18,16 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "api.microlink.io",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "app-uploads.krea.ai",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "www.krea.ai",
         pathname: "/**",
       },
     ],
