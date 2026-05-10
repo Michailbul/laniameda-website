@@ -85,7 +85,14 @@ export function EditableText({
   className,
   parseLinks = false,
 }: EditableTextProps) {
-  const Tag = (as ?? "span") as ElementType
+  // The caller chooses the actual element via `as`. Both JSX usages
+  // below need to typecheck across every possible HTML tag (children,
+  // ref, all attributes), and React 19's `ElementType` typing makes
+  // that effectively impossible to pin without losing JSX flexibility
+  // — so this local var is intentionally `any`. The compiled code is
+  // identical; we lose type checking only inside this one component.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const Tag = (as ?? "span") as any
   const ctx = useEditor()
   const ref = useRef<HTMLElement>(null)
 
