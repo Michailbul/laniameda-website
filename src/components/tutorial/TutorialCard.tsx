@@ -20,7 +20,7 @@ export interface TutorialCardData {
 }
 
 /**
- * Tutorial card with cursor-driven parallax tilt + spotlight on hover.
+ * Tutorial card with cursor-driven parallax tilt on hover.
  *
  * Tilt math:
  *  - Cursor position is normalized to (0..1, 0..1) relative to the card.
@@ -38,7 +38,6 @@ export function TutorialCard({ data }: { data: TutorialCardData }) {
 
   const articleRef = useRef<HTMLElement>(null)
   const mediaRef = useRef<HTMLDivElement>(null)
-  const spotlightRef = useRef<HTMLDivElement>(null)
   const rafRef = useRef<number | null>(null)
 
   const handleMouseMove = useCallback(
@@ -72,11 +71,6 @@ export function TutorialCard({ data }: { data: TutorialCardData }) {
           // opposite the cursor — classic parallax depth cue.
           mediaRef.current.style.transform = `translate3d(${dx * -12}px, ${dy * -12}px, 30px)`
         }
-
-        if (spotlightRef.current) {
-          spotlightRef.current.style.opacity = "1"
-          spotlightRef.current.style.background = `radial-gradient(circle 320px at ${cx * 100}% ${cy * 100}%, rgba(229,134,111,0.16), rgba(229,134,111,0.04) 35%, transparent 65%)`
-        }
       })
     },
     [isComingSoon],
@@ -89,7 +83,6 @@ export function TutorialCard({ data }: { data: TutorialCardData }) {
     const article = articleRef.current
     if (article) article.style.transform = ""
     if (mediaRef.current) mediaRef.current.style.transform = ""
-    if (spotlightRef.current) spotlightRef.current.style.opacity = "0"
   }, [isComingSoon])
 
   useEffect(() => {
@@ -125,18 +118,6 @@ export function TutorialCard({ data }: { data: TutorialCardData }) {
         aria-hidden
         className="pointer-events-none absolute left-0 inset-y-12 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent"
       />
-
-      {/* Cursor-following spotlight — a soft coral glow that tracks the
-          mouse over the card surface. Sits above the glass, below the
-          content so it tints rather than washes. */}
-      {!isComingSoon ? (
-        <div
-          ref={spotlightRef}
-          aria-hidden
-          className="pointer-events-none absolute inset-0 z-[1] opacity-0 transition-opacity duration-300 ease-out"
-          style={{ mixBlendMode: "screen" }}
-        />
-      ) : null}
 
       {/* Media — 16:9 preview at the top of the card. The wrapper is the
           parallax-translated layer; the video itself doesn't transform. */}
@@ -244,22 +225,6 @@ export function TutorialCard({ data }: { data: TutorialCardData }) {
             ))}
           </ul>
 
-          {!isComingSoon ? (
-            <span
-              aria-hidden
-              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.02] text-white/55 transition-all duration-300 group-hover/card:border-[#E5866F]/40 group-hover/card:bg-[#E5866F]/[0.08] group-hover/card:text-[#E5866F]"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                className="h-3.5 w-3.5 transition-transform duration-300 group-hover/card:translate-x-0.5 group-hover/card:-translate-y-0.5"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={1.7}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M7 17L17 7M17 7H7M17 7V17" />
-              </svg>
-            </span>
-          ) : null}
         </div>
       </div>
     </article>
