@@ -185,14 +185,43 @@ export default function MusicArtwork({
                 animationDelay: effectivePlaying ? `${-rotation / (360 / spinDuration)}s` : undefined,
               }}
             >
-              <Image
-                src="https://pngimg.com/d/vinyl_PNG95.png"
-                alt="Vinyl Record"
-                width={80}
-                height={80}
-                className="w-full h-full object-contain"
-                unoptimized
-              />
+              <svg
+                viewBox="0 0 100 100"
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-full h-full"
+                role="img"
+                aria-label="Vinyl Record"
+              >
+                <defs>
+                  <radialGradient id="vinyl-body" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stopColor="#1c1c1c" />
+                    <stop offset="55%" stopColor="#0a0a0a" />
+                    <stop offset="100%" stopColor="#000" />
+                  </radialGradient>
+                  <linearGradient id="vinyl-shine" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="rgba(255,255,255,0.18)" />
+                    <stop offset="35%" stopColor="rgba(255,255,255,0)" />
+                    <stop offset="65%" stopColor="rgba(255,255,255,0)" />
+                    <stop offset="100%" stopColor="rgba(255,255,255,0.08)" />
+                  </linearGradient>
+                </defs>
+                <circle cx="50" cy="50" r="49" fill="url(#vinyl-body)" />
+                {[44, 40, 36, 32, 28, 24, 20].map((r) => (
+                  <circle
+                    key={r}
+                    cx="50"
+                    cy="50"
+                    r={r}
+                    fill="none"
+                    stroke="rgba(255,255,255,0.05)"
+                    strokeWidth="0.3"
+                  />
+                ))}
+                <circle cx="50" cy="50" r="49" fill="url(#vinyl-shine)" />
+                <circle cx="50" cy="50" r="16" fill="#F26157" />
+                <circle cx="50" cy="50" r="16" fill="none" stroke="rgba(0,0,0,0.25)" strokeWidth="0.4" />
+                <circle cx="50" cy="50" r="1.4" fill="#000" />
+              </svg>
             </div>
           </div>
         </div>

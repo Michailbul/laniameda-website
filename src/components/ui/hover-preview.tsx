@@ -1,290 +1,254 @@
 "use client"
 
-import type React from "react"
-import { useState, useCallback, useRef, useEffect } from "react"
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
+import { createPortal } from "react-dom"
 
-export const previewData = {
-    laniameda: {
-        image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=560&h=320&fit=crop",
-        title: "Laniameda",
-        subtitle: "Creative studio for emerging tech brands",
-    },
-    midjourney: {
-        image: "https://images.unsplash.com/photo-1695144244472-a4543101ef35?w=560&h=320&fit=crop",
-        title: "Midjourney",
-        subtitle: "Create stunning AI-generated artwork",
-    },
-    stable: {
-        image: "https://images.unsplash.com/photo-1712002641088-9d76f9080889?w=560&h=320&fit=crop",
-        title: "Stable Diffusion",
-        subtitle: "Open-source generative AI model",
-    },
-    leonardo: {
-        image: "https://images.unsplash.com/photo-1718241905696-cb34c2c07bed?w=560&h=320&fit=crop",
-        title: "Leonardo AI",
-        subtitle: "Production-ready creative assets",
-    },
+interface HoverPreviewProps {
+  /** Link target. When omitted, the wrapper renders as a `<span>` so
+   *  this component can decorate non-link content (e.g. a table header
+   *  label) with the same hover-card behaviour. */
+  href?: string
+  /** Visible content (text + icons + animations). The component wraps
+   *  it in an anchor (or span, if `href` is absent) and attaches the
+   *  hover/leave handlers — your inner styling stays exactly as authored. */
+  children: ReactNode
+  /** Preview thumbnail. Pass a static `image`, an autoplaying `video`,
+   *  or omit `src` entirely to show a text-only card. */
+  preview: {
+    /** Headline shown in the card. */
+    title: string
+    /** Smaller line under the headline. Optional. */
+    subtitle?: string
+    /** Image (or video poster) URL. */
+    src?: string
+    /** Defaults to "image". Use "video" for muted autoplay loop. */
+    kind?: "image" | "video"
+    /** Card pixel width — defaults to 320. Height auto from aspect. */
+    width?: number
+    /** Optional aspect ratio for the media frame ("16/9" by default). */
+    aspectRatio?: string
+  }
+  /** Standard anchor attributes. */
+  target?: string
+  rel?: string
+  className?: string
+  /** Disable the hover preview entirely (e.g. on touch devices via
+   *  `pointer-events: coarse` upstream). The link still works. */
+  disabled?: boolean
 }
 
-export const hoverPreviewStyles = `
-  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Syne:wght@400;700;800&display=swap');
-
-  .hover-link {
-    cursor: pointer;
-    position: relative;
-    display: inline-block;
-  }
-
-  /* Only apply the underline effect if we want it, or keep it generic */
-  .hover-link-animated::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb);
-    transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  }
-
-  .hover-link-animated:hover::after {
-    width: 100%;
-  }
-
-  .preview-card {
-    position: fixed;
-    pointer-events: none;
-    z-index: 1000;
-    opacity: 0;
-    transform: translateY(10px) scale(0.95);
-    transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-    will-change: transform, opacity;
-  }
-
-  .preview-card.visible {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-
-  .preview-card-inner {
-    background: #1a1a1a;
-    border-radius: 16px;
-    padding: 8px;
-    box-shadow: 
-      0 25px 50px -12px rgba(0, 0, 0, 0.8),
-      0 0 0 1px rgba(255, 255, 255, 0.1),
-      0 0 60px rgba(255, 107, 107, 0.1);
-    overflow: hidden;
-    backdrop-filter: blur(10px);
-  }
-
-  .preview-card img {
-    width: 280px;
-    height: auto;
-    border-radius: 10px;
-    display: block;
-  }
-
-  .preview-card-title {
-    padding: 12px 8px 8px;
-    font-size: 0.85rem;
-    color: #fff;
-    font-weight: 600;
-    font-family: 'Syne', sans-serif;
-  }
-
-  .preview-card-subtitle {
-    padding: 0 8px 8px;
-    font-size: 0.75rem;
-    color: #666;
-  }
-`
-
-export interface UseHoverPreviewReturn {
-    activePreview: (typeof previewData)[keyof typeof previewData] | null;
-    position: { x: number; y: number };
-    isVisible: boolean;
-    cardRef: React.RefObject<HTMLDivElement | null>;
-    handleHoverStart: (key: string, e: React.MouseEvent) => void;
-    handleHoverMove: (e: React.MouseEvent) => void;
-    handleHoverEnd: () => void;
-}
-
-export function useHoverPreview(): UseHoverPreviewReturn {
-    const [activePreview, setActivePreview] = useState<(typeof previewData)[keyof typeof previewData] | null>(null)
-    const [position, setPosition] = useState({ x: 0, y: 0 })
-    const [isVisible, setIsVisible] = useState(false)
-    const cardRef = useRef<HTMLDivElement>(null)
-
-    // Preload all images on mount
-    useEffect(() => {
-        Object.entries(previewData).forEach(([, data]) => {
-            const img = new Image()
-            img.crossOrigin = "anonymous"
-            img.src = data.image
-        })
-    }, [])
-
-    const updatePosition = useCallback((e: React.MouseEvent | MouseEvent) => {
-        const cardWidth = 300
-        const cardHeight = 250 // Approximate card height
-        const offsetX = 15
-        const offsetY = 20 // Gap between cursor and card bottom
-
-        // Position card so its bottom-left is above the cursor
-        let x = e.clientX - cardWidth / 2 // Center horizontally on cursor
-        let y = e.clientY - cardHeight - offsetY // Position above cursor
-
-        // Boundary checks - keep card on screen
-        if (x + cardWidth > window.innerWidth - 20) {
-            x = window.innerWidth - cardWidth - 20
-        }
-        if (x < 20) {
-            x = 20
-        }
-
-        // If card would go above viewport, position below cursor instead
-        if (y < 20) {
-            y = e.clientY + offsetY
-        }
-
-        setPosition({ x, y })
-    }, [])
-
-    const handleHoverStart = useCallback(
-        (key: string, e: React.MouseEvent) => {
-            if (previewData[key as keyof typeof previewData]) {
-                setActivePreview(previewData[key as keyof typeof previewData])
-                setIsVisible(true)
-                updatePosition(e)
-            }
-        },
-        [updatePosition],
-    )
-
-    const handleHoverMove = useCallback(
-        (e: React.MouseEvent) => {
-            if (isVisible) {
-                updatePosition(e)
-            }
-        },
-        [isVisible, updatePosition],
-    )
-
-    const handleHoverEnd = useCallback(() => {
-        setIsVisible(false)
-    }, [])
-
-    return {
-        activePreview,
-        position,
-        isVisible,
-        cardRef,
-        handleHoverStart,
-        handleHoverMove,
-        handleHoverEnd
-    }
-}
-
-export const HoverLink = ({
-    previewKey,
-    children,
-    onHoverStart,
-    onHoverMove,
-    onHoverEnd,
-    className = "",
-}: {
-    previewKey: string
-    children: React.ReactNode
-    onHoverStart: (key: string, e: React.MouseEvent) => void
-    onHoverMove: (e: React.MouseEvent) => void
-    onHoverEnd: () => void
-    className?: string
-}) => {
-    return (
-        <span
-            className={`hover-link ${className}`}
-            onMouseEnter={(e) => onHoverStart(previewKey, e)}
-            onMouseMove={onHoverMove}
-            onMouseLeave={onHoverEnd}
-        >
-            {children}
-        </span>
-    )
-}
-
-export const PreviewCard = ({
-    data,
-    position,
-    isVisible,
-    cardRef,
-}: {
-    data: (typeof previewData)[keyof typeof previewData] | null
-    position: { x: number; y: number }
-    isVisible: boolean
-    cardRef: React.RefObject<HTMLDivElement | null>
-}) => {
-    if (!data) return null
-
-    return (
-        <div
-            ref={cardRef}
-            className={`preview-card ${isVisible ? "visible" : ""}`}
-            style={{
-                left: `${position.x}px`,
-                top: `${position.y}px`,
-            }}
-        >
-            <div className="preview-card-inner">
-                <img
-                    src={data.image || "/placeholder.svg"}
-                    alt={data.title || ""}
-                    crossOrigin="anonymous"
-                    referrerPolicy="no-referrer"
-                />
-                <div className="preview-card-title">{data.title}</div>
-                <div className="preview-card-subtitle">{data.subtitle}</div>
-            </div>
-        </div>
-    )
-}
-
+/**
+ * Wraps any link with a cursor-following preview card that appears on
+ * hover. Card is portal-mounted to `document.body` so it can never be
+ * clipped by an ancestor with `overflow: hidden` (e.g. a sticky header
+ * region or a card with rounded clipping). Position is recomputed on
+ * every mouse move and clamped to viewport edges.
+ *
+ * The link's own visual treatment (underlines, arrows, color shifts,
+ * icons) is fully preserved — pass it as `children`.
+ */
 export function HoverPreview({
-    children,
-    previewKey = "laniameda",
-    className = "",
-}: {
-    children: React.ReactNode
-    previewKey?: string
-    className?: string
-}) {
-    const {
-        activePreview,
-        position,
-        isVisible,
-        cardRef,
-        handleHoverStart,
-        handleHoverMove,
-        handleHoverEnd,
-    } = useHoverPreview()
+  href,
+  children,
+  preview,
+  target,
+  rel,
+  className,
+  disabled = false,
+}: HoverPreviewProps) {
+  const [mounted, setMounted] = useState(false)
+  const [visible, setVisible] = useState(false)
+  const [pos, setPos] = useState({ x: 0, y: 0 })
+  const [imgError, setImgError] = useState(false)
+  // Show / hide are debounced slightly so brushing the link doesn't
+  // flash the card. Hide is the longer of the two so a fast move from
+  // link → card doesn't cause a flicker (the card itself has
+  // pointer-events: none — but the timing still benefits readers who
+  // hover briefly).
+  const showTimerRef = useRef<number | null>(null)
+  const hideTimerRef = useRef<number | null>(null)
 
-    return (
-        <>
-            <HoverLink
-                previewKey={previewKey}
-                onHoverStart={handleHoverStart}
-                onHoverMove={handleHoverMove}
-                onHoverEnd={handleHoverEnd}
-                className={className}
+  useEffect(() => setMounted(true), [])
+
+  useEffect(() => {
+    return () => {
+      if (showTimerRef.current !== null) window.clearTimeout(showTimerRef.current)
+      if (hideTimerRef.current !== null) window.clearTimeout(hideTimerRef.current)
+    }
+  }, [])
+
+  const cardWidth = preview.width ?? 320
+  // Approximate card height for above-cursor positioning. Real height
+  // varies with image aspect + caption length; we re-clamp on render
+  // anyway so being slightly off here only affects the initial frame.
+  const approxHeight = Math.round(cardWidth * 0.66) + 64
+
+  const updatePosition = useCallback(
+    (clientX: number, clientY: number) => {
+      const offset = 18
+      let x = clientX - cardWidth / 2
+      let y = clientY - approxHeight - offset
+
+      // Clamp to viewport with a small inner gutter
+      const gutter = 16
+      if (x + cardWidth > window.innerWidth - gutter) {
+        x = window.innerWidth - cardWidth - gutter
+      }
+      if (x < gutter) x = gutter
+      // Flip below cursor if it would clip the top
+      if (y < gutter) y = clientY + offset
+
+      setPos({ x, y })
+    },
+    [cardWidth, approxHeight]
+  )
+
+  const handleEnter = (e: React.MouseEvent) => {
+    if (disabled) return
+    if (hideTimerRef.current !== null) {
+      window.clearTimeout(hideTimerRef.current)
+      hideTimerRef.current = null
+    }
+    updatePosition(e.clientX, e.clientY)
+    // Tiny delay so brushing past the link doesn't flash the card
+    showTimerRef.current = window.setTimeout(() => setVisible(true), 60)
+  }
+
+  const handleMove = (e: React.MouseEvent) => {
+    if (disabled) return
+    updatePosition(e.clientX, e.clientY)
+  }
+
+  const handleLeave = () => {
+    if (disabled) return
+    if (showTimerRef.current !== null) {
+      window.clearTimeout(showTimerRef.current)
+      showTimerRef.current = null
+    }
+    hideTimerRef.current = window.setTimeout(() => setVisible(false), 80)
+  }
+
+  const showMedia = preview.src !== undefined && !imgError
+
+  // Shared interaction props for both anchor + span renderings.
+  const interactionProps = {
+    className,
+    onMouseEnter: handleEnter,
+    onMouseMove: handleMove,
+    onMouseLeave: handleLeave,
+    onFocus: (e: React.FocusEvent<HTMLElement>) => {
+      // Keyboard focus also surfaces the preview, anchored above the
+      // element so it sits in roughly the same spot a mouse hover would.
+      if (disabled) return
+      const rect = e.currentTarget.getBoundingClientRect()
+      updatePosition(rect.left + rect.width / 2, rect.top)
+      setVisible(true)
+    },
+    onBlur: handleLeave,
+  }
+
+  return (
+    <>
+      {href !== undefined ? (
+        <a href={href} target={target} rel={rel} {...interactionProps}>
+          {children}
+        </a>
+      ) : (
+        // Non-link wrapper — `tabIndex={0}` so keyboard users still get
+        // the hover preview via focus.
+        <span role="button" tabIndex={0} {...interactionProps}>
+          {children}
+        </span>
+      )}
+
+      {mounted
+        ? createPortal(
+            <div
+              aria-hidden
+              className={`pointer-events-none fixed z-[1200] transition-all duration-200 ease-out ${
+                visible
+                  ? "opacity-100 translate-y-0 scale-100"
+                  : "translate-y-1.5 scale-[0.97] opacity-0"
+              }`}
+              style={{
+                left: pos.x,
+                top: pos.y,
+                width: cardWidth,
+                willChange: "transform, opacity",
+              }}
             >
-                {children}
-            </HoverLink>
-            <PreviewCard
-                data={activePreview}
-                position={position}
-                isVisible={isVisible}
-                cardRef={cardRef}
-            />
-        </>
-    )
+              <div
+                className="relative overflow-hidden rounded-xl border border-white/[0.10] bg-[#141414]/95 p-2 backdrop-blur-xl"
+                style={{
+                  boxShadow:
+                    "0 24px 48px -16px rgba(0,0,0,0.72), 0 0 0 1px rgba(255,255,255,0.04), 0 0 36px rgba(229,134,111,0.12)",
+                }}
+              >
+                {/* Top-edge specular highlight */}
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                />
+
+                {/* Media frame */}
+                {showMedia ? (
+                  <div
+                    className="relative w-full overflow-hidden rounded-lg bg-black/60"
+                    style={{ aspectRatio: preview.aspectRatio ?? "16 / 9" }}
+                  >
+                    {preview.kind === "video" ? (
+                      <video
+                        src={preview.src}
+                        muted
+                        loop
+                        autoPlay
+                        playsInline
+                        preload="metadata"
+                        onError={() => setImgError(true)}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={preview.src}
+                        alt=""
+                        loading="eager"
+                        decoding="async"
+                        onError={() => setImgError(true)}
+                        className="h-full w-full object-cover"
+                      />
+                    )}
+                  </div>
+                ) : (
+                  // Text-only fallback if no image OR image failed to
+                  // load. Keeps the hover behaviour useful even before
+                  // a real preview asset has been added.
+                  <div
+                    className="flex w-full items-center justify-center rounded-lg bg-gradient-to-br from-[#1f1f1f] via-[#171717] to-[#0e0e0e] px-4"
+                    style={{ aspectRatio: preview.aspectRatio ?? "16 / 9" }}
+                  >
+                    <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#E5866F]/70">
+                      Preview
+                    </span>
+                  </div>
+                )}
+
+                {/* Caption */}
+                <div className="px-2 pb-1.5 pt-3">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#E5866F]/85">
+                    {preview.title}
+                  </p>
+                  {preview.subtitle ? (
+                    <p className="mt-1 text-[12px] font-light leading-[1.35] text-white/65">
+                      {preview.subtitle}
+                    </p>
+                  ) : null}
+                </div>
+              </div>
+            </div>,
+            document.body
+          )
+        : null}
+    </>
+  )
 }

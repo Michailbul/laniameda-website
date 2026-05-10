@@ -17,12 +17,7 @@ import {
     MediaType,
     Platform,
 } from "./types";
-import {
-    useHoverPreview,
-    HoverLink,
-    PreviewCard,
-    hoverPreviewStyles,
-} from "@/components/ui/hover-preview";
+import { HoverPreview } from "@/components/ui/hover-preview";
 
 const sampleHypotheses: HypothesisEntry[] = [
     {
@@ -157,20 +152,9 @@ const complexityColors: Record<ComplexityLevel, string> = {
 };
 
 export function HypothesesLibraryCard({ isActive }: { isActive: boolean }) {
-    const {
-        activePreview,
-        position,
-        isVisible,
-        cardRef,
-        handleHoverStart,
-        handleHoverMove,
-        handleHoverEnd,
-    } = useHoverPreview();
-
     return (
         <div className="w-full max-w-6xl mx-auto px-6">
-            <style>{hoverPreviewStyles}</style>
-            
+
             {/* Problem Section */}
             <div className="mb-3">
                 <p className="text-[11px] font-semibold tracking-[0.15em] text-zinc-500 uppercase">
@@ -212,15 +196,16 @@ export function HypothesesLibraryCard({ isActive }: { isActive: boolean }) {
                                 Format Example
                             </TableHead>
                             <TableHead className="h-10 px-3 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider text-center whitespace-nowrap">
-                                <HoverLink
-                                    previewKey="midjourney"
-                                    onHoverStart={handleHoverStart}
-                                    onHoverMove={handleHoverMove}
-                                    onHoverEnd={handleHoverEnd}
-                                    className="hover:text-white transition-colors"
+                                <HoverPreview
+                                    className="hover:text-white transition-colors cursor-help"
+                                    preview={{
+                                        src: "https://images.unsplash.com/photo-1695144244472-a4543101ef35?w=560&h=320&fit=crop",
+                                        title: "Reference",
+                                        subtitle: "Tap a row to inspect the source asset",
+                                    }}
                                 >
                                     Ref
-                                </HoverLink>
+                                </HoverPreview>
                             </TableHead>
                             <TableHead className="h-10 px-3 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider whitespace-nowrap">
                                 Type
@@ -338,13 +323,7 @@ export function HypothesesLibraryCard({ isActive }: { isActive: boolean }) {
                         })}
                     </TableBody>
                 </Table>
-            </div>    
-            <PreviewCard
-                data={activePreview}
-                position={position}
-                isVisible={isVisible}
-                cardRef={cardRef}
-            />
+            </div>
         </div>
     );
 }

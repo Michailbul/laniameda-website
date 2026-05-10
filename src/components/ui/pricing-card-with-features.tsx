@@ -82,7 +82,7 @@ export const PricingCardWithFeatures = ({
           </div>
 
           <a
-            href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+            href="https://cal.com/michael-buloichyk-zwzdvl/30min"
             target="_blank"
             rel="noopener noreferrer"
             className="block w-full sm:w-[220px]"
