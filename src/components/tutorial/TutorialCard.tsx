@@ -157,21 +157,13 @@ export function TutorialCard({ data }: { data: TutorialCardData }) {
           {data.eyebrow}
         </p>
 
-        {/* Status badge — top right */}
+        {/* Status badge — top right (coming-soon only) */}
         {isComingSoon ? (
           <div className="absolute right-5 top-5 inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-black/60 px-2.5 py-1 font-mono text-[9.5px] uppercase tracking-[0.2em] text-white/75 backdrop-blur-sm">
             <span aria-hidden className="h-1 w-1 rounded-full bg-white/45" />
             Coming soon
           </div>
-        ) : (
-          <div className="absolute right-5 top-5 inline-flex items-center gap-1.5 rounded-full border border-[#E5866F]/35 bg-[#E5866F]/[0.12] px-2.5 py-1 font-mono text-[9.5px] uppercase tracking-[0.2em] text-[#E5866F] backdrop-blur-sm">
-            <span aria-hidden className="relative flex h-1 w-1">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#E5866F]/60" />
-              <span className="relative inline-flex h-1 w-1 rounded-full bg-[#E5866F]" />
-            </span>
-            Live
-          </div>
-        )}
+        ) : null}
 
         {/* Cinematic corner brackets — only on live cards */}
         {!isComingSoon ? (
