@@ -12,21 +12,30 @@ interface HoverPreviewProps {
    *  it in an anchor (or span, if `href` is absent) and attaches the
    *  hover/leave handlers — your inner styling stays exactly as authored. */
   children: ReactNode
-  /** Preview thumbnail. Pass a static `image`, an autoplaying `video`,
-   *  or omit `src` entirely to show a text-only card. */
+  /** Preview thumbnail. Pass a static `image`, an autoplaying `video`, a
+   *  live `iframe` of the destination, or omit `src` entirely to show a
+   *  text-only card. */
   preview: {
     /** Headline shown in the card. */
     title: string
     /** Smaller line under the headline. Optional. */
     subtitle?: string
-    /** Image (or video poster) URL. */
+    /** Image / video URL, or the page to frame when kind is "iframe". */
     src?: string
-    /** Defaults to "image". Use "video" for muted autoplay loop. */
-    kind?: "image" | "video"
+    /** Defaults to "image". "video" is a muted autoplay loop; "iframe"
+     *  renders the live page, scaled down to thumbnail size. */
+    kind?: "image" | "video" | "iframe"
     /** Card pixel width — defaults to 320. Height auto from aspect. */
     width?: number
-    /** Optional aspect ratio for the media frame ("16/9" by default). */
+    /** Optional aspect ratio for the media frame ("16/9" by default).
+     *  Ignored for "iframe", whose height follows frameWidth/frameHeight. */
     aspectRatio?: string
+    /** iframe only — the viewport the page is rendered at before being
+     *  scaled into the card. Framing a site at card width would trip its
+     *  mobile breakpoints and show a cramped phone layout, so render it
+     *  at desktop size and shrink the result. Defaults to 1280x800. */
+    frameWidth?: number
+    frameHeight?: number
   }
   /** Standard anchor attributes. */
   target?: string
@@ -35,6 +44,11 @@ interface HoverPreviewProps {
   /** Disable the hover preview entirely (e.g. on touch devices via
    *  `pointer-events: coarse` upstream). The link still works. */
   disabled?: boolean
+  /** iframe only — start loading the framed page before the link itself is
+   *  hovered. Hang this off a coarser signal that the reader is heading for
+   *  the link (entering the nav, say): a client-rendered app can take
+   *  seconds to paint, and the first hover shouldn't pay for all of it. */
+  warm?: boolean
 }
 
 /**
@@ -55,11 +69,22 @@ export function HoverPreview({
   rel,
   className,
   disabled = false,
+  warm = false,
 }: HoverPreviewProps) {
   const [mounted, setMounted] = useState(false)
   const [visible, setVisible] = useState(false)
   const [pos, setPos] = useState({ x: 0, y: 0 })
   const [imgError, setImgError] = useState(false)
+  // An iframe is only created once the link is actually hovered — a live
+  // page costs a real page load, and the header would otherwise pay for
+  // every preview on the site before anyone asks for one. Once armed it
+  // stays mounted, so the second hover is instant.
+  const [armed, setArmed] = useState(false)
+  const [frameLoaded, setFrameLoaded] = useState(false)
+  // Touch devices have no hover. The card would either never open or, worse,
+  // open on tap and swallow the navigation — so it is switched off entirely
+  // and the link behaves like a plain link.
+  const [coarsePointer, setCoarsePointer] = useState(false)
   // Show / hide are debounced slightly so brushing the link doesn't
   // flash the card. Hide is the longer of the two so a fast move from
   // link → card doesn't cause a flicker (the card itself has
@@ -67,21 +92,43 @@ export function HoverPreview({
   // hover briefly).
   const showTimerRef = useRef<number | null>(null)
   const hideTimerRef = useRef<number | null>(null)
+  const settleTimerRef = useRef<number | null>(null)
 
   useEffect(() => setMounted(true), [])
+
+  useEffect(() => {
+    const query = window.matchMedia("(hover: none)")
+    const sync = () => setCoarsePointer(query.matches)
+    sync()
+    query.addEventListener("change", sync)
+    return () => query.removeEventListener("change", sync)
+  }, [])
 
   useEffect(() => {
     return () => {
       if (showTimerRef.current !== null) window.clearTimeout(showTimerRef.current)
       if (hideTimerRef.current !== null) window.clearTimeout(hideTimerRef.current)
+      if (settleTimerRef.current !== null) window.clearTimeout(settleTimerRef.current)
     }
   }, [])
 
+  const inert = disabled || coarsePointer
+  const isFrame = preview.kind === "iframe" && preview.src !== undefined
+
   const cardWidth = preview.width ?? 320
+  // The media frame sits inside the card's p-2, so it is 8px narrower per side.
+  const mediaWidth = cardWidth - 16
+  const frameWidth = preview.frameWidth ?? 1280
+  const frameHeight = preview.frameHeight ?? 800
+  const frameScale = mediaWidth / frameWidth
+  const frameCardHeight = Math.round(frameHeight * frameScale)
+
   // Approximate card height for above-cursor positioning. Real height
   // varies with image aspect + caption length; we re-clamp on render
   // anyway so being slightly off here only affects the initial frame.
-  const approxHeight = Math.round(cardWidth * 0.66) + 64
+  const approxHeight = isFrame
+    ? frameCardHeight + 72
+    : Math.round(cardWidth * 0.66) + 64
 
   const updatePosition = useCallback(
     (clientX: number, clientY: number) => {
@@ -103,24 +150,35 @@ export function HoverPreview({
     [cardWidth, approxHeight]
   )
 
+  // Opening the card is also what creates the iframe, the first time.
+  const reveal = useCallback(() => {
+    setArmed(true)
+    setVisible(true)
+  }, [])
+
   const handleEnter = (e: React.MouseEvent) => {
-    if (disabled) return
+    if (inert) return
     if (hideTimerRef.current !== null) {
       window.clearTimeout(hideTimerRef.current)
       hideTimerRef.current = null
     }
     updatePosition(e.clientX, e.clientY)
-    // Tiny delay so brushing past the link doesn't flash the card
-    showTimerRef.current = window.setTimeout(() => setVisible(true), 60)
+    // Tiny delay so brushing past the link doesn't flash the card — and so a
+    // framed page isn't fetched for a cursor that was only passing through.
+    showTimerRef.current = window.setTimeout(reveal, 60)
   }
 
   const handleMove = (e: React.MouseEvent) => {
-    if (disabled) return
+    // A framed page is a live document — dragging it around under the cursor
+    // repaints the whole subtree on every mouse move and reads as jittery
+    // besides. Thumbnails are cheap enough to follow; iframes stay put where
+    // they opened.
+    if (inert || isFrame) return
     updatePosition(e.clientX, e.clientY)
   }
 
   const handleLeave = () => {
-    if (disabled) return
+    if (inert) return
     if (showTimerRef.current !== null) {
       window.clearTimeout(showTimerRef.current)
       showTimerRef.current = null
@@ -139,10 +197,10 @@ export function HoverPreview({
     onFocus: (e: React.FocusEvent<HTMLElement>) => {
       // Keyboard focus also surfaces the preview, anchored above the
       // element so it sits in roughly the same spot a mouse hover would.
-      if (disabled) return
+      if (inert) return
       const rect = e.currentTarget.getBoundingClientRect()
       updatePosition(rect.left + rect.width / 2, rect.top)
-      setVisible(true)
+      reveal()
     },
     onBlur: handleLeave,
   }
@@ -191,7 +249,62 @@ export function HoverPreview({
                 />
 
                 {/* Media frame */}
-                {showMedia ? (
+                {isFrame ? (
+                  <div
+                    className="relative w-full overflow-hidden rounded-lg bg-black"
+                    style={{ height: frameCardHeight }}
+                  >
+                    {/* `inert` is re-checked here, not just on the handlers: a
+                        tap on a touch device still fires mouseenter, and a
+                        warm signal wired to that would load the framed app for
+                        a card the reader can never see. */}
+                    {(armed || warm) && !inert ? (
+                      <iframe
+                        src={preview.src}
+                        title={preview.title}
+                        // Decorative: the card is aria-hidden, and the real
+                        // destination is the link this preview belongs to.
+                        tabIndex={-1}
+                        loading="lazy"
+                        // The framed page is ours, so it needs its own scripts
+                        // and origin to render at all. It stays sandboxed out
+                        // of top-level navigation, popups, downloads and forms.
+                        sandbox="allow-scripts allow-same-origin"
+                        referrerPolicy="no-referrer"
+                        // `load` means the document and its subresources
+                        // arrived — not that anything is on screen. A
+                        // client-rendered app mounts after that, and a
+                        // cross-origin frame gives us no way to watch for its
+                        // first paint, so hold the placeholder a beat longer
+                        // rather than reveal an empty rectangle.
+                        onLoad={() => {
+                          settleTimerRef.current = window.setTimeout(
+                            () => setFrameLoaded(true),
+                            600,
+                          )
+                        }}
+                        className="absolute left-0 top-0 origin-top-left border-0"
+                        style={{
+                          width: frameWidth,
+                          height: frameHeight,
+                          transform: `scale(${frameScale})`,
+                        }}
+                      />
+                    ) : null}
+
+                    {/* Held until the page paints, so the card never opens
+                        onto a white flash or an empty black rectangle. */}
+                    <div
+                      className={`absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#1f1f1f] via-[#171717] to-[#0e0e0e] transition-opacity duration-500 ${
+                        frameLoaded ? "pointer-events-none opacity-0" : "opacity-100"
+                      }`}
+                    >
+                      <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#E5866F]/70">
+                        Loading
+                      </span>
+                    </div>
+                  </div>
+                ) : showMedia ? (
                   <div
                     className="relative w-full overflow-hidden rounded-lg bg-black/60"
                     style={{ aspectRatio: preview.aspectRatio ?? "16 / 9" }}

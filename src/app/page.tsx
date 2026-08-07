@@ -1,8 +1,10 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import TubesCursor from "@/components/ui/tubes-cursor"
+import { HoverPreview } from "@/components/ui/hover-preview"
 
 function HeroContent() {
   return (
@@ -38,14 +40,21 @@ function HeroContent() {
 // button chrome, no fill. An absolute href gets the arrow nudge, since that
 // link leaves laniameda.space — the ecosystem subdomains keep the same tab,
 // only third-party destinations open a new one.
+//
+// Pass `preview` to hang a live hover card off the link. The card frames the
+// destination itself rather than a screenshot, so it can never go stale.
 function NavLink({
   href,
   label,
   newTab = false,
+  preview,
+  warm = false,
 }: {
   href: string
   label: string
   newTab?: boolean
+  preview?: { src: string; title: string; subtitle: string }
+  warm?: boolean
 }) {
   const leavesSite = href.startsWith("http")
   const className =
@@ -75,13 +84,25 @@ function NavLink({
     </>
   )
 
-  if (leavesSite) {
+  const newTabProps = newTab ? { target: "_blank", rel: "noreferrer" } : {}
+
+  if (preview) {
     return (
-      <a
+      <HoverPreview
         href={href}
         className={className}
-        {...(newTab ? { target: "_blank", rel: "noreferrer" } : {})}
+        preview={{ ...preview, kind: "iframe", width: 380 }}
+        warm={warm}
+        {...newTabProps}
       >
+        {body}
+      </HoverPreview>
+    )
+  }
+
+  if (leavesSite) {
+    return (
+      <a href={href} className={className} {...newTabProps}>
         {body}
       </a>
     )
@@ -95,11 +116,21 @@ function NavLink({
 }
 
 function Header() {
+  // Both previews frame a live app, and neither paints instantly. The studio
+  // is the slow one by a distance: it is client-rendered and fetches Tailwind
+  // and React from CDNs before it mounts, all while the hero's WebGL shader is
+  // eating the main thread. Entering the header — a wider target than the nav,
+  // and crossed on the way to it — starts both loads, which is most of the head
+  // start available without making every visitor pay for two apps they may
+  // never look at.
+  const [navWarm, setNavWarm] = useState(false)
+
   return (
     <motion.header
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8 }}
+      onMouseEnter={() => setNavWarm(true)}
       className="relative z-30 flex flex-wrap items-center justify-between gap-x-6 gap-y-4 px-6 sm:px-8 py-7"
     >
       <motion.div
@@ -116,8 +147,29 @@ function Header() {
           UI shouldn't pay for a hop. Wraps on narrow screens: four mono items
           plus the wordmark overflow a phone on one line. */}
       <nav className="flex flex-wrap items-center gap-x-5 gap-y-3 sm:gap-x-7 md:gap-x-9">
-        <NavLink href="https://gallery.laniameda.space" label="Gallery" />
-        <NavLink href="https://studio.laniameda.space" label="Studio" />
+        <NavLink
+          href="https://gallery.laniameda.space"
+          label="Gallery"
+          warm={navWarm}
+          // The link goes to the root so it lands Michael in his vault when
+          // he's signed in; the frame skips straight to the public view it
+          // would redirect to anyway, saving the preview a hop.
+          preview={{
+            src: "https://gallery.laniameda.space/misha.buloy/taste_profile/featured",
+            title: "Gallery · Taste profile",
+            subtitle: "The work, the worlds behind it, and the archive underneath.",
+          }}
+        />
+        <NavLink
+          href="https://studio.laniameda.space"
+          label="Studio"
+          warm={navWarm}
+          preview={{
+            src: "https://studio.laniameda.space",
+            title: "Studio · Image Stitch",
+            subtitle: "Crop, lock, stitch. A browser workspace for AI image workflows.",
+          }}
+        />
         <NavLink href="/tutorials" label="Tutorials" />
         <NavLink
           href="https://cal.com/michael-buloichyk-zwzdvl/30min"
