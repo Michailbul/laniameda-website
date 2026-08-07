@@ -9,6 +9,31 @@
       "source": "/andromeda/:path*",
       "destination": "https://andromeda.laniameda.space",
       "permanent": false
+    },
+    {
+      "source": "/gallery",
+      "destination": "https://gallery.laniameda.space",
+      "permanent": false
+    },
+    {
+      "source": "/gallery/:path*",
+      "destination": "https://gallery.laniameda.space/:path*",
+      "permanent": false
+    },
+    {
+      "source": "/studio",
+      "destination": "https://studio.laniameda.space",
+      "permanent": false
+    },
+    {
+      "source": "/studio/:path*",
+      "destination": "https://studio.laniameda.space/:path*",
+      "permanent": false
+    },
+    {
+      "source": "/misha",
+      "destination": "https://www.mishabuloichyk.com",
+      "permanent": false
     }
   ]
 }
