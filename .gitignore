@@ -43,3 +43,8 @@ next-env.d.ts
 
 # git worktrees
 .worktrees/
+/.claude/worktrees/
+
+# Per-machine Claude Code settings. The shared .claude/settings.json is tracked;
+# this one holds local permissions and should not follow the repo around.
+.claude/settings.local.json
