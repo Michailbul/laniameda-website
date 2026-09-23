@@ -57,8 +57,13 @@ export const publish = internalMutation({
 
     const changes = [];
     if (previous) {
-      const before = index(previous.groups);
-      const after = index(args.groups);
+      // Only tiers present in both checks are compared: a model or tier taken off the tracker
+      // on purpose is an editorial change, not a price that moved.
+      const tier = (g: { model: string; tier: string }) => `${g.model}|${g.tier}`;
+      const kept = new Set(args.groups.map(tier));
+      const was = new Set(previous.groups.map(tier));
+      const before = index(previous.groups.filter((g) => kept.has(tier(g))));
+      const after = index(args.groups.filter((g) => was.has(tier(g))));
       for (const [k, a] of after) {
         const b = before.get(k);
         // Under a hundredth of a cent a second is rounding, not a price move.

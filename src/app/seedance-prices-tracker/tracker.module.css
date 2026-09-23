@@ -12,8 +12,7 @@
   --win: #2F7A52;
   --win-soft: #E4F0E7;
   --plan: #9A6410;
-  --studio: #F26157;
-  --studio-soft: #FDE6E2;
+  --band: #F7EDE1;
 
   min-height: 100vh;
   background: var(--ground);
@@ -35,8 +34,7 @@
     --win: #55B183;
     --win-soft: #14251C;
     --plan: #E8A838;
-    --studio: #F26157;
-    --studio-soft: #2A1512;
+    --band: #17130F;
   }
 }
 
@@ -72,8 +70,8 @@
 
 .key { display: flex; flex-wrap: wrap; gap: .5rem 1.1rem; margin-left: auto; font-size: 12px; color: var(--ink-3); }
 .key span { display: inline-flex; align-items: center; gap: .4rem; }
-.dotStudio, .dotPlan, .dotHollow { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
-.dotStudio { background: var(--studio); }
+.dotWin, .dotPlan, .dotHollow { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+.dotWin { background: var(--win); }
 .dotPlan { background: var(--plan); }
 .dotHollow { border: 1.5px solid var(--ink-3); }
 
@@ -114,9 +112,8 @@
 .win .prov { color: var(--win); font-weight: 600; }
 .win .num { color: var(--win); font-weight: 500; }
 
-.studio td { background: var(--studio-soft); }
-.studio .prov, .studio .num { color: var(--studio); font-weight: 600; }
-.studio .detail { color: var(--studio); opacity: .8; }
+.studio td, .studio th { background: var(--band); }
+.studio .prov, .studio .num, .studio th { color: var(--ink); font-weight: 700; }
 
 .plan .prov::before {
   content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%;
@@ -151,3 +148,48 @@
     letter-spacing: 0; text-transform: none; color: var(--ink);
   }
 }
+
+/* ---- the table view: providers x tiers ---------------------------------------------- */
+.grid {
+  border-collapse: separate; border-spacing: 0; width: 100%;
+  font-family: var(--tr-mono), ui-monospace, monospace; font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+}
+.grid th, .grid td { padding: .5rem .7rem; white-space: nowrap; border-bottom: 1px solid var(--rule-soft); }
+.grid td { text-align: right; }
+.grid tbody th {
+  text-align: left; font-family: var(--tr-sans), sans-serif; font-size: 13.5px; font-weight: 500;
+  position: sticky; left: 0; background: var(--ground); z-index: 1; padding-left: 0;
+}
+.grid thead th {
+  font-weight: 500; color: var(--ink-3); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase;
+  position: sticky; top: 0; background: var(--ground);
+}
+.grid .corner { text-align: left; vertical-align: bottom; left: 0; z-index: 2; padding-left: 0; border-bottom: 1px solid var(--rule); }
+.grid .modelHead {
+  text-align: center; color: var(--ink); font-family: var(--tr-sans), sans-serif; font-size: 13px;
+  letter-spacing: 0; text-transform: none; font-weight: 600; border-bottom: 1px solid var(--rule-soft);
+  border-left: 1px solid var(--rule-soft);
+}
+.grid .tierHead { text-align: right; border-bottom: 1px solid var(--rule); }
+.grid .gridSection th {
+  position: static; background: none; padding: 1.1rem 0 .35rem; border-bottom: none;
+  font-family: var(--tr-mono), ui-monospace, monospace; font-size: 10px; font-weight: 500;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3);
+}
+.grid .gridSection.routePlan th { color: var(--plan); }
+.grid .na { color: var(--ink-3); opacity: .5; }
+.grid td.win { color: var(--win); font-weight: 700; background: var(--win-soft); }
+.grid .studio td, .grid .studio th { background: var(--band); color: var(--ink); font-weight: 700; }
+.grid .plan th::before {
+  content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--plan); margin-right: .5rem; vertical-align: middle;
+}
+.grid td.unsure { color: var(--ink-3); }
+.grid td.unsure::after { content: "°"; margin-left: .1rem; color: var(--plan); }
+.cellTag {
+  display: block; font-size: 9.5px; font-weight: 400; color: var(--ink-3);
+  letter-spacing: .02em; margin-top: .05rem;
+}
+.grid tbody tr:hover td:not(.win), .grid tbody tr:hover th { background: var(--rule-soft); }
+.grid .studio:hover td, .grid .studio:hover th { background: var(--band); }
