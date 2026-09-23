@@ -2,7 +2,7 @@
 
 import { ConvexProvider, ConvexReactClient, useQuery } from "convex/react";
 import { Inter, JetBrains_Mono, Darker_Grotesque } from "next/font/google";
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import s from "./tracker.module.css";
 
@@ -33,23 +33,27 @@ export function Tracker() {
 }
 
 type Filter = "all" | "api" | "platform";
-type View = "table" | "list";
+type View = "table" | "charts";
 type Snapshot = NonNullable<ReturnType<typeof useLatest>>;
 type Group = Snapshot["groups"][number];
 type Row = Group["rows"][number];
 
 const useLatest = () => useQuery(api.seedancePrices.latest);
 const VIEW_KEY = "seedance-tracker:view";
+const STUDIO_URL = "https://fantasy-studio.laniameda.space";
 
 const money = (v: number) => (v >= 1 ? "$" + v.toFixed(2) : v >= 0.01 ? "$" + v.toFixed(4) : "$" + v.toFixed(5));
 const when = (ms: number) =>
   new Date(ms).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 
+const cheapestOf = (rows: Row[]): Row | null =>
+  rows.length ? rows.reduce((a, b) => (b.usd < a.usd ? b : a)) : null;
+
 /** The cheapest API row per tier: the floor Fantasy Studio routes to. */
-const cheapestApi = (g: Group): Row | null => {
-  const api = g.rows.filter((r) => r.route === "api");
-  return api.length ? api.reduce((a, b) => (b.usd < a.usd ? b : a)) : null;
-};
+const cheapestApi = (g: Group) => cheapestOf(g.rows.filter((r) => r.route === "api"));
+
+/** The cheapest platform row per tier. Unconfirmed figures do not compete for it. */
+const cheapestPlatform = (g: Group) => cheapestOf(g.rows.filter((r) => r.route === "platform" && !r.provisional));
 
 function Board() {
   const data = useLatest();
@@ -58,7 +62,7 @@ function Board() {
   useEffect(() => {
     try {
       const saved = localStorage.getItem(VIEW_KEY);
-      if (saved === "table" || saved === "list") setView(saved);
+      if (saved === "table" || saved === "charts") setView(saved);
     } catch {}
   }, []);
   const pickView = (v: View) => {
@@ -83,6 +87,11 @@ function Board() {
           Every API and platform that sells Seedance, at every resolution, in US dollars per second of output.
           Re-checked against each provider&apos;s own page every three days.
         </p>
+        <p className={s.studioLine}>
+          <a href={STUDIO_URL} target="_blank" rel="noopener">Fantasy Studio</a> sends every request to the
+          cheapest API route in this table, per model and per tier.{" "}
+          <a href={STUDIO_URL} target="_blank" rel="noopener" className={s.studioCta}>Open the app →</a>
+        </p>
         <div className={s.meta}>
           <span>Verified {data.verifiedOn}</span>
           <span>Published {when(data.publishedAt)}</span>
@@ -93,16 +102,17 @@ function Board() {
       </header>
 
       <div className={s.controls}>
-        <Seg label="View" value={view} onChange={pickView} options={[["table", "Table"], ["list", "List"]]} />
+        <Seg label="View" value={view} onChange={pickView} options={[["table", "Table"], ["charts", "Charts"]]} />
         <Seg label="Show" value={filter} onChange={setFilter} options={[["all", "All"], ["api", "Through the API"], ["platform", "On the platform"]]} />
         <div className={s.key}>
           <span><i className={s.dotWin} /> cheapest API route</span>
+          <span><i className={s.dotPlanWin} /> cheapest platform</span>
           <span><i className={s.dotPlan} /> web app, paid in credits</span>
           <span><i className={s.dotHollow} /> unconfirmed</span>
         </div>
       </div>
 
-      {view === "table" ? <Grid groups={data.groups} filter={filter} /> : <List groups={data.groups} filter={filter} />}
+      {view === "table" ? <Grid groups={data.groups} filter={filter} /> : <Charts groups={data.groups} filter={filter} />}
 
     </main>
   );
@@ -129,6 +139,7 @@ function Seg<T extends string>({ label, value, onChange, options }: {
  */
 function Grid({ groups, filter }: { groups: Group[]; filter: Filter }) {
   const floors = groups.map(cheapestApi);
+  const platformFloors = groups.map(cheapestPlatform);
 
   const providers = (route: "api" | "platform") => {
     const names = [...new Set(groups.flatMap((g) => g.rows.filter((r) => r.route === route).map((r) => r.provider)))];
@@ -153,10 +164,11 @@ function Grid({ groups, filter }: { groups: Group[]; filter: Filter }) {
   const cell = (g: Group, i: number, name: string, route: "api" | "platform") => {
     const r = g.rows.find((x) => x.provider === name && x.route === route);
     if (!r) return <td key={i} className={s.na}>—</td>;
-    const win = route === "api" && floors[i] === r;
+    const win = route === "api" ? floors[i] === r : platformFloors[i] === r;
     const title = [r.plan, r.detail, r.promo ? `promo to ${r.promo}` : "", r.provisional ? "unconfirmed" : ""].filter(Boolean).join(" · ");
+    const winCls = win ? (route === "api" ? s.win : s.winPlan) : "";
     return (
-      <td key={i} className={[win ? s.win : "", r.provisional ? s.unsure : ""].join(" ")} title={title}>
+      <td key={i} className={[winCls, r.provisional ? s.unsure : ""].join(" ")} title={title}>
         {money(r.usd)}
         {r.promo && <small className={s.cellTag}>promo</small>}
       </td>
@@ -170,7 +182,7 @@ function Grid({ groups, filter }: { groups: Group[]; filter: Filter }) {
       </tr>
       {route === "api" && (
         <tr className={s.studio}>
-          <th>Fantasy Studio</th>
+          <th><a href={STUDIO_URL} target="_blank" rel="noopener" className={s.studioName}>Fantasy Studio ↗</a></th>
           {groups.map((g, i) => (
             <td key={i} title={floors[i] ? `routes to ${floors[i]!.provider}` : ""}>
               {floors[i] ? money(floors[i]!.usd) : "—"}
@@ -209,65 +221,53 @@ function Grid({ groups, filter }: { groups: Group[]; filter: Filter }) {
   );
 }
 
-/** The list view: one tier at a time, every route with its working underneath. */
-function List({ groups, filter }: { groups: Group[]; filter: Filter }) {
+/**
+ * The charts view: one bar chart per model and tier, cheapest first. API bars are ink, platform
+ * bars amber; the cheapest of each is saturated. The dashed line is ByteDance's own rate, so a
+ * bar that reaches past it is paying markup.
+ */
+function Charts({ groups, filter }: { groups: Group[]; filter: Filter }) {
   return (
-    <div className={s.scroll}>
-      <table className={s.table}>
-        <thead>
-          <tr>
-            <th className={s.wide}>Model</th>
-            <th className={s.wide}>Tier</th>
-            <th>Provider</th>
-            <th className={s.num}>USD / second</th>
-          </tr>
-        </thead>
-        <tbody>
-          {groups.map((g) => {
-            const cheapest = cheapestApi(g);
-            const blocks = [
-              { route: "api" as const, label: "Through the API", rows: g.rows.filter((r) => r.route !== "platform") },
-              { route: "platform" as const, label: "On the platform · paying in credits", rows: g.rows.filter((r) => r.route === "platform") },
-            ].filter((b) => b.rows.length > 0 && (filter === "all" || filter === b.route));
-            return blocks.map((b, bi) => (
-              <Fragment key={`${g.model}-${g.tier}-${b.route}`}>
-                <tr className={`${s.route} ${b.route === "platform" ? s.routePlan : ""} ${bi === 0 ? s.groupStart : ""}`}>
-                  <td className={`${s.model} ${s.wide}`}>{bi === 0 ? g.model : ""}</td>
-                  <td className={`${s.tier} ${s.wide}`}>{bi === 0 ? g.tier : ""}</td>
-                  <td colSpan={2}>
-                    {bi === 0 && <span className={s.narrowTier}>{g.model} · {g.tier}</span>}
-                    {b.label}
-                  </td>
-                </tr>
-                {b.rows.map((r) => {
-                  const win = r === cheapest;
-                  const cls = [
-                    r.route === "studio" ? s.studio : "",
-                    r.route === "platform" ? s.plan : "",
-                    win ? s.win : "",
-                    r.provisional ? s.unsure : "",
-                  ].join(" ");
-                  return (
-                    <tr key={r.provider + r.route} className={cls}>
-                      <td className={s.wide} />
-                      <td className={s.wide} />
-                      <td className={s.prov}>
-                        {r.provider}
-                        {win && <span className={s.tag}>cheapest</span>}
-                        {!win && r.anchor && <span className={`${s.tag} ${s.tagQuiet}`}>first-party</span>}
-                        {r.promo && <span className={`${s.tag} ${s.tagQuiet}`}>promo to {r.promo}</span>}
-                        {r.provisional && <span className={`${s.tag} ${s.tagQuiet}`}>unconfirmed</span>}
-                        <small className={s.detail}>{r.plan ? `${r.plan} · ${r.detail}` : r.detail}</small>
-                      </td>
-                      <td className={s.num}>{money(r.usd)}</td>
-                    </tr>
-                  );
-                })}
-              </Fragment>
-            ));
-          })}
-        </tbody>
-      </table>
+    <div className={s.charts}>
+      {groups.map((g) => {
+        const rows = g.rows
+          .filter((r) => r.route !== "studio" && (filter === "all" || r.route === filter))
+          .sort((a, b) => a.usd - b.usd);
+        if (!rows.length) return null;
+        const max = Math.max(...rows.map((r) => r.usd));
+        const anchor = g.rows.find((r) => r.anchor);
+        const apiWin = cheapestApi(g);
+        const platWin = cheapestPlatform(g);
+        return (
+          <section key={g.model + g.tier} className={s.chart}>
+            <header className={s.chartHead}>
+              <h3 className={s.chartTitle}>{g.model} <em>{g.tier}</em></h3>
+              {anchor && <span className={s.chartSrc}>ByteDance {money(anchor.usd)}</span>}
+            </header>
+            <div className={s.bars}>
+              {rows.map((r) => {
+                const win = r === apiWin || r === platWin;
+                const cls = [
+                  s.barRow,
+                  r.route === "platform" ? s.barPlan : s.barApi,
+                  win ? s.barWin : "",
+                  r.provisional ? s.barUnsure : "",
+                ].join(" ");
+                return (
+                  <div key={r.provider + r.route} className={cls} title={[r.plan, r.detail].filter(Boolean).join(" · ")}>
+                    <span className={s.barName}>{r.provider}</span>
+                    <span className={s.barTrack}>
+                      <i style={{ width: `${Math.max(1.5, (r.usd / max) * 100)}%` }} />
+                      {anchor && <b style={{ left: `${(anchor.usd / max) * 100}%` }} />}
+                    </span>
+                    <span className={s.barVal}>{money(r.usd)}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        );
+      })}
     </div>
   );
 }
