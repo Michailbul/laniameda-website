@@ -240,3 +240,7 @@
   .charts { grid-template-columns: 1fr; }
   .barRow { grid-template-columns: 6rem 1fr 4.4rem; gap: .5rem; font-size: 11.5px; }
 }
+.rowTag {
+  margin-left: .45rem; font-family: var(--tr-mono), ui-monospace, monospace; font-size: 9.5px;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--plan); font-weight: 500;
+}

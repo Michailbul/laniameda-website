@@ -133,25 +133,30 @@ function Seg<T extends string>({ label, value, onChange, options }: {
 }
 
 /**
- * The table view: providers down the side, every model and tier across the top, one price per
- * cell. Providers are ordered by how close they sit to the cheapest API route on average, so
- * the top of each block is the best all-rounder.
+ * The table view: one list of rows, API routes and platforms together, every model and tier
+ * across the top, one price per cell. Rows are ordered by how close they sit to the cheapest
+ * API route on average, so the best all-rounder is at the top whatever it is. Platform rows
+ * carry an amber dot and a "web app" tag; in each column the cheapest API route is green and
+ * the cheapest platform amber.
  */
-function Grid({ groups, filter }: { groups: Group[]; filter: Filter }) {
+function Grid({ groups }: { groups: Group[]; filter: Filter }) {
   const floors = groups.map(cheapestApi);
   const platformFloors = groups.map(cheapestPlatform);
 
-  const providers = (route: "api" | "platform") => {
-    const names = [...new Set(groups.flatMap((g) => g.rows.filter((r) => r.route === route).map((r) => r.provider)))];
-    const score = (name: string) => {
-      const ratios = groups.flatMap((g, i) => {
-        const r = g.rows.find((x) => x.provider === name && x.route === route);
-        return r && floors[i] ? [r.usd / floors[i]!.usd] : [];
-      });
-      return ratios.reduce((a, b) => a + b, 0) / (ratios.length || 1);
-    };
-    return names.map((n) => ({ n, sc: score(n) })).sort((a, b) => a.sc - b.sc).map((x) => x.n);
+  type Key = { name: string; route: "api" | "platform" };
+  const keys: Key[] = [];
+  for (const g of groups)
+    for (const r of g.rows)
+      if (r.route !== "studio" && !keys.some((k) => k.name === r.provider && k.route === r.route))
+        keys.push({ name: r.provider, route: r.route });
+  const score = (k: Key) => {
+    const ratios = groups.flatMap((g, i) => {
+      const r = g.rows.find((x) => x.provider === k.name && x.route === k.route);
+      return r && floors[i] ? [r.usd / floors[i]!.usd] : [];
+    });
+    return ratios.reduce((a, b) => a + b, 0) / (ratios.length || 1);
   };
+  const ordered = keys.map((k) => ({ k, sc: score(k) })).sort((a, b) => a.sc - b.sc).map((x) => x.k);
 
   // Model headers span their consecutive tiers.
   const spans: { model: string; n: number }[] = [];
@@ -161,12 +166,12 @@ function Grid({ groups, filter }: { groups: Group[]; filter: Filter }) {
     else spans.push({ model: g.model, n: 1 });
   }
 
-  const cell = (g: Group, i: number, name: string, route: "api" | "platform") => {
-    const r = g.rows.find((x) => x.provider === name && x.route === route);
+  const cell = (g: Group, i: number, k: Key) => {
+    const r = g.rows.find((x) => x.provider === k.name && x.route === k.route);
     if (!r) return <td key={i} className={s.na}>—</td>;
-    const win = route === "api" ? floors[i] === r : platformFloors[i] === r;
+    const win = k.route === "api" ? floors[i] === r : platformFloors[i] === r;
     const title = [r.plan, r.detail, r.promo ? `promo to ${r.promo}` : "", r.provisional ? "unconfirmed" : ""].filter(Boolean).join(" · ");
-    const winCls = win ? (route === "api" ? s.win : s.winPlan) : "";
+    const winCls = win ? (k.route === "api" ? s.win : s.winPlan) : "";
     return (
       <td key={i} className={[winCls, r.provisional ? s.unsure : ""].join(" ")} title={title}>
         {money(r.usd)}
@@ -174,31 +179,6 @@ function Grid({ groups, filter }: { groups: Group[]; filter: Filter }) {
       </td>
     );
   };
-
-  const block = (route: "api" | "platform", label: string) => (
-    <>
-      <tr className={`${s.gridSection} ${route === "platform" ? s.routePlan : ""}`}>
-        <th colSpan={groups.length + 1}>{label}</th>
-      </tr>
-      {route === "api" && (
-        <tr className={s.studio}>
-          <th><a href={STUDIO_URL} target="_blank" rel="noopener" className={s.studioName}>Fantasy Studio ↗</a></th>
-          {groups.map((g, i) => (
-            <td key={i} title={floors[i] ? `routes to ${floors[i]!.provider}` : ""}>
-              {floors[i] ? money(floors[i]!.usd) : "—"}
-              {floors[i] && <small className={s.cellTag}>{floors[i]!.provider}</small>}
-            </td>
-          ))}
-        </tr>
-      )}
-      {providers(route).map((name) => (
-        <tr key={name} className={route === "platform" ? s.plan : ""}>
-          <th className={s.prov}>{name}</th>
-          {groups.map((g, i) => cell(g, i, name, route))}
-        </tr>
-      ))}
-    </>
-  );
 
   return (
     <div className={s.scroll}>
@@ -213,8 +193,24 @@ function Grid({ groups, filter }: { groups: Group[]; filter: Filter }) {
           </tr>
         </thead>
         <tbody>
-          {filter !== "platform" && block("api", "Through the API")}
-          {filter !== "api" && block("platform", "On the platform · paying in credits")}
+          <tr className={s.studio}>
+            <th><a href={STUDIO_URL} target="_blank" rel="noopener" className={s.studioName}>Fantasy Studio ↗</a></th>
+            {groups.map((g, i) => (
+              <td key={i} title={floors[i] ? `routes to ${floors[i]!.provider}` : ""}>
+                {floors[i] ? money(floors[i]!.usd) : "—"}
+                {floors[i] && <small className={s.cellTag}>{floors[i]!.provider}</small>}
+              </td>
+            ))}
+          </tr>
+          {ordered.map((k) => (
+            <tr key={k.name + k.route} className={k.route === "platform" ? s.plan : ""}>
+              <th className={s.prov}>
+                {k.name}
+                {k.route === "platform" && <small className={s.rowTag}>web app</small>}
+              </th>
+              {groups.map((g, i) => cell(g, i, k))}
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
