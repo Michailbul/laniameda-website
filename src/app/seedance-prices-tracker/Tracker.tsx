@@ -104,38 +104,6 @@ function Board() {
 
       {view === "table" ? <Grid groups={data.groups} filter={filter} /> : <List groups={data.groups} filter={filter} />}
 
-      <section className={s.section}>
-        <h2 className={s.h2}>What moved at the last check</h2>
-        {data.changes.length === 0 ? (
-          <p className={s.quiet}>Nothing moved against the previous check.</p>
-        ) : (
-          <ul className={s.changes}>
-            {data.changes.map((c) => (
-              <li key={`${c.model}${c.tier}${c.provider}${c.route}`}>
-                <b>{c.model} {c.tier}</b> on {c.provider}
-                <span className={s.quiet}> ({c.route === "platform" ? "platform" : "API"})</span>:{" "}
-                {c.from === undefined ? <>new at {money(c.to!)}</> : c.to === undefined ? <>dropped, was {money(c.from)}</> : <>{money(c.from)} → {money(c.to)}</>}
-              </li>
-            ))}
-          </ul>
-        )}
-        {data.history.length > 0 && (
-          <p className={s.quiet}>
-            Earlier checks:{" "}
-            {data.history.map((h, i) => (
-              <span key={h.publishedAt}>
-                {i > 0 && " · "}
-                {when(h.publishedAt)} ({h.changes.length} moved)
-              </span>
-            ))}
-          </p>
-        )}
-      </section>
-
-      <section className={s.section}>
-        <h2 className={s.h2}>Notes</h2>
-        {data.notes.map((n) => <p key={n} className={s.note}>{n}</p>)}
-      </section>
     </main>
   );
 }
