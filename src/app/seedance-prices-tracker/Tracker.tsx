@@ -57,7 +57,8 @@ const cheapestPlatform = (g: Group) => cheapestOf(g.rows.filter((r) => r.route =
 
 function Board() {
   const data = useLatest();
-  const [filter, setFilter] = useState<Filter>("all");
+  // API and platform prices always sit together (Michael, 23 Sep 2026): no route filter.
+  const filter: Filter = "all";
   const [view, setView] = useState<View>("table");
   useEffect(() => {
     try {
@@ -103,7 +104,6 @@ function Board() {
 
       <div className={s.controls}>
         <Seg label="View" value={view} onChange={pickView} options={[["table", "Table"], ["charts", "Charts"]]} />
-        <Seg label="Show" value={filter} onChange={setFilter} options={[["all", "All"], ["api", "Through the API"], ["platform", "On the platform"]]} />
         <div className={s.key}>
           <span><i className={s.dotWin} /> cheapest API route</span>
           <span><i className={s.dotPlanWin} /> cheapest platform</span>
